@@ -1,0 +1,16 @@
+version: '3.9'
+services:
+  backend:
+    build: ./src/backend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./src/backend:/usr/src/app
+  dbservice:
+    image: postgres
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_DB=ft_transendance
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin
