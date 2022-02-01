@@ -1,9 +1,9 @@
-import { HttpService } from "@nestjs/axios";
-import { Injectable, UnauthorizedException } from "@nestjs/common";
+import { HttpException, Injectable, NotFoundException, UnauthorizedException } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { PassportStrategy } from "@nestjs/passport";
 import { Strategy} from "passport-oauth2"
-import { catchError, take } from "rxjs";
+import { CreateUserDto } from "src/user/dtos/createUser.dto";
+import { AuthService } from "../auth.service";
 
 @Injectable()
 
@@ -11,7 +11,7 @@ export class Oauth2Strategy extends PassportStrategy(Strategy, "outh2")
 {
     constructor(
         private readonly configeService:ConfigService,
-        private readonly httpService: HttpService
+        private readonly authService: AuthService
     ){
         super(
            {
@@ -20,6 +20,7 @@ export class Oauth2Strategy extends PassportStrategy(Strategy, "outh2")
             clientID: configeService.get("CLIENT_ID"),
             clientSecret: configeService.get("CLIENT_SECRET"),
             callbackURL: configeService.get("CALL_BACK_URL"),
+            
            }
         )
     }
@@ -27,12 +28,7 @@ export class Oauth2Strategy extends PassportStrategy(Strategy, "outh2")
     
     async validate(accessToken: string)
     {
-        const {data} = await this.httpService.get("https://api.intra.42.fr/v2/me",
-        {
-            headers: { Authorization: `Bearer ${ accessToken }` }
-        }).pipe(take(1),
-        catchError(()=> {throw new UnauthorizedException;})).toPromise();
-
-        return data.email;
+        const user: CreateUserDto = await this.authService.getUserFromIntranet(accessToken);
+        return user;
     }
 }

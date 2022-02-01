@@ -1,7 +1,7 @@
 import { Body, 
         Controller, Get, HttpCode,
         HttpException,
-        Param, Post, Query, Req, Request, Res,
+        Param, Post, Query, Redirect, Req, Request, Res,
         UnauthorizedException,
         UseGuards
      } from "@nestjs/common";
@@ -18,7 +18,7 @@ import { AxiosResponse , AxiosError} from "axios";
 import { catchError, interval, map, of, throwError } from "rxjs";
 import { Oauth2Guard } from "./Guards/outh2.guard";
 import { Oauth2Strategy } from "./Strategys/oauth2.strategy";
-import { Response } from "express";
+import e, { Response } from "express";
 @Controller("auth")
 export class AuthController
 {
@@ -39,9 +39,18 @@ export class AuthController
     // @UseGuards(LocalAuthenticationGuard)
     @UseGuards(Oauth2Guard)
     @Get("/connect")
-    async connect(@Res() response: Response)
+    async connect(@Req() request: RequestWithUser,@Res() response: Response)
     {
-        response.redirect(301,"isLog")
+        const {user}  = request;
+
+        
+        let existedUser: UserEntity = await this.userService.getByEmail(user.email);
+        // if user !exist register him
+        if (!existedUser)
+            existedUser = await this.authService.register(user);
+        if (existedUser.two_factor_authenticator)
+            // redirect to two factor page
+        return 
     }
 
     @UseGuards(JwtAuthGuard)

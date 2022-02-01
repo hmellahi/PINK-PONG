@@ -16,7 +16,7 @@ export default class  User
     @Column({nullable: true})
     login?: string;
 
-    @Column()
+    @Column({nullable: true})
     password: string;
     
     @Column({unique: true})
@@ -25,4 +25,10 @@ export default class  User
     // refresh token
     @Column({nullable: true})
     currentRefreshToken?: string;
+
+    @Column({nullable: true})
+    phone?: string;
+
+    @Column({default: false})
+    two_factor_authenticator: boolean;
 }

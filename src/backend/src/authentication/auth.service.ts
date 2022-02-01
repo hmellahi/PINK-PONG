@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable, InternalServerErrorException } from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable, InternalServerErrorException, UnauthorizedException } from "@nestjs/common";
 import { CreateUserDto } from "src/user/dtos/createUser.dto";
 import { UserService } from "src/user/user.service";
 import * as bcrypt from "bcrypt";
@@ -7,7 +7,7 @@ import { UserAuthDataDto } from "./Dtos/userAuthData.dto";
 import UserEntity from "src/user/entities/user.entity";
 import { JwtService } from "@nestjs/jwt";
 import { ConfigService } from "@nestjs/config";
-import { Observable } from "rxjs";
+import { catchError, lastValueFrom, map, Observable, take } from "rxjs";
 import { AxiosResponse } from "axios";
 import { HttpService } from "@nestjs/axios";
 
@@ -27,7 +27,7 @@ export class AuthService
         const hash = bcrypt.hashSync(user.password, 10);
         try
         {
-            await this.userService.createUser({...user, password: hash});
+            return await this.userService.createUser({...user, phone: null, password: hash});
         }
         catch(error)
         {
@@ -36,6 +36,7 @@ export class AuthService
             throw new InternalServerErrorException();
         }
     }
+
     public async getAuthenticatedUser(credentials: UserAuthDataDto): Promise<UserEntity>
     {
         try
@@ -50,6 +51,12 @@ export class AuthService
         }
 
     }
+
+    public async connect(user: UserEntity)
+    {
+        console.log(user);
+        console.log(user.two_factor_authenticator);
+    } 
 
     private async verifyPassword(hashedPassword:string, plainTextPasword:string)
     {
@@ -86,9 +93,20 @@ export class AuthService
         return [`Authentication=; HttpOnly; Path=/; Max-Age=0`,
                 `Refresh=; HttpOnly; Path=/; Max-Age=0`];
       }
-    public getUserToken(code : string): Observable<AxiosResponse>
+
+    public async getUserFromIntranet(accessToken: string): Promise<CreateUserDto>
     {
-        
-        return this.httpService.get(this.configService.get("TOKEN_42_API"));
+        //fetch user's data from Intranet
+        const observable: Observable<CreateUserDto> = this.httpService.get<CreateUserDto>("https://api.intra.42.fr/v2/me",
+        {
+            headers: { Authorization: `Bearer ${ accessToken }` }
+        })
+        .pipe(
+            map((response: AxiosResponse<CreateUserDto>)=> response.data
+        ),
+        catchError(()=> {console.log("erro Test");throw new UnauthorizedException;}));
+
+        const user: CreateUserDto = await lastValueFrom(observable);
+        return user;
     }
 }

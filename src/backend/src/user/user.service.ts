@@ -16,16 +16,16 @@ export class UserService {
     public async createUser(user: CreateUserDto)
     {
         const newUser =  this.userRepository.create(user);
-        await this.userRepository.save(newUser);
+        return await this.userRepository.save(newUser);
     }
 
     public async getByEmail(email: string): Promise<UserEntity>
     {
-        const user = await this.userRepository.findOne({email: email});
+        return await this.userRepository.findOne({email: email});
         
-        if (user)
-            return user;
-        throw new HttpException("Email not found", HttpStatus.NOT_FOUND);
+        // if (user)
+            // return user;
+        // throw new HttpException("Email not found", HttpStatus.NOT_FOUND);
     }
 
     public async getById(id: number)
@@ -66,7 +66,6 @@ export class UserService {
 
         if (user)
         {
-            console.log("i am here");
             if (await bcrypt.compare(refreshToken, user.currentRefreshToken))
                 return user;
         }
