@@ -19,6 +19,7 @@ import { catchError, interval, map, of, throwError } from "rxjs";
 import { Oauth2Guard } from "./Guards/outh2.guard";
 import { Oauth2Strategy } from "./Strategys/oauth2.strategy";
 import e, { Response } from "express";
+
 @Controller("auth")
 export class AuthController
 {
@@ -38,19 +39,26 @@ export class AuthController
 
     // @UseGuards(LocalAuthenticationGuard)
     @UseGuards(Oauth2Guard)
-    @Get("/connect")
+    @Get("/callback")
     async connect(@Req() request: RequestWithUser,@Res() response: Response)
     {
-        const {user}  = request;
-
+        const {user} = request;
+        // const cookie = this.authService.getAccessJwtCookie(user.id);
         
-        let existedUser: UserEntity = await this.userService.getByEmail(user.email);
-        // if user !exist register him
+        let existedUser = await this.userService.getByEmail(user.email);
+
         if (!existedUser)
             existedUser = await this.authService.register(user);
-        if (existedUser.two_factor_authenticator)
-            // redirect to two factor page
-        return 
+        console.log(existedUser);
+        const cookie = this.authService.getAccessJwtCookie(existedUser.id,
+                        existedUser.two_factor_auth_active);
+        const refresh = this.authService.getRefreshJwtCookie(existedUser.id);
+
+        await this.userService.setRefreshToken(existedUser.id, refresh.token);
+        response.setHeader("set-cookie", cookie);
+        response.send({
+            isTwoFactorAuthonticator: existedUser.two_factor_auth_active
+        });
     }
 
     @UseGuards(JwtAuthGuard)
@@ -76,11 +84,27 @@ export class AuthController
         return response.sendStatus(200);
     }
 
+    // two factor auth
+    // use Guard jwt token
+    @Get("2fa/generate")
+    async generateTwoFactroAuthCode(@Req() request: RequestWithUser,
+                                    @Res() response: Response)
+    {
+        const {user} = request;
+        const {
+            otpauthUrl,
+            base32
+        } = this.authService.getTwoFactorAuthenticationCode();
+        // insert base32 into databas "later"
+        // this.userService.findByIdAndUpdate(user.id, {two_factor_auth_code: base32});
+        this.authService.respondWithQrCode(otpauthUrl, response)
+    }
+    //
     // for testing
     @UseGuards(JwtAuthGuard)
     @Get('isLog')
     async isLogin(@Res() resp: Response)
     {
-        resp.sendStatus(400);
+        resp.sendStatus(200);
     }
 }

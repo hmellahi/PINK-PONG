@@ -30,5 +30,8 @@ export default class  User
     phone?: string;
 
     @Column({default: false})
-    two_factor_authenticator: boolean;
+    two_factor_auth_active: boolean;
+
+    @Column({nullable: true})
+    two_factor_auth_code: string;
 }

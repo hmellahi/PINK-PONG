@@ -1,9 +1,10 @@
-import { HttpCode, HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpCode, HttpException, HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeleteResult, Repository } from 'typeorm';
 import { CreateUserDto } from './dtos/createUser.dto';
 import UserEntity from './entities/user.entity';
 import * as bcrypt from "bcrypt";
+import { use } from 'passport';
 
 @Injectable()
 export class UserService {
@@ -37,12 +38,17 @@ export class UserService {
         throw new HttpException('User Not Exist', HttpStatus.NOT_FOUND);
     }
 
+    public async findByIdAndUpdate(id:number, updatedUser)
+    {
+        await this.userRepository.update(id, updatedUser);
+    }
+    
     public async setRefreshToken(userId: number,token: string)
     {
         const user = await this.userRepository.findOne(userId);
         let hashToken: string;
 
-        if (userId)
+        if (user)
         {
             hashToken = await bcrypt.hash(token, 10);
             user.currentRefreshToken = hashToken;
@@ -53,7 +59,7 @@ export class UserService {
     {
         const user = await this.userRepository.findOne(userId);
 
-        if (userId)
+        if (user)
         {
             user.currentRefreshToken = null;
             this.userRepository.save(user);
@@ -69,5 +75,8 @@ export class UserService {
             if (await bcrypt.compare(refreshToken, user.currentRefreshToken))
                 return user;
         }
+        throw new UnauthorizedException;  // need to update
     }
+
+
 }

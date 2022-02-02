@@ -10,6 +10,9 @@ import { ConfigService } from "@nestjs/config";
 import { catchError, lastValueFrom, map, Observable, take } from "rxjs";
 import { AxiosResponse } from "axios";
 import { HttpService } from "@nestjs/axios";
+import * as speakeasy from "speakeasy"
+import * as QRCode from "qrcode"
+import internal from "stream";
 
 @Injectable()
 
@@ -24,10 +27,10 @@ export class AuthService
 
     public async register(user: CreateUserDto)
     {
-        const hash = bcrypt.hashSync(user.password, 10);
+        // const hash = bcrypt.hashSync(user.password, 10);
         try
         {
-            return await this.userService.createUser({...user, phone: null, password: hash});
+            return await this.userService.createUser({...user, phone: null});
         }
         catch(error)
         {
@@ -52,12 +55,6 @@ export class AuthService
 
     }
 
-    public async connect(user: UserEntity)
-    {
-        console.log(user);
-        console.log(user.two_factor_authenticator);
-    } 
-
     private async verifyPassword(hashedPassword:string, plainTextPasword:string)
     {
         const isMatching = bcrypt.compareSync(plainTextPasword,
@@ -66,9 +63,9 @@ export class AuthService
             throw new HttpException("Wrong credintials", HttpStatus.BAD_REQUEST);
     }
 
-    public getAccessJwtCookie(userId: number)
+    public getAccessJwtCookie(userId: number, isTwoFactorAuthenticated = false)
     {
-        const payload: TokenPayload = {userId};
+        const payload: TokenPayload = {userId, isTwoFactorAuthenticated};
         const token = this.jwtService.sign(payload, {
             secret: this.configService.get('JWT_ACCESS_SECRET'),
             expiresIn: `${this.configService.get('JWT_ACCESS_EXPIRATION_TIME')}s`
@@ -79,7 +76,7 @@ export class AuthService
 
     public getRefreshJwtCookie(userId: number)
     {
-        const payload: TokenPayload = {userId};
+        const payload: TokenPayload = {userId, isTwoFactorAuthenticated: true};
         const token = this.jwtService.sign(payload,{
             secret: this.configService.get('JWT_REFRESH_SECRET'),
             expiresIn: `${this.configService.get('JWT_REFRESH_EXPIRATION_TIME')}`
@@ -108,5 +105,35 @@ export class AuthService
 
         const user: CreateUserDto = await lastValueFrom(observable);
         return user;
+    }
+
+    // two factor auth
+
+    public getTwoFactorAuthenticationCode()
+    {
+        const secretCode = speakeasy.generateSecret(
+            {
+                name: this.configService.get("TWO_FACTOR_AUTH_APP_NAME")
+            }
+        );
+
+        return {
+                otpauthUrl: secretCode.otpauth_url,
+                base32: secretCode.base32
+            };
+    }
+
+    public respondWithQrCode(data: string, response: internal.Writable)
+    {
+        QRCode.toFileStream(response, data);
+    }
+
+    public verifyTwoFactorAuthCode(twoFactorAuthCode: string, user:UserEntity)
+    {
+        return speakeasy.totp.verify({
+            secret: user.two_factor_auth_code,
+            encoding: 'base32',
+            token: twoFactorAuthCode
+        })
     }
 }

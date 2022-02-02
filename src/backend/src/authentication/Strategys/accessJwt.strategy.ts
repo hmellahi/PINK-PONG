@@ -1,4 +1,5 @@
-import { Injectable } from "@nestjs/common"
+import { HttpException, HttpStatus, Injectable, InternalServerErrorException, UnauthorizedException } from "@nestjs/common"
+import { ErrorHandler } from "@nestjs/common/interfaces"
 import { ConfigService } from "@nestjs/config"
 import { PassportStrategy } from "@nestjs/passport"
 import { Request } from "express-serve-static-core"
@@ -25,6 +26,19 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt')
 
     async validate(payload: TokenPayload)
     {
-        return this.userService.getById(payload.userId);
+        try
+        {
+            const user = await this.userService.getById(payload.userId);
+
+            if (!payload.isTwoFactorAuthenticated && user.two_factor_auth_active)
+                throw UnauthorizedException;
+            return user;
+        }
+        catch(error)
+        {
+            if (error?.code === HttpStatus.NOT_FOUND) // need to update
+                throw new UnauthorizedException;
+            throw new InternalServerErrorException;
+        }
     }
 }

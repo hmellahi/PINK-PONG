@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { PassportStrategy } from "@nestjs/passport";
 import { Request } from "express";
@@ -25,7 +25,10 @@ export class RefreshJwtStgrategy extends PassportStrategy(
  
   async validate(request: Request, payload: TokenPayload) {
     const refreshToken = request?.cookies?.Refresh;
+    const user = await this.userService.getUserIfRefreshTokenMatches(refreshToken, payload.userId);
     
-    return await this.userService.getUserIfRefreshTokenMatches(refreshToken, payload.userId);
+    // if (!payload.isTwoFactorAuthenticated && user.two_factor_auth_active)
+    //   throw new UnauthorizedException;
+    return user;
   }
 }
