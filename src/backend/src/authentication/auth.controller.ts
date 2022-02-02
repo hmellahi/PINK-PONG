@@ -1,4 +1,4 @@
-import { Body, 
+import { BadRequestException, Body, 
         Controller, Get, HttpCode,
         HttpException,
         Param, Post, Query, Redirect, Req, Request, Res,
@@ -18,7 +18,7 @@ import { AxiosResponse , AxiosError} from "axios";
 import { catchError, interval, map, of, throwError } from "rxjs";
 import { Oauth2Guard } from "./Guards/outh2.guard";
 import { Oauth2Strategy } from "./Strategys/oauth2.strategy";
-import e, { Response } from "express";
+import e, { response, Response } from "express";
 
 @Controller("auth")
 export class AuthController
@@ -43,21 +43,23 @@ export class AuthController
     async connect(@Req() request: RequestWithUser,@Res() response: Response)
     {
         const {user} = request;
-        // const cookie = this.authService.getAccessJwtCookie(user.id);
         
         let existedUser = await this.userService.getByEmail(user.email);
 
         if (!existedUser)
             existedUser = await this.authService.register(user);
-        console.log(existedUser);
         const cookie = this.authService.getAccessJwtCookie(existedUser.id,
-                        existedUser.two_factor_auth_active);
-        const refresh = this.authService.getRefreshJwtCookie(existedUser.id);
+                        existedUser.two_factor_auth_enabled);
+        if (!existedUser.two_factor_auth_enabled)
+        {
+            const refresh = this.authService.getRefreshJwtCookie(existedUser.id);
+            await this.userService.setRefreshToken(existedUser.id, refresh.token);
+            response.setHeader("set-cookie", refresh.cookie);
 
-        await this.userService.setRefreshToken(existedUser.id, refresh.token);
+        }
         response.setHeader("set-cookie", cookie);
         response.send({
-            isTwoFactorAuthonticator: existedUser.two_factor_auth_active
+            isTwoFactorAuthonticator: existedUser.two_factor_auth_enabled
         });
     }
 
@@ -85,7 +87,7 @@ export class AuthController
     }
 
     // two factor auth
-    // use Guard jwt token
+    @UseGuards(JwtAuthGuard)
     @Get("2fa/generate")
     async generateTwoFactroAuthCode(@Req() request: RequestWithUser,
                                     @Res() response: Response)
@@ -96,10 +98,51 @@ export class AuthController
             base32
         } = this.authService.getTwoFactorAuthenticationCode();
         // insert base32 into databas "later"
-        // this.userService.findByIdAndUpdate(user.id, {two_factor_auth_code: base32});
+        this.userService.findByIdAndUpdate(user.id, {two_factor_auth_code: base32});
         this.authService.respondWithQrCode(otpauthUrl, response)
     }
-    //
+
+    @UseGuards(JwtAuthGuard)
+    @HttpCode(200)
+    @Post("2fa/enableTwoFactorAuth") // change it to Post and get code from Body
+    async enableTwoFactorAuth(@Body("code") twoFactorAuthCode: string ,
+                              @Req() request: RequestWithUser)
+    {
+        const { user } = request;
+
+        if (!user.two_factor_auth_enabled)
+        {
+            const isValid = this.authService.verifyTwoFactorAuthCode(twoFactorAuthCode, user);
+
+            if (!isValid)
+                throw new BadRequestException;
+            await this.userService.findByIdAndUpdate(user.id,
+                {two_factor_auth_enabled: true})
+        }
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @HttpCode(200)
+    @Post("2fa/login")
+    async twoFactorAuthLogin(@Req() request: RequestWithUser,
+                             @Body("twoFactorAuthCode") twoFactorAuthCode: string,
+                             @Res() respnse: Response)
+    {
+        const { user } = request;
+        
+        if (user.two_factor_auth_enabled)
+        {
+            const isValid = this.authService.verifyTwoFactorAuthCode(twoFactorAuthCode, user);
+
+            if (!isValid)
+                throw new BadRequestException;
+            const refresh = this.authService.getRefreshJwtCookie(user.id);
+            await this.userService.setRefreshToken(user.id, refresh.token);
+            response.setHeader("set-cookie", refresh.cookie);
+        }
+
+    }
+
     // for testing
     @UseGuards(JwtAuthGuard)
     @Get('isLog')

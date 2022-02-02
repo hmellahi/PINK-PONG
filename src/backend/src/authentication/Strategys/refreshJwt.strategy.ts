@@ -27,7 +27,7 @@ export class RefreshJwtStgrategy extends PassportStrategy(
     const refreshToken = request?.cookies?.Refresh;
     const user = await this.userService.getUserIfRefreshTokenMatches(refreshToken, payload.userId);
     
-    // if (!payload.isTwoFactorAuthenticated && user.two_factor_auth_active)
+    // if (!payload.isTwoFactorAuthenticated && user.two_factor_auth_enabled)
     //   throw new UnauthorizedException;
     return user;
   }

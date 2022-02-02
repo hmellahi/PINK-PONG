@@ -16,7 +16,4 @@ export class CreateUserDto
 
     @IsEmail()
     email: string;
-
-    // @isPhoneNumber()
-    phone?: string;
 }

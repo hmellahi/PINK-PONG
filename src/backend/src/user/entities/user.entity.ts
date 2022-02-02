@@ -26,12 +26,13 @@ export default class  User
     @Column({nullable: true})
     currentRefreshToken?: string;
 
-    @Column({nullable: true})
-    phone?: string;
 
     @Column({default: false})
-    two_factor_auth_active: boolean;
+    two_factor_auth_enabled: boolean;
 
     @Column({nullable: true})
     two_factor_auth_code: string;
+
+    @Column({nullable: true})
+    avatar: string;
 }

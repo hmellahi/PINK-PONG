@@ -27,10 +27,9 @@ export class AuthService
 
     public async register(user: CreateUserDto)
     {
-        // const hash = bcrypt.hashSync(user.password, 10);
         try
         {
-            return await this.userService.createUser({...user, phone: null});
+            return await this.userService.createUser(user);
         }
         catch(error)
         {

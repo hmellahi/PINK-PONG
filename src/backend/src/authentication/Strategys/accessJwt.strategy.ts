@@ -30,15 +30,15 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt')
         {
             const user = await this.userService.getById(payload.userId);
 
-            if (!payload.isTwoFactorAuthenticated && user.two_factor_auth_active)
+            if (!payload.isTwoFactorAuthenticated && user.two_factor_auth_enabled)
                 throw UnauthorizedException;
             return user;
         }
         catch(error)
         {
-            if (error?.code === HttpStatus.NOT_FOUND) // need to update
+            // if (error?.status === HttpStatus.NOT_FOUND) // need to update
                 throw new UnauthorizedException;
-            throw new InternalServerErrorException;
+            // throw new InternalServerErrorException;
         }
     }
 }

@@ -1,4 +1,4 @@
-import { HttpCode, HttpException, HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
+import { HttpCode, HttpException, HttpStatus, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeleteResult, Repository } from 'typeorm';
 import { CreateUserDto } from './dtos/createUser.dto';
@@ -35,7 +35,7 @@ export class UserService {
 
         if(user)
             return user;
-        throw new HttpException('User Not Exist', HttpStatus.NOT_FOUND);
+            throw new HttpException("User not found", HttpStatus.NOT_FOUND);;
     }
 
     public async findByIdAndUpdate(id:number, updatedUser)
