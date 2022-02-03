@@ -4,6 +4,8 @@ import  *  as joi from '@hapi/joi';
 import { DatabaseModule } from './database/database.module';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './authentication/auth.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module(
 {
@@ -33,6 +35,10 @@ import { AuthModule } from './authentication/auth.module';
         )
       }
     ),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'public'),
+      serveRoot: "/api/public"
+    }),
     DatabaseModule,
     ConfigModule,
     UserModule,
