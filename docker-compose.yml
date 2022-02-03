@@ -1,4 +1,4 @@
-version: '3.9'
+version: "3.9"
 services:
   backend:
     build: ./src/backend/
@@ -7,7 +7,7 @@ services:
     volumes:
       - ./src/backend:/usr/src/app
     depends_on:
-      - "dbservice" 
+      - "dbservice"
   dbservice:
     image: postgres
     ports:
@@ -16,3 +16,12 @@ services:
       - POSTGRES_DB=ft_transendance
       - POSTGRES_USER=admin
       - POSTGRES_PASSWORD=admin
+  client:
+    volumes:
+      - ./client:/usr/app
+      - /usr/app/node_modules
+    build: "./client"
+    container_name: "client"
+    ports:
+      - "5000:8080"
+    command: yarn serve
