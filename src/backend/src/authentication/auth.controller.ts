@@ -29,17 +29,8 @@ export class AuthController
         private httpService: HttpService
         ){}
 
-    @Post("/register")
-    @HttpCode(200)
-    async register(@Body() credentials: CreateUserDto): Promise<string>
-    {
-        await this.authService.register(credentials);
-        return "user added"
-    }
-
-    // @UseGuards(LocalAuthenticationGuard)
     @UseGuards(Oauth2Guard)
-    @Get("/callback")
+    @Get("callback")
     async connect(@Req() request: RequestWithUser,@Res() response: Response)
     {
         const {user} = request;
@@ -86,7 +77,7 @@ export class AuthController
         return response.sendStatus(200);
     }
 
-    // two factor auth
+    //=========================two factor auth================================//
     @UseGuards(JwtAuthGuard)
     @Get("2fa/generate")
     async generateTwoFactroAuthCode(@Req() request: RequestWithUser,
@@ -104,21 +95,30 @@ export class AuthController
 
     @UseGuards(JwtAuthGuard)
     @HttpCode(200)
-    @Post("2fa/enableTwoFactorAuth") // change it to Post and get code from Body
+    @Post("2fa/enableTwoFactorAuth")
     async enableTwoFactorAuth(@Body("code") twoFactorAuthCode: string ,
                               @Req() request: RequestWithUser)
     {
         const { user } = request;
 
-        if (!user.two_factor_auth_enabled)
-        {
-            const isValid = this.authService.verifyTwoFactorAuthCode(twoFactorAuthCode, user);
+        if (!await this.authService.switchTwoFactorAuthStatus(
+            twoFactorAuthCode, user, true
+        ))
+            throw new BadRequestException;
+    }
 
-            if (!isValid)
-                throw new BadRequestException;
-            await this.userService.findByIdAndUpdate(user.id,
-                {two_factor_auth_enabled: true})
-        }
+    @UseGuards(JwtAuthGuard)
+    @HttpCode(200)
+    @Post("2fa/disableTwoFactorAuth")
+    async disableTwoFactorAuth(@Body("code") twoFactorAuthCode: string ,
+                              @Req() request: RequestWithUser)
+    {
+        const { user } = request;
+
+        if (!await this.authService.switchTwoFactorAuthStatus(
+            twoFactorAuthCode, user, false
+        ))
+            throw new BadRequestException;
     }
 
     @UseGuards(JwtAuthGuard)
@@ -142,6 +142,8 @@ export class AuthController
         }
 
     }
+
+    //=====================================================================//
 
     // for testing
     @UseGuards(JwtAuthGuard)
