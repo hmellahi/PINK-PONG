@@ -34,5 +34,5 @@ export default class  User
     two_factor_auth_code: string;
 
     @Column({nullable: true})
-    avatar: string;
+    avatar_url: string;
 }

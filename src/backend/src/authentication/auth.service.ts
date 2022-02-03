@@ -29,6 +29,8 @@ export class AuthService
     {
         try
         {
+            const randomNumber: number = Math.round(Math.random() * 10000);
+            user.avatar_url = this.configService.get("AVATAR_API") + randomNumber + '.svg';
             return await this.userService.createUser(user);
         }
         catch(error)
@@ -134,5 +136,22 @@ export class AuthService
             encoding: 'base32',
             token: twoFactorAuthCode
         })
+    }
+
+    public async switchTwoFactorAuthStatus( // action = false ==> disable | action = true ==> enable
+        twoFactorAuthCode: string,
+        user: UserEntity,
+        action: boolean): Promise<boolean>
+    {
+        if (user.two_factor_auth_enabled !== action)
+        {
+            const isValid = this.verifyTwoFactorAuthCode(twoFactorAuthCode, user);
+
+            if (!isValid)
+                return false;
+            await this.userService.findByIdAndUpdate(user.id,
+                {two_factor_auth_enabled: action})
+        }
+        return true;
     }
 }

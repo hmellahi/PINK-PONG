@@ -27,7 +27,8 @@ import { AuthModule } from './authentication/auth.module';
             AUTHORIZAION_URL: joi.string().required(),
             CALL_BACK_URL: joi.string().required(),
             CLIENT_ID: joi.string().required(),
-            CLIENT_SECRET: joi.string().required()
+            CLIENT_SECRET: joi.string().required(),
+            AVATAR_API: joi.string().required()
           }
         )
       }
