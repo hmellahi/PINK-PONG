@@ -8,12 +8,12 @@ Vue.use(Vuex);
 
 const debug = process.env.NODE_ENV !== "production";
 export default new Vuex.Store({
-  mutations: {
-    // RESET_STATE(state: any, defaultstate: any): void {
-    //   // this.state = defaultstate;
-    //   // this.replaceState(defaultstate)
-    // },
-  },
+  // mutations: {
+  //   // RESET_STATE(state: any, defaultstate: any): void {
+  //   //   // this.state = defaultstate;
+  //   //   // this.replaceState(defaultstate)
+  //   // },
+  // },
   modules: {
     Friends,
     User,

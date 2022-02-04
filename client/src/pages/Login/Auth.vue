@@ -30,7 +30,8 @@ import Button from "@/common/components/UI/Button.vue";
 export default class Auth extends Vue {
   async login() {
     await this.$store.dispatch('User/login')
-    this.$router.push({path: '/verification_code'})
+    // this.$router.push({path: '/verification_code'})
+    // this.$router.push('/')
   }
 }
 </script>

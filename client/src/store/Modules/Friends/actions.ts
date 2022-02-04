@@ -4,6 +4,7 @@ import Vue from "vue";
 import { ActionContext } from "vuex";
 // actions
 const actions = {
+
   unFriend({ commit, state }: ActionContext<FriendsState, any>, friend: any) {
     let friendsListBackup = [...state.friends];
     commit("REMOVE_FROM", ["friends", friend]);
@@ -13,6 +14,7 @@ const actions = {
       commit("SET_ENTITY", ["friends", friendsListBackup]);
     }
   },
+
   addFriend({ commit }: ActionContext<FriendsState, any>, username: any) {
     try {
       // let friend = { username: "hamza", lastSeen: "10m ago" };
@@ -22,6 +24,7 @@ const actions = {
       // smtg wrong happened
     }
   },
+  
   async fetchFriends({ commit }: ActionContext<FriendsState, any>) {
     try {
       // TODO make an api call
