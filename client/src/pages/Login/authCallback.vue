@@ -8,6 +8,12 @@ import Button from "@/common/components/UI/Button.vue";
   components: { Button },
 })
 export default class Auth extends Vue {
+  beforeCreate(){
+    // if ()
+  }
+  mounted(){
+    // this.$http.post("jhghjg")
+  }
   async login() {
     // await this.$store.dispatch("User/login");
   }
