@@ -49,7 +49,7 @@ export default class App extends Vue {
   }
 
   updateIsLoginPage() {
-    let paths = ["/login", "/verification_code"];
+    let paths = ["/login", "/verification_code", "/auth/callback"];
     this.isLoginPage = paths.includes(this.$route.path);
   }
 }
