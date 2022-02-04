@@ -20,7 +20,7 @@ services:
     ports:
       - 5432:5432
     env_file:
-      - ./src/.env
+      - ./src/.env # where db secrets are stored
     networks:
       - db-network
     container_name: "dbservice"
@@ -31,7 +31,7 @@ services:
     volumes:
       - ./src/client:/usr/app
       - /usr/app/node_modules
-    build: "./client"
+    build: "./src/client"
     container_name: "client"
     ports:
       - "5000:8080"
