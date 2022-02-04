@@ -1,5 +1,6 @@
 version: "3.9"
 services:
+
   backend:
     build: ./src/backend/
     ports:
@@ -10,32 +11,35 @@ services:
       - "dbservice"
     networks:
       - db-network
+    restart: always
     container_name: "backend"
+
   dbservice:
     image: postgres
+    restart: always
     ports:
       - 5432:5432
-    environment:
-      - POSTGRES_DB=ft_transendance
-      - POSTGRES_USER=admin
-      - POSTGRES_PASSWORD=admin
+    env_file:
+      - ./src/.env
     networks:
       - db-network
     container_name: "dbservice"
     volumes:
       - pgdata:/var/lib/postgresql/data
+  
   client:
     volumes:
-      - ./client:/usr/app
+      - ./src/client:/usr/app
       - /usr/app/node_modules
     build: "./client"
     container_name: "client"
     ports:
       - "5000:8080"
+    restart: always
     command: yarn serve
 
 networks:
   db-network:
 
-volumes: 
-     pgdata:
+volumes:
+  pgdata:
