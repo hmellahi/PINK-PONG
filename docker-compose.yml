@@ -10,6 +10,7 @@ services:
       - "dbservice"
     networks:
       - db-network
+    container_name: "backend"
   dbservice:
     image: postgres
     ports:
@@ -20,6 +21,9 @@ services:
       - POSTGRES_PASSWORD=admin
     networks:
       - db-network
+    container_name: "dbservice"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
   client:
     volumes:
       - ./client:/usr/app
@@ -32,3 +36,6 @@ services:
 
 networks:
   db-network:
+
+volumes: 
+     pgdata:
