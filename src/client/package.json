@@ -8,7 +8,6 @@
     "test:unit": "vue-cli-service test:unit"
   },
   "dependencies": {
-    "@bigheads/core": "^0.3.3",
     "@soldeplata/popper-vue": "^1.0.4",
     "@types/node": "^16.11.11",
     "axios": "^0.24.0",
