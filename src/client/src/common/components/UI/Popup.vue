@@ -57,7 +57,7 @@ export default class Popup extends Vue {
 .close-icon {
   position: absolute;
   top: -10%;
-  right: -16%;
+  right: -3rem;
   background: transparent !important;
 }
 </style>

@@ -28,7 +28,7 @@ export default class Auth extends Vue {
 
 <style scoped>
 .btn_title {
-  font-size: 1.3rem!important;
+  font-size: 1.3rem;
 }
 /* a{
 } */

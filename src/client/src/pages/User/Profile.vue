@@ -10,15 +10,15 @@
       <!-- // col-md-10"> -->
       <div class="row text-center">
         <div class="col-md-5 infos px-5">
-          <div class="row mb-3">
+          <div class="row mb-3 avatar_profile">
             <img class="col-md-5 mx-0" :src="user.avatarUrl" alt="" />
             <span class="user-name col-md-7 p-0 text-left my-auto">{{
               user.username
             }}</span>
           </div>
-          <Button class="w-100 m-0 mb-0 f1" :onClick="sendFriendReq"
+          <!-- <Button class="w-100 m-0 mb-0 f1" :onClick="sendFriendReq"
             >Send Friend Request</Button
-          >
+          > -->
           <div class="row mt-2 states">
             <div class="col-md-6">
               <div class="col-md-12">Games</div>
@@ -72,7 +72,7 @@ export default class Profile extends Vue {
 }
 </script>
 
-<style lang="scss" scodped>
+<style lang="scss" scoped>
 .states div div {
   background-color: #53137e !important;
   padding: 0.2rem;
@@ -81,32 +81,34 @@ export default class Profile extends Vue {
   border-radius: 10px;
   // margin-left:2rem
 }
-.states div {
-}
+
 .user-name {
   font-size: 2rem;
 }
-.infos {
-  // border-right: 1px solid white;
-  overflow: hidden;
-  position: relative;
+.leader_box{
+  justify-content: space-evenly!important;
 }
-.infos:after {
-  content: ""; // todo read abt wt content is
-  height: 80%; //You can change this if you want smaller/bigger borders
-  width: 1px;
+// .infos {
+//   // border-right: 1px solid white;
+//   overflow: hidden;
+//   position: relative;
+// }
+// .infos:after {
+//   content: ""; // todo read abt wt content is
+//   height: 80%; //You can change this if you want smaller/bigger borders
+//   width: 1px;
 
-  position: absolute;
-  right: 0;
-  top: 10%; // If you want to set a smaller height and center it, change this value
+//   position: absolute;
+//   right: 0;
+//   top: 10%; // If you want to set a smaller height and center it, change this value
 
-  background-color: white; // The color of your border
-}
-.f1 {
-  font-size: 10rem !important;
-}
-.profile .overlay {
-  height: 90%; // tod00o
-  // height: 100%; // todo
-}
+//   background-color: white; // The color of your border
+// }
+// .f1 {
+//   font-size: 10rem !important;
+// }
+// .profile .overlay {
+//   height: 90%; // tod00o
+//   // height: 100%; // todo
+// }
 </style>
