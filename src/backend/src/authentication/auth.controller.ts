@@ -125,7 +125,7 @@ export class AuthController
     @HttpCode(200)
     @Post("2fa/login")
     async twoFactorAuthLogin(@Req() request: RequestWithUser,
-                             @Body("twoFactorAuthCode") twoFactorAuthCode: string,
+                             @Body("code") twoFactorAuthCode: string,
                              @Res() respnse: Response)
     {
         const { user } = request;
