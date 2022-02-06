@@ -35,4 +35,7 @@ export default class  User
 
     @Column({nullable: true})
     avatar_url: string;
+
+    @Column({type: "timestamp", default: ()=> "CURRENT_TIMESTAMP"})
+    create_date: Date;
 }
