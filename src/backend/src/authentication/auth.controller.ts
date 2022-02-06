@@ -28,7 +28,7 @@ export class AuthController
         private userService: UserService,
         private httpService: HttpService
         ){}
-
+    
     @UseGuards(Oauth2Guard)
     @Get("callback")
     async connect(@Req() request: RequestWithUser,@Res() response: Response)

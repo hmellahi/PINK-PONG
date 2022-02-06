@@ -2,7 +2,7 @@
   <div>
     <div class="row" v-for="conversation in dms">
       <router-link
-        :to="'channel/' + conversation.name"
+        :to="'directMessage/' + conversation.name"
         class="leader_box px-5 col-md-9 mx-4"
       >
         <div class="col-md-3 avatar-box">

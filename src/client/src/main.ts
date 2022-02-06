@@ -18,16 +18,16 @@ Vue.component("Overlay", Overlay);
 
 // Vue.prototype.$http = API;
 import VueAxios from 'vue-axios'
-import axios from 'axios'
+import axios from './api'
 // import "./types/http.d.ts"
 import _Vue from "vue";
-import Axios from "axios";
+// import Axios from "axios";
 export function AxiosPlugin<AxiosPlugOptions>(
   Vue: typeof _Vue,
   options?: AxiosPluginOptions
 ): void {
   // do stuff with options
-  Vue.prototype.$http = Axios;
+  Vue.prototype.$http = axios;
 }
 export class AxiosPluginOptions {
   // add stuff

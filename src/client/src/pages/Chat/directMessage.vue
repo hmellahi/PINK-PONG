@@ -6,21 +6,10 @@
       :onClick="goBackward"
       >Back</Button
     >
-    <Button
-      class="mb-3 col-md-2 right-btn"
-      style="right: 19%;"
-      :link="'#'"
-      >Leave</Button
-    >
-    <Button
-      class="mb-3 col-md-2 right-btn"
-      :link="'/chat/edit/' + $route.params.name"
-      >Edit</Button
-    >
     <Overlay class="p-3">
       <div class="mb-4 room px-4">
         <MessageBox
-          :isDM="false"
+          :isDM="true"
           v-for="(message, i) in messages"
           :message="message"
           :class="'id-' + i"
