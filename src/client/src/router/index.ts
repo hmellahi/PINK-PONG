@@ -22,6 +22,7 @@ import createChannel from "@/pages/Chat/CreateChannel.vue";
 import EditChannel from "@/pages/Chat/editChannel.vue";
 import checkAuth from "@/middlewares/checkAuth";
 import conversations from "@/pages/Chat/dms.vue";
+import directMessage from "@/pages/Chat/directMessage.vue";
 import Game from "@/pages/Game/pingpong.vue";
 import channelRoom from "@/pages/Chat/channelRoom.vue";
 import AuthCallback from "@/pages/Login/authCallback.vue";
@@ -31,10 +32,7 @@ const routes: Array<RouteConfig> = [
   {
     path: "/",
     name: "Home",
-    component: Home,
-    meta: {
-      // requiresAuth: false,
-    },
+    component: Play,
   },
   {
     path: "/verification_code",
@@ -93,11 +91,11 @@ const routes: Array<RouteConfig> = [
       },
     ],
   },
-  {
-    path: "/play",
-    name: "play",
-    component: Play,
-  },
+  // {
+  //   path: "/play",
+  //   name: "play",
+  //   component: Play,
+  // },
   {
     path: "/chat",
     // name: "chat",
@@ -124,6 +122,10 @@ const routes: Array<RouteConfig> = [
   {
     path: "/chat/channel/:name",
     component: channelRoom,
+  },
+  {
+    path: "/chat/directMessage/:name",
+    component: directMessage,
   },
   // {
   //   path: "/match_history",
@@ -153,6 +155,8 @@ const router = new VueRouter({
   mode: "history",
   base: process.env.BASE_URL,
   routes,
+  linkActiveClass: "active",
+  linkExactActiveClass: "active",
 });
 
 router.beforeEach((to, from, next) => {

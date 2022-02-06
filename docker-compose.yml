@@ -7,6 +7,7 @@ services:
       - "3000:3000"
     volumes:
       - ./src/backend:/usr/src/app
+      - /usr/app/node_modules
     depends_on:
       - "dbservice"
     networks:
@@ -17,8 +18,8 @@ services:
   dbservice:
     image: postgres
     restart: always
-    ports:
-      - 5432:5432
+    # ports: # shouldnt be exposed
+    #   - 5432:5432
     env_file:
       - ./src/.env # where db secrets are stored
     networks:

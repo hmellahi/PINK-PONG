@@ -3,7 +3,7 @@
     <h3 class="mb-4">FINDING MATCH...</h3>
     <div class="time_finding_match">{{ showCount() }}</div>
     <div class="mt-4">
-      <Button link="/play">
+      <Button link="/">
         <div class="btn_title">CANCEL</div>
       </Button>
     </div>

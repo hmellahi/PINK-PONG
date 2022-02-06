@@ -1,4 +1,5 @@
 <template>
+<div>
   <!-- <header class="header"> -->
   <!-- Fixed Navigation Starts -->
   <!-- <ul class="icon-menu d-none d-lg-block">
@@ -13,12 +14,11 @@
     <Button
       class="w-100 mb-3 ml-4 text-left px-3 position-relative"
       v-for="(link, i) in links"
-      :class="iconClass(link.path)"
       :link="link.path"
       :key="i"
     >
       <span><i :class="link.icon"></i>
-      <h2 class="d-inline ml-3">{{ link.name }}</h2></span>
+      <h2 class="d-inline ml-2">{{ link.name }}</h2></span>
     </Button>
   </div>
   <!-- Fixed Navigation Ends -->
@@ -37,7 +37,8 @@
           </li>
         </ul>
       </div>
-    </nav>
+    </nav> -->
+    </div>
     <!-- Mobile Menu Ends -->
   <!-- </header>  -->
 </template>
@@ -62,7 +63,7 @@ export default class SideBar extends Vue {
 
   mounted() {
     this.links = [
-      { name: "play", icon: "fa fa-table-tennis", path: "/play" },
+      { name: "play", icon: "fa fa-table-tennis", path: "/" },
       { name: "friends", icon: "fa fa-user-friends", path: "/friends" },
       { name: "profile", icon: "fa fa-user", path: "/profile/mine" },
       { name: "LeaderBoard", icon: "fa fa-trophy", path: "/leaderBoard" },
@@ -74,7 +75,7 @@ export default class SideBar extends Vue {
   iconClass(path: string) {
     let currentRoute = this.$router.currentRoute.path;
     let className = "icon-box";
-    className += currentRoute.includes(path) ? " active" : "";
+    className += currentRoute.includes(path) ? " active" : "" ;
     return className;
   }
 }

@@ -150,12 +150,13 @@ const actions = {
 
 export async function catchAction(store: any, action: string) {
   let prevstate = store.state.Friends;
-  console.log(prevstate);
+  console.log({prevstate});
   try {
     await store.dispatch(action);
   } catch (err) {
     console.log(err);
   }
+  // console.log({ store.state})
   store.commit("Friends/RESET_STATE", prevstate);
 }
 export default actions;

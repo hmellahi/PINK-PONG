@@ -10,6 +10,7 @@
           placeholder="verification code"
           v-model="verificationCode"
         />
+        {{error}}
       </div>
       <Button class="mt-4 px-4" :onClick="handleSubmit"
         ><i class="fas fa-check"></i> Sign In</Button
@@ -28,16 +29,40 @@ import Button from "@/common/components/UI/Button.vue";
 })
 export default class VerificationCode extends Vue {
   verificationCode: string = "";
+  error=""
 
-  handleSubmit(): void {
-    if (!this.isValid(this.verificationCode)) return;
-    console.log(this.verificationCode);
+  async handleSubmit() {
+    if (!this.isValid(this.verificationCode))
+      this.error = "verification code isnt valid"
+    // console.log(this.verificationCode);
+    try {
+       let data = await this.$http({
+        method: 'post',
+        url:'auth/2fa/login',
+        data:{
+          code:this.verificationCode
+        },
+        withCredentials: true,
+
+        headers:{
+          'Access-Control-Allow-Origin':'http://127.0.0.1:5000',
+          'Access-Control-Allow-Credentials': 'true'
+        }
+      })
+      // http://159.223.102.35:3000/api/auth/2fa/generate
+      console.log({data})
+       this.$router.push({ path: "/" });
+    }catch(e){
+      console.log({e})
+      this.error = "verification code isnt valid"
+      return;
+    }
     this.$router.push({ path: "/" });
   }
 
   isValid(code: string): boolean {
     // todo verify the code
-    return true;
+    return code.length != 0;
   }
 }
 </script>

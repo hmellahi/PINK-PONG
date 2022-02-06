@@ -1,7 +1,9 @@
 <template>
   <div class="msg position-relative">
     <span class="date">[{{ message.date }}]</span>
+    <span v-if="!isDM">
     <img src="/assets/svg/medal.svg" v-if="message.isAdmin" alt="" />
+    </span>
     <PopperVue
       :show="message.showTooltip"
       class="d-inline"
@@ -22,9 +24,11 @@
           :style="tooltipStyles(message)"
         >
           <div id="arrow" data-popper-arrow></div>
-          <div v-if="true" class="mb-2 position-relative">
+          <div v-if="!isDM">
+          <div v-if="true" class="mb-2">
             <span>Administrator</span>
             <Checkbox class="col-md- right-div" :value="message.isAdmin" />
+          </div>
           </div>
           <div class="row p-0">
             <div class="col-md-4">
@@ -80,6 +84,7 @@ import PopperVue from "@soldeplata/popper-vue";
 
 @Component({
   props: {
+    isDM: Boolean,
     message: {
       // type: Message, //wtf why?
       required: true,

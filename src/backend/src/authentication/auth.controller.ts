@@ -30,6 +30,10 @@ export class AuthController
         private httpService: HttpService,
         private configService: ConfigService
         ){}
+    
+    @UseGuards(Oauth2Guard)
+    @Get("login")
+    login(){}
 
     @UseGuards(Oauth2Guard)
     @Get("callback")
@@ -123,11 +127,10 @@ export class AuthController
     }
 
     @UseGuards(JwtAuthGuard)
-    @HttpCode(200)
     @Post("2fa/login")
     async twoFactorAuthLogin(@Req() request: RequestWithUser, 
                              @Body("code") twoFactorAuthCode: string,
-                             @Res() respnse: Response)
+                             @Res() response: Response)
     {
         const { user } = request;
         
@@ -139,7 +142,8 @@ export class AuthController
                 throw new BadRequestException;
             const refresh = this.authService.getRefreshJwtCookie(user.id);
             await this.userService.setRefreshToken(user.id, refresh.token);
-            response.setHeader("set-cookie", refresh.cookie);
+            response.setHeader("set-cookie", [refresh.cookie]);
+            response.sendStatus(200);
         }
 
     }

@@ -4,13 +4,15 @@
     <span v-else>
       <!-- <SideBar></SideBar> -->
       <Title></Title>
-      <div class="col-md-9 m-auto main">
-        <div class="row">
-          <div class="col-md-3">
-            <SideBar></SideBar>
-          </div>
-          <div class="col-md-9 dashboard_main text-center">
-            <router-view></router-view>
+      <div class="container-fluid">
+        <div class="col-md-12 m-auto main">
+          <div class="row">
+            <div class="col-md-3">
+              <SideBar></SideBar>
+            </div>
+            <div class="col-md-9 dashboard_main text-center">
+              <router-view></router-view>
+            </div>
           </div>
         </div>
       </div>
@@ -43,9 +45,6 @@ export default class App extends Vue {
     // if (process.env.A == "true") {
     //   console.log("yayks");
     // }
-    // this.$http
-    //   .get("https://api.github.com/users/mapbox")
-    //   .then((response) => console.log({ response }));
   }
 
   updateIsLoginPage() {
@@ -56,17 +55,13 @@ export default class App extends Vue {
 </script>
 
 <style lang="scss">
-@font-face {
-  font-family: "Merienda";
-  src: local("Merienda"),
-    url(../public/assets/fonts/BeatWorddemo.ttf) format("truetype");
-}
+@import url('https://fonts.googleapis.com/css2?family=Coda&display=swap');
 
 * {
-  // font-family: "Merienda";
+font-family: 'Coda', cursive;
 }
 .main {
   height: 30em;
-  // overflow: hidden;
 }
+// CSS rules to specify families
 </style>
