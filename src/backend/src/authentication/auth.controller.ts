@@ -19,6 +19,7 @@ import { catchError, interval, map, of, throwError } from "rxjs";
 import { Oauth2Guard } from "./Guards/outh2.guard";
 import { Oauth2Strategy } from "./Strategys/oauth2.strategy";
 import e, { response, Response } from "express";
+import { ConfigService } from "@nestjs/config";
 
 @Controller("auth")
 export class AuthController
@@ -26,7 +27,8 @@ export class AuthController
     constructor(
         private authService: AuthService,
         private userService: UserService,
-        private httpService: HttpService
+        private httpService: HttpService,
+        private configService: ConfigService
         ){}
 
     @UseGuards(Oauth2Guard)
@@ -34,24 +36,23 @@ export class AuthController
     async connect(@Req() request: RequestWithUser,@Res() response: Response)
     {
         const {user} = request;
-        
         let existedUser = await this.userService.getByEmail(user.email);
 
         if (!existedUser)
             existedUser = await this.authService.register(user);
-        const cookie = this.authService.getAccessJwtCookie(existedUser.id,
-                        existedUser.two_factor_auth_enabled);
+        const cookies: string[] = [this.authService.getAccessJwtCookie(existedUser.id,
+                        existedUser.two_factor_auth_enabled)];
+        let redirectiUrl = this.configService.get("TWO_FACTOR_LOGIN_PAGE");
         if (!existedUser.two_factor_auth_enabled)
         {
             const refresh = this.authService.getRefreshJwtCookie(existedUser.id);
+            cookies.push(refresh.cookie);
             await this.userService.setRefreshToken(existedUser.id, refresh.token);
-            response.setHeader("set-cookie", refresh.cookie);
-
+            redirectiUrl = this.configService.get("HOME_PAGE_URL");   
         }
-        response.setHeader("set-cookie", cookie);
-        response.send({
-            isTwoFactorAuthonticator: existedUser.two_factor_auth_enabled
-        });
+        console.log(cookies);
+        response.setHeader("set-cookie", cookies);
+        response.redirect(redirectiUrl);
     }
 
     @UseGuards(JwtAuthGuard)
@@ -124,7 +125,7 @@ export class AuthController
     @UseGuards(JwtAuthGuard)
     @HttpCode(200)
     @Post("2fa/login")
-    async twoFactorAuthLogin(@Req() request: RequestWithUser,
+    async twoFactorAuthLogin(@Req() request: RequestWithUser, 
                              @Body("code") twoFactorAuthCode: string,
                              @Res() respnse: Response)
     {
