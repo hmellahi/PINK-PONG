@@ -19,7 +19,8 @@ import { join } from 'path';
                 entities : [
                     join(__dirname, '/../**/entities/**.entity{.ts,.js}')
                 ],
-                synchronize: true // in production disable it !!
+                synchronize: true,// in production disable it !!
+                timeZone: 'z'
             })
         })
     ]

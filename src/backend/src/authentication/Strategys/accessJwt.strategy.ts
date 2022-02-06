@@ -25,20 +25,28 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
         },
       ]),
       secretOrKey: configService.get('JWT_ACCESS_SECRET'),
+      passReqToCallback: true
     });
   }
 
-  async validate(payload: TokenPayload) {
-    try {
+  async validate(request: Request, payload: TokenPayload)
+  {
+    console.log(payload);
+    try
+    {
+      const endpoint: string = request.url;
+      console.log(endpoint)
       const user = await this.userService.getById(payload.userId);
 
-      if (!payload.isTwoFactorAuthenticated && user.two_factor_auth_enabled)
+      if (!payload.isTwoFactorAuthenticated &&
+          user.two_factor_auth_enabled && 
+          endpoint !== "/api/auth/2fa/login") 
         throw UnauthorizedException;
       return user;
     } catch (error) {
-      // if (error?.status === HttpStatus.NOT_FOUND) // need to update
-      throw new UnauthorizedException();
-      // throw new InternalServerErrorException;
-    }
+        // if (error?.status === HttpStatus.NOT_FOUND) // need to update
+        throw new UnauthorizedException();
+        // throw new InternalServerErrorException;
+      }
   }
 }
