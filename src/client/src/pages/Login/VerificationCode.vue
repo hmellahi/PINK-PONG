@@ -28,16 +28,33 @@ import Button from "@/common/components/UI/Button.vue";
 })
 export default class VerificationCode extends Vue {
   verificationCode: string = "";
+  error=""
 
-  handleSubmit(): void {
-    if (!this.isValid(this.verificationCode)) return;
+  async handleSubmit() {
+    if (!this.isValid(this.verificationCode))
+      this.error = "verification code isnt valid"
     console.log(this.verificationCode);
+    try {
+       let data = await this.$http({
+        method: 'post',
+        url:'2f/login',
+        data:{
+          code:this.verificationCode
+        }
+      })
+      // http://159.223.102.35:3000/api/auth/2fa/generate
+      console.log({data})
+    }catch(e){
+      console.log({e})
+      this.error = "verification code isnt valid"
+      return;
+    }
     this.$router.push({ path: "/" });
   }
 
   isValid(code: string): boolean {
     // todo verify the code
-    return true;
+    return code.length != 0;
   }
 }
 </script>

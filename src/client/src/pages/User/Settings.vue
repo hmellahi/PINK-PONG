@@ -24,7 +24,9 @@
       </div>
 
       <div class="col-12 px-0 fa_factor" v-if="settings[2].isActive && !isVerified">
-        <img src="/assets/img/googleQRcodes.png" />
+        <!-- {{process}} -->
+        {{sd}}
+        <img src=`/api/auth/2fa/generate` />
         <div class="verify_factor">
           <InputField
             class="text-left"

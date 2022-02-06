@@ -16,6 +16,7 @@ export default class Auth extends Vue {
   const { VUE_APP_API_URL: API_URL } = process.env;
     // console.log(this.$route.query)
   const token = this.$route.query.code
+  //http://159.223.102.35:3000/api/auth/isLog
   try{
     let data = await axios({
         method: 'get',
