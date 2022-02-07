@@ -44,8 +44,7 @@ export class AuthController
 
         if (!existedUser)
             existedUser = await this.authService.register(user);
-        const cookies: string[] = [this.authService.getAccessJwtCookie(existedUser.id,
-                        existedUser.two_factor_auth_enabled)];
+        const cookies: string[] = [this.authService.getAccessJwtCookie(existedUser.id)];
         let redirectiUrl = this.configService.get("TWO_FACTOR_LOGIN_PAGE");
         if (!existedUser.two_factor_auth_enabled)
         {
@@ -54,7 +53,6 @@ export class AuthController
             await this.userService.setRefreshToken(existedUser.id, refresh.token);
             redirectiUrl = this.configService.get("HOME_PAGE_URL");   
         }
-        console.log(cookies);
         response.setHeader("set-cookie", cookies);
         response.redirect(redirectiUrl);
     }
@@ -95,7 +93,8 @@ export class AuthController
         } = this.authService.getTwoFactorAuthenticationCode();
         // insert base32 into databas "later"
         this.userService.findByIdAndUpdate(user.id, {two_factor_auth_code: base32});
-        this.authService.respondWithQrCode(otpauthUrl, response)
+        this.authService.respondWithQrCode(otpauthUrl, response);
+
     }
 
     @UseGuards(JwtAuthGuard)
@@ -110,6 +109,7 @@ export class AuthController
             twoFactorAuthCode, user, true
         ))
             throw new BadRequestException;
+        // logout
     }
 
     @UseGuards(JwtAuthGuard)
@@ -124,6 +124,7 @@ export class AuthController
             twoFactorAuthCode, user, false
         ))
             throw new BadRequestException;
+        //logout
     }
 
     @UseGuards(JwtAuthGuard)
@@ -140,9 +141,10 @@ export class AuthController
 
             if (!isValid)
                 throw new BadRequestException;
+            const accessCookie = this.authService.getAccessJwtCookie(user.id, true);
             const refresh = this.authService.getRefreshJwtCookie(user.id);
             await this.userService.setRefreshToken(user.id, refresh.token);
-            response.setHeader("set-cookie", [refresh.cookie]);
+            response.setHeader("set-cookie", [refresh.cookie, accessCookie]);
             response.sendStatus(200);
         }
 

@@ -6,6 +6,7 @@ import { UserModule } from './user/user.module';
 import { AuthModule } from './authentication/auth.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { FriendshipModule } from './friend/friendship.module';
 
 @Module(
 {
@@ -42,6 +43,7 @@ import { join } from 'path';
     DatabaseModule,
     ConfigModule,
     UserModule,
+    FriendshipModule,
     AuthModule
   ]
 })
