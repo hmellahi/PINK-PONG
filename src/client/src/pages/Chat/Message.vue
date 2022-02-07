@@ -26,8 +26,7 @@
           <div id="arrow" data-popper-arrow></div>
           <div v-if="!isDM">
           <div v-if="true" class="mb-2">
-            <span>Administrator</span>
-            <Checkbox class="col-md- right-div" :value="message.isAdmin" />
+            <span><input class="checkbox_admin" type="checkbox" :value="message.isAdmin" /> Administrator</span>
           </div>
           </div>
           <div class="row p-0">
@@ -37,7 +36,7 @@
               >
             </div>
             <div class="col-md-7 pr-0">
-              <Button class="m-0" :link="'/profile/' + message.sender"
+              <Button class="m-0" :onClick="InviteToPlay"
                 >Invite To Play
               </Button>
             </div>
@@ -117,6 +116,9 @@ export default class MessageBox extends Vue {
       marginLeft: !message.isAdmin ? "5%" : "9%",
     };
   }
+  InviteToPlay(){
+    console.log('invited to play')
+  }
 }
 </script>
 
@@ -149,74 +151,69 @@ export default class MessageBox extends Vue {
       font-size: 1rem !important;
       // width: 100%;
     }
-    input {
-      width: 100%;
-      height: 100%;
-      padding: 0;
-    }
   }
 }
-.right-div {
-  position: absolute;
-  right: -2%;
-  top: 40%;
-}
+// .right-div {
+//   position: absolute;
+//   right: -2%;
+//   top: 40%;
+// }
 /* e8b7ff */
 /*b183cd  */
 /* ffb5fd */
 // wc -l *.ts */*.ts */*/*.ts */*/*/*.ts *.vue */*.vue */*/*.vue */*/*/*.vue
-#arrow,
-#arrow::before {
-  position: absolute;
-  width: 1.5rem;
-  height: 1.5rem;
-  background: inherit;
-  left: 1rem !important;
-  bottom: -0.5rem;
-}
+// #arrow,
+// #arrow::before {
+//   position: absolute;
+//   width: 1.5rem;
+//   height: 1.5rem;
+//   background: inherit;
+//   left: 1rem !important;
+//   bottom: -0.5rem;
+// }
 
-#arrow {
-  visibility: hidden;
-  //   z-index:;
-}
+// #arrow {
+//   visibility: hidden;
+//   //   z-index:;
+// }
 
-#arrow::before {
-  visibility: visible;
-  content: "";
-  transform: rotate(45deg);
-  border-right: 1px solid white;
-  border-bottom: 1px solid white;
-}
+// #arrow::before {
+//   visibility: visible;
+//   content: "";
+//   transform: rotate(45deg);
+//   border-right: 1px solid white;
+//   border-bottom: 1px solid white;
+// }
 
-#my-tooltip span{
-  z-index:99999999;
-}
-#my-tooltip span[data-popper-placement="top"] #arrow {
-  bottom: -0.3rem;
-  // background: red;
-}
+// #my-tooltip span{
+//   z-index:99999999;
+// }
+// #my-tooltip span[data-popper-placement="top"] #arrow {
+//   bottom: -0.3rem;
+//   // background: red;
+// }
 
-#my-tooltip span[data-popper-placement="bottom"] {
-  #arrow {
-    top: -1.3rem;
-    // background: red;
-    bottom: 0;
-  }
-  #tooltip {
-    margin-top: 1.3rem;
-  }
-}
-#my-tooltip span[data-popper-placement="bottom"] #arrow::before {
-  border: 0;
-  border-left: 1px solid white;
-  border-top: 1px solid white;
-}
+// #my-tooltip span[data-popper-placement="bottom"] {
+//   #arrow {
+//     top: -1.3rem;
+//     // background: red;
+//     bottom: 0;
+//   }
+//   #tooltip {
+//     margin-top: 1.3rem;
+//   }
+// }
+// #my-tooltip span[data-popper-placement="bottom"] #arrow::before {
+//   border: 0;
+//   border-left: 1px solid white;
+//   border-top: 1px solid white;
+// }
 
-#my-tooltip[data-popper-placement^="left"] > #arrow {
-  right: -4px;
-}
+// #my-tooltip[data-popper-placement^="left"] > #arrow {
+//   right: -4px;
+// }
 
-#my-tooltip[data-popper-placement^="right"] > #arrow {
-  left: -4px;
-}
+// #my-tooltip[data-popper-placement^="right"] > #arrow {
+//   left: -4px;
+// }
 </style>

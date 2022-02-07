@@ -2,31 +2,37 @@
   <Overlay class="position-relative center">
     <!-- ><h1>Settings</h1> -->
     <div class="mb-5">
+    <div class="mt-4 update_info">
       <div class="setting_user">
       <div class="avatar_setting">
-        <img :src="user.avatarUrl"  />
-        <input type="file" id="upload" @change="onFileChange" class="d-none" />
+        <img :src="image" class="avatar_change" />
+        <input type="file" id="upload" ref="avatar" @change="onFileChange" class="d-none" />
         <label class="avatar_edit" for="upload">
           <img src="/assets/svg/add_photo_alternate.svg" alt=""
         /></label>
       </div>
-      <InputField
-        name="username"
-        placeholder="Change Your Name"
-        class="text-left p-3 my-4"
-        v-model="user.username"
-      ></InputField>
+      <div style="width:100%">
+        <InputField
+          name="username"
+          placeholder="Change Your Name"
+          class="text-left p-3 my-4"
+          v-model="user.username"
+        ></InputField>
+        <p class="success_msg" v-if="success">{{ success }}</p>
+        <!-- <Button class="text-left px-5 m-0 mb-2" :onClick="UpdateUsername">Update</Button> -->
       </div>
+      </div>
+    </div> 
       <div v-for="(setting, i) in settings" class="row">
         <h2 class="text-left col-8">{{ setting.name }}</h2>
-        <SwitchBtn class="ml-0" v-model="setting.isActive"></SwitchBtn>
+        <SwitchBtn class="ml-0 col-4" v-model="setting.isActive"></SwitchBtn>
         <!-- :onClick="toggle(i)" -->
       </div>
 
       <div class="col-12 px-0 fa_factor" v-if="settings[2].isActive && !isVerified">
         <!-- {{process}} -->
-        {{sd}}
-        <img src=`/api/auth/2fa/generate` />
+        <!-- {{sd}} -->
+        <img src='/api/auth/2fa/generate' />
         <div class="verify_factor">
           <InputField
             class="text-left"
@@ -35,14 +41,13 @@
           ></InputField>
           <Button class="text-left px-5 m-0 mb-2" :onClick="verify">Verify</Button>
         </div>
-
-      </div>
+      </div>    
     </div>
 
-    <!-- <div class="br px-5">
-      <Button :onClick="save" class="text-left mx-0">Save</Button>
-      <Button :onClick="logout">Logout</Button>
-    </div> -->
+    <div class="text-right">
+      <Button :onClick="save" class="text-left mx-0 px-5">Update</Button>
+      <!-- <Button :onClick="logout">Logout</Button> -->
+    </div>
   </Overlay>
 </template>
 <script lang="ts">
@@ -66,20 +71,36 @@ export default class Settings extends Vue {
   avatar = {};
   isActive = false;
   isVerified = false;
+  success = "";
+  image = this.user.avatarUrl;
   onFileChange(e: any) {
-    var files = e.target.files || e.dataTransfer.files;
-    if (!files.length) return;
-    this.avatar = files[0];
-    console.log(this.avatar);
+    // var files = e.target.files || e.dataTransfer.files;
+    // if (!files.length) return;
+    // this.avatar = files[0];
+    // console.log(this.avatar);
+      let input = this.$refs.avatar
+      let file = input.files
+      if (file && file[0]) {
+        let reader = new FileReader
+        reader.onload =   (e:Event) => {
+          if (e)
+            this.image = e.target.result
+        }
+        reader.readAsDataURL(file[0])
+        this.$emit('input', file[0])
+      } 
   }
   verify(){
     this.isVerified = true;
   }
+  UpdateUsername(){
+    this.success = "its Update Succefully";
+  }
   get user() {
-    return this.$store.getters["User/getCurrentUser"];
+    // return this.$store.getters["User/getCurrentUser"];
+    return Object.assign({},this.$store.getters["User/getCurrentUser"])
   }
   // logout!: () => any;
-  logout() {}
   mounted() {
     // this.logout();
   }
@@ -98,8 +119,8 @@ export default class Settings extends Vue {
 <style lang="scss">
 .br {
   position: absolute;
-  right: -6%;
-  bottom: 5%;
+  right: 0rem;
+  bottom: 1rem;
 }
 InputField {
   font-size: 1.4rdem;

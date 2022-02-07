@@ -20,6 +20,10 @@
       <span><i :class="link.icon"></i>
       <h2 class="d-inline ml-2">{{ link.name }}</h2></span>
     </Button>
+    <Button :onClick="logout" class="w-100 mb-3 ml-4 text-left px-3 position-relative">
+      <span><i class="fas fa-sign-out-alt"></i>
+      <h2 class="d-inline ml-2">Logout</h2></span>
+    </Button>
   </div>
   <!-- Fixed Navigation Ends -->
   <!-- Mobile Menu Starts -->
@@ -63,12 +67,12 @@ export default class SideBar extends Vue {
 
   mounted() {
     this.links = [
-      { name: "play", icon: "fa fa-table-tennis", path: "/" },
-      { name: "friends", icon: "fa fa-user-friends", path: "/friends" },
-      { name: "profile", icon: "fa fa-user", path: "/profile/mine" },
+      { name: "Play", icon: "fa fa-table-tennis", path: "/" },
+      { name: "Friends", icon: "fa fa-user-friends", path: "/friends" },
+      { name: "Profile", icon: "fa fa-user", path: "/profile/mine" },
       { name: "LeaderBoard", icon: "fa fa-trophy", path: "/leaderBoard" },
-      { name: "chat", icon: "fa fa-comment", path: "/chat" },
-      { name: "settings", icon: "fa fa-cogs", path: "/settings" },
+      { name: "Chat", icon: "fa fa-comment", path: "/chat" },
+      { name: "Settings", icon: "fa fa-cogs", path: "/settings" },
     ];
   }
 
@@ -77,6 +81,9 @@ export default class SideBar extends Vue {
     let className = "icon-box";
     className += currentRoute.includes(path) ? " active" : "" ;
     return className;
+  }
+  logout(){
+    this.$router.push("/login")
   }
 }
 </script>

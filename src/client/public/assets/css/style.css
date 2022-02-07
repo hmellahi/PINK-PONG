@@ -1755,7 +1755,7 @@ body.light hr.separator {
   margin-bottom: 3em;
   /* background: #ac3ff29c; */
   overflow-y: auto;
-  height: 30em;
+  height: 35em;
   position: relative;
   border: 3px solid #53137e;
 
@@ -1811,6 +1811,7 @@ body.light hr.separator {
   border: 1px solid #fff;
   padding: 1em 10em 1em 1em;
   color: white !important;
+  margin-bottom: 0.3rem;
 }
 
 .change_name_input::placeholder {
@@ -2042,8 +2043,8 @@ body.light hr.separator {
   display: flex;
   align-items: center;
   border-right: 1px solid #eee;
-  padding-right: 0em;
-  padding-left: 1em;
+  padding-right: 4em;
+  padding-left: 3sem;
 }
 
 .match_history img {
@@ -2106,7 +2107,7 @@ body.light hr.separator {
 }
 
 .match_box {
-  /* justify-content: space-around; */
+  justify-content: space-around;
 }
 
 .box_channel {
@@ -2138,7 +2139,7 @@ body.light hr.separator {
 .fa_factor{
   background: #eeeeee45;
   display: flex;
-  padding: 1rem;
+  padding: 0.5rem;
   justify-content: space-evenly;
 }
 .fa_factor img{
@@ -2152,6 +2153,54 @@ body.light hr.separator {
   justify-content: center;
   align-items: center;
   padding: 1rem;
+}
+.overlay{
+  height:28rem!important;
+  overflow: scroll;
+}
+.history
+{
+  height: 26rem!important;
+}
+.infos_profile{
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+.success_msg{
+  color:rgb(106, 231, 168);
+}
+.update_info{
+}
+.avatar_setting .avatar_change{
+  width: 100px;
+  border-radius: 50%;
+  height: 100px;
+}
+.room{
+  background-color: #53137e;
+  height: 20rem;
+  border-radius: 10px;
+  overflow: auto;
+  overflow-y: auto;
+  display: flex;
+  justify-content: flex-end;
+  flex-direction: column;
+}
+.popup_wrapper{
+  position: absolute;
+  top: -5em;
+  background: #eee;
+  padding: 1em 1em;
+  border-radius: 8px;
+}
+
+.checkbox_admin{
+      width: 25px;
+    height: 25px;
+    border: 1px solid #832121;
+    position: relative;
+    top: 0.3rem;
 }
 @media (max-width: 768px) {
   .change_name_input {
@@ -2169,6 +2218,7 @@ body.light hr.separator {
 
   .dashboard_main {
     padding: 10px 1em 60px;
+    
   }
 
   .btn-friends {
