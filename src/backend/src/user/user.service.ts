@@ -35,7 +35,12 @@ export class UserService {
 
         if(user)
             return user;
-            throw new HttpException("User not found", HttpStatus.NOT_FOUND);;
+        throw new HttpException("User not found", HttpStatus.NOT_FOUND);
+    }
+
+    public async getByLogin(login: string)
+    {
+        return  await this.userRepository.findOne({login}); //need opt
     }
 
     public async findByIdAndUpdate(id:number, updatedUser)

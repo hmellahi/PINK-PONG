@@ -31,11 +31,9 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
 
   async validate(request: Request, payload: TokenPayload)
   {
-    console.log(payload);
     try
     {
       const endpoint: string = request.url;
-      console.log(endpoint)
       const user = await this.userService.getById(payload.userId);
 
       if (!payload.isTwoFactorAuthenticated &&
