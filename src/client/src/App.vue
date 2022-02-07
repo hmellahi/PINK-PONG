@@ -4,7 +4,7 @@
     <span v-else>
       <!-- <SideBar></SideBar> -->
       <Title></Title>
-      <div class="container-fluid">
+      <div class="container">
         <div class="col-md-12 m-auto main">
           <div class="row">
             <div class="col-md-3">

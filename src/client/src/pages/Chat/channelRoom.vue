@@ -19,6 +19,7 @@
     >
     <Overlay class="p-3">
       <div class="mb-4 room px-4">
+        <b-alert show variant="primary">Primary Alert</b-alert>
         <MessageBox
           :isDM="false"
           v-for="(message, i) in messages"
@@ -50,7 +51,6 @@ import Button from "@/common/components/UI/Button.vue";
 import InputField from "@/common/components/UI/InputField.vue";
 import { Message } from "@/types/Channel";
 import MessageBox from "./Message.vue";
-
 @Component({
   components: { Button, InputField, MessageBox },
   props: {},
@@ -133,24 +133,7 @@ input:hover {
 
   //   // height: 0px !important;
 }
-.room {
-  background-color: #53137e;
-  height: 14rem;
-  border-radius: 10px;
-  // position: relative;
-  overflow: auto;
-  // display: flex;
-  // justify-content: flex-end;
-  // flex-direction: column;
-  // display: block;
-  // vertical-align: bottom;
-  overflow-y: auto;
-  display: flex;
-  flex-flow: column nowrap;
-  .id-0 {
-    margin-top: auto !important;
-  }
-}
+
 .wrapper {
   // position: absolute;
   // bottom: 0;

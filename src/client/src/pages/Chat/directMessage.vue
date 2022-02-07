@@ -122,24 +122,7 @@ input:hover {
 
   //   // height: 0px !important;
 }
-.room {
-  background-color: #53137e;
-  height: 14rem;
-  border-radius: 10px;
-  // position: relative;
-  overflow: auto;
-  // display: flex;
-  // justify-content: flex-end;
-  // flex-direction: column;
-  // display: block;
-  // vertical-align: bottom;
-  overflow-y: auto;
-  display: flex;
-  flex-flow: column nowrap;
-  .id-0 {
-    margin-top: auto !important;
-  }
-}
+
 .wrapper {
   // position: absolute;
   // bottom: 0;
