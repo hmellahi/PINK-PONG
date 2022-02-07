@@ -1,5 +1,6 @@
 import { Exclude } from "class-transformer";
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import  Friendship from "src/friend/entities/friendship.enitity"
 
 @Entity()
 export default class  User
@@ -13,10 +14,10 @@ export default class  User
     @Column()
     last_name: string;
 
-    @Column({nullable: true})
+    @Column({unique: true})
     login?: string;
 
-    @Column({nullable: true})
+    @Column({nullable: true, select: false})
     password: string;
     
     @Column({unique: true})
@@ -35,4 +36,14 @@ export default class  User
 
     @Column({nullable: true})
     avatar_url: string;
+
+    @Column({type: "timestamp", default: ()=> "CURRENT_TIMESTAMP"})
+    create_date: Date;
+
+    @OneToMany(()=> Friendship, friendRequest => friendRequest.sender)
+    sendedFriendRequests: Friendship[];
+
+    @OneToMany(()=> Friendship, friendRequest => friendRequest.receiver)
+    receivedFriendRequests: Friendship[];
+
 }

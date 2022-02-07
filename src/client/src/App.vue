@@ -45,9 +45,6 @@ export default class App extends Vue {
     // if (process.env.A == "true") {
     //   console.log("yayks");
     // }
-    // this.$http
-    //   .get("users/mapbox")
-    //   .then((response) => console.log({ response }));
   }
 
   updateIsLoginPage() {

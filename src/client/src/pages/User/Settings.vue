@@ -31,14 +31,14 @@
 
       <div class="col-12 px-0 fa_factor" v-if="settings[2].isActive && !isVerified">
         <!-- {{process}} -->
-        <!-- {{sd}} -->
-        <img src='/api/auth/2fa/generate' />
+        <img src='http://127.0.0.1:3000/api/auth/2fa/generate' />
         <div class="verify_factor">
           <InputField
             class="text-left"
             v-model="email"
             placeholder="Enter the pin code"
           ></InputField>
+          {{error}}
           <Button class="text-left px-5 m-0 mb-2" :onClick="verify">Verify</Button>
         </div>
       </div>    
@@ -68,6 +68,7 @@ import { mapActions } from "vuex";
 export default class Settings extends Vue {
   settings: any[] = [];
   email = "";
+  error="";
   avatar = {};
   isActive = false;
   isVerified = false;
@@ -90,8 +91,29 @@ export default class Settings extends Vue {
         this.$emit('input', file[0])
       } 
   }
-  verify(){
-    this.isVerified = true;
+  async verify(){
+     try {
+       let data = await this.$http({
+        method: 'post',
+        url:'auth/2fa/enableTwoFactorAuth',
+        data:{
+          code:this.email
+        },
+        withCredentials: true,
+
+        headers:{
+          'Access-Control-Allow-Origin':'http://127.0.0.1:5000',
+          'Access-Control-Allow-Credentials': 'true'
+        }
+      })
+      // http://159.223.102.35:3000/api/auth/2fa/generate
+      console.log({data})
+      this.isVerified = true;
+    }catch(e){
+      console.log({e})
+      this.error = "verification code isnt valid"
+      return;
+    }
   }
   UpdateUsername(){
     this.success = "its Update Succefully";
