@@ -6,15 +6,15 @@
       :onClick="goBackward"
       >Back</Button
     >
-    <Overlay class="px-3 overflow-hidden pt-3">
+    <Overlay class="px-3 pt-3">
       <!-- // col-md-10"> -->
-      <div class="row text-center">
-        <div class="col-md-5 infos px-5">
-          <div class="row mb-3 avatar_profile">
-            <img class="col-md-5 mx-0" :src="user.avatarUrl" alt="" />
-            <span class="user-name col-md-7 p-0 text-left my-auto">{{
+      <div class="text-center">
+        <div class="infos infos_profile px-5">
+          <div class="avatar_profile">
+            <img class="mx-3" :src="user.avatarUrl" alt="" />
+            <p class="user-name p-0 text-center my-auto">{{
               user.username
-            }}</span>
+            }}</p>
           </div>
           <!-- <Button class="w-100 m-0 mb-0 f1" :onClick="sendFriendReq"
             >Send Friend Request</Button
@@ -40,7 +40,7 @@
             </div>
           </div>
         </div>
-        <div class="col-md-7">
+        <div class="">
           <MatchHistory
             class="text-center pt-4"
             :matches="user.matches"
@@ -74,16 +74,16 @@ export default class Profile extends Vue {
 
 <style lang="scss" scoped>
 .states div div {
-  background-color: #53137e !important;
-  padding: 0.2rem;
-  font-size: 1.6rem;
-  border: 1px solid black;
-  border-radius: 10px;
+    background-color: #53137e !important;
+    padding: 0rem;
+    font-size: 1.2rem;
+    border: 1px solid black;
+    // border-radius: 25px;
   // margin-left:2rem
 }
 
 .user-name {
-  font-size: 2rem;
+  font-size: 1.5rem;
 }
 .leader_box{
   justify-content: space-evenly!important;
