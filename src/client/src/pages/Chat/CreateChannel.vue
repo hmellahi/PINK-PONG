@@ -14,6 +14,9 @@
         v-model="channel.password"
         type="password"
       ></InputField>
+      <div>
+        <input type="checkbox" class="my_checkbox" v-model="channel.isPrivate" /> <span>Private channel</span>
+      </div>
       <h4>{{ errors }}</h4>
       <!-- <InputField :args="propsToPass"></InputField> -->
       <Button :onClick="createChannel" class="mt-4">Create</Button>
@@ -27,12 +30,12 @@ import InputField from "@/common/components/UI/InputField.vue";
 import Button from "@/common/components/UI/Button.vue";
 import { Channel } from "@/types/Channel";
 import { isValidInput } from "@/common/helpers/Validations";
-
+import Checkbox from "@/common/components/UI/Checkbox.vue";
 @Component({
-  components: { InputField, Button },
+  components: { InputField, Button, Checkbox },
 })
 export default class createChannel extends Vue {
-  channel: Channel = { name: "", password: "" };
+  channel: Channel = { name: "", password: "", isPrivate:false };
   errors = "";
   createChannel() {
     console.log(this.channel.name);

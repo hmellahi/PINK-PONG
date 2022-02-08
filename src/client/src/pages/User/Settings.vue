@@ -79,13 +79,14 @@ export default class Settings extends Vue {
     // if (!files.length) return;
     // this.avatar = files[0];
     // console.log(this.avatar);
-      let input = this.$refs.avatar
+      let input: any = this.$refs.avatar
       let file = input.files
       if (file && file[0]) {
         let reader = new FileReader
         reader.onload =   (e:Event) => {
           if (e)
             this.image = e.target.result
+            
         }
         reader.readAsDataURL(file[0])
         this.$emit('input', file[0])
@@ -152,6 +153,7 @@ InputField {
 }
 .avatar_setting{
   text-align:left;
+  margin-right: 5rem;
 }
 .avatar_setting .avatar_edit{
     position: relative;
@@ -164,4 +166,5 @@ InputField {
 .avatar_edit img{
   width: 23px;
 }
+
 </style>
