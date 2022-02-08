@@ -2154,10 +2154,10 @@ body.light hr.separator {
   align-items: center;
   padding: 1rem;
 }
-.overlay{
-  height:28rem!important;
+/* .overlay{
+  height:35rem!important;
   overflow: scroll;
-}
+} */
 .history
 {
   height: 26rem!important;
@@ -2201,6 +2201,12 @@ body.light hr.separator {
     border: 1px solid #832121;
     position: relative;
     top: 0.3rem;
+}
+.my_checkbox{
+  width: 2rem;
+  height: 1.3rem;
+  position: relative;
+  top: 0.3rem;
 }
 @media (max-width: 768px) {
   .change_name_input {

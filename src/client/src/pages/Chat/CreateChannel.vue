@@ -3,7 +3,7 @@
     <div class="text-center col-12">
       <InputField
         name="name"
-        placeholder="Enter Name"
+        placeholder="Enter Name (*)"
         v-model="channel.name"
         class="input-text p-3 col-md-6 my-4"
       ></InputField>
@@ -14,6 +14,10 @@
         v-model="channel.password"
         type="password"
       ></InputField>
+      <span>If you don't enter a password then its public</span>
+      <div>
+        <input type="checkbox" class="my_checkbox" v-model="channel.isPrivate" /> <span>Private channel</span>
+      </div>
       <h4>{{ errors }}</h4>
       <!-- <InputField :args="propsToPass"></InputField> -->
       <Button :onClick="createChannel" class="mt-4">Create</Button>
@@ -27,12 +31,12 @@ import InputField from "@/common/components/UI/InputField.vue";
 import Button from "@/common/components/UI/Button.vue";
 import { Channel } from "@/types/Channel";
 import { isValidInput } from "@/common/helpers/Validations";
-
+import Checkbox from "@/common/components/UI/Checkbox.vue";
 @Component({
-  components: { InputField, Button },
+  components: { InputField, Button, Checkbox },
 })
 export default class createChannel extends Vue {
-  channel: Channel = { name: "", password: "" };
+  channel: Channel = { name: "", password: "", isPrivate:false };
   errors = "";
   createChannel() {
     console.log(this.channel.name);

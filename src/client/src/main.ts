@@ -3,9 +3,6 @@ import App from "./App.vue";
 import router from "./router";
 import store from "./store";
 import Overlay from "@/common/components/UI/Overlay.vue";
-import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
-import 'bootstrap/dist/css/bootstrap.css'
-import 'bootstrap-vue/dist/bootstrap-vue.css'
 // import API from "./api";
 
 // import 'dotenv/config'
@@ -42,7 +39,7 @@ declare module "vue/types/vue" {
   }
 }
 
-Vue.use(VueAxios, axios, BootstrapVue, IconsPlugin)
+Vue.use(VueAxios, axios)
 
 new Vue({
   router,

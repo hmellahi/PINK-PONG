@@ -6,7 +6,7 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - ./src/backend:/usr/src/app
+      - ./src/backend:/usr/src/appdocker-compose up --build --force-recreate
       - /usr/app/node_modules
     depends_on:
       - "dbservice"
