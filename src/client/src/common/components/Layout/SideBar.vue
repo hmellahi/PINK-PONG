@@ -19,11 +19,11 @@
       :key="i"
     >
       <span><i :class="link.icon"></i>
-      <h2 class="d-inline ml-2">{{ link.name }}</h2></span>
+      <h2 class="d-inline ml-2 title">{{ link.name.toUpperCase() }}</h2></span>
     </Button>
     <Button :onClick="logout" class="w-100 mb-3 ml-4 text-left px-3 position-relative">
       <span><i class="fas fa-sign-out-alt"></i>
-      <h2 class="d-inline ml-2">Logout</h2></span>
+      <h2 class="d-inline ml-2 title">LOGOUT</h2></span>
     </Button>
   </div>
   <!-- Fixed Navigation Ends -->
@@ -96,6 +96,9 @@ export default class SideBar extends Vue {
     position:absolute;
     top:20%;
     //  vertical-align: middle
+  }
+  .title {
+    font-size:1.5rem;
   }
   a {
     border: 3px solid #53137e;
