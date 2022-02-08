@@ -2,15 +2,15 @@ import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import UserEntity from "src/user/entities/user.entity"
 import { FindOneOptions, Repository } from "typeorm";
-import FriendshipEntity from "./entities/friendship.enitity";
+// import FriendshipEntity from "./entities/friendship.enitity";
 import { Friendship_Status , FriendshipStatus} from "./Interfaces/friendship.interface";
 @Injectable()
 export class FriendshipService
 {
-    constructor(
-        @InjectRepository(FriendshipEntity)
-        private friendshipRepository: Repository<FriendshipEntity>
-    ){}
+    // constructor(
+    //     @InjectRepository(FriendshipEntity)
+    //     private friendshipRepository: Repository<FriendshipEntity>
+    // ){}
 
     // public async createFriendship(sender: UserEntity, receiver: UserEntity)
     // {

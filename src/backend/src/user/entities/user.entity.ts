@@ -1,6 +1,5 @@
 import { Exclude } from "class-transformer";
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
-import  Friendship from "src/friend/entities/friendship.enitity"
 
 @Entity()
 export default class  User
@@ -40,10 +39,10 @@ export default class  User
     @Column({type: "timestamp", default: ()=> "CURRENT_TIMESTAMP"})
     create_date: Date;
 
-    @OneToMany(()=> Friendship, friendRequest => friendRequest.sender)
-    sendedFriendRequests: Friendship[];
+    // @OneToMany(()=> Friendship, friendRequest => friendRequest.sender)
+    // sendedFriendRequests: Friendship[];
 
-    @OneToMany(()=> Friendship, friendRequest => friendRequest.receiver)
-    receivedFriendRequests: Friendship[];
+    // @OneToMany(()=> Friendship, friendRequest => friendRequest.receiver)
+    // receivedFriendRequests: Friendship[];
 
 }
