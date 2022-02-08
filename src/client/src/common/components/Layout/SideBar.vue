@@ -15,6 +15,7 @@
       class="w-100 mb-3 ml-4 text-left px-3 position-relative"
       v-for="(link, i) in links"
       :link="link.path"
+      :class="iconClass(link.path)"
       :key="i"
     >
       <span><i :class="link.icon"></i>
@@ -79,7 +80,7 @@ export default class SideBar extends Vue {
   iconClass(path: string) {
     let currentRoute = this.$router.currentRoute.path;
     let className = "icon-box";
-    className += currentRoute.includes(path) ? " active" : "" ;
+    className += currentRoute.includes(path) && path != "/" ? " active" : "" ;
     return className;
   }
   logout(){

@@ -1,15 +1,12 @@
 <template>
   <div class="text-left h-100 overflow-hidde profile">
     <Button
-      class="text-left px-5 m-0 mb-2"
+      class="text-left px-5 m-0 mb-2 mb-3"
       v-if="this.$route.path != '/profile/mine'"
       :onClick="goBackward"
       >Back</Button
     >
-    <Overlay class="px-3 pt-3">
-      <!-- // col-md-10"> -->
-      <div class="text-center">
-        <div class="infos infos_profile px-5">
+    <div class="infos infos_profile px-5 text-center mb-4">
           <div class="avatar_profile">
             <img class="mx-3" :src="user.avatarUrl" alt="" />
             <p class="user-name p-0 text-center my-auto">{{
@@ -40,6 +37,10 @@
             </div>
           </div>
         </div>
+    <Overlay class="px-3 pt-3">
+      <!-- // col-md-10"> -->
+      <div class="text-center">
+        
         <div class="">
           <MatchHistory
             class="text-center pt-4"
