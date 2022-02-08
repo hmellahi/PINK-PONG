@@ -3,7 +3,7 @@
     <div class="text-center col-12">
       <InputField
         name="name"
-        placeholder="Enter Name"
+        placeholder="Enter Name (*)"
         v-model="channel.name"
         class="input-text p-3 col-md-6 my-4"
       ></InputField>
@@ -14,6 +14,7 @@
         v-model="channel.password"
         type="password"
       ></InputField>
+      <span>If you don't enter a password then its public</span>
       <div>
         <input type="checkbox" class="my_checkbox" v-model="channel.isPrivate" /> <span>Private channel</span>
       </div>
