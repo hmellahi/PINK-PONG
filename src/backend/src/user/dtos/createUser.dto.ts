@@ -9,14 +9,11 @@ export class CreateUserDto
     last_name: string;
 
     @IsNotEmpty()
-    password?: string;
-
-    @IsNotEmpty()
     login?: string; 
 
     @IsEmail()
     email: string;
 
-    @IsNotEmpty()
+    // @IsNotEmpty()
     avatar_url?: string;
 }
