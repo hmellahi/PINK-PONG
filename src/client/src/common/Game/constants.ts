@@ -1,10 +1,14 @@
+let canvas = { width: 400, height: 400 };
+let paddle = {    width: 10,height: 60}
+let gridSize = 80;
 export const GameConstants = {
-  canvas: { width: 600, height: 400 },
+  // canvas: { width: 600, height: 400 },
+  canvas: canvas,
   /* some extra variables */
   netWidth: 4,
   backColor: 0,
   //   netHeight : canvas.height,
-
+  borderWidth:canvas.width/60,
   paddleWidth: 10,
   paddleHeight: 100,
   upArrowPressed: false,
@@ -16,10 +20,10 @@ export const GameConstants = {
   // net
   paddle: {
     // x: canvas.width / 2 - netWidth / 2,
-    x: 40,
-    y: 200 - 60/2,
-    width: 10,
-    height: 60,
+    width: paddle.width,
+    height: paddle.height,
+    x: canvas.width - paddle.width,
+    y: canvas.height / 2 - paddle.height/2,
     color: "#FFF",
   },
 
@@ -44,11 +48,11 @@ export const GameConstants = {
 
   // ball
   ball: {
-    x: 400 / 2, // todo
-    // x: this.canvas.width / 2,
-    // y: canvas.height / 2,
-    y: 400 / 2,
-    radius: 7,
+    // x: 400 / 2, // todo
+    x: canvas.width / 2,
+    y: canvas.height / 2,
+    // y: 400 / 2,
+    radius: canvas.width/gridSize,
     speed: 7,
     velocityX: 5,
     velocityY: 5,
@@ -58,7 +62,6 @@ export const GameConstants = {
   /* objects declaration ends */
 
   /* drawing functions */
-
   /* drawing functions end */
 };
 

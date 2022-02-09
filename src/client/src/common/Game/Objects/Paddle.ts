@@ -29,7 +29,7 @@ export default class Ball {
     this.width = tempWidth;
     this.height = tempHeight;
     this.color = tempColor;
-    this.speed = 3;
+    this.speed = 6;
     this.velocity = 0;
   }
 
@@ -47,6 +47,8 @@ export default class Ball {
     let nexPos = this.y + this.velocity * this.speed;
     if (nexPos + this.height > windowHeight || nexPos < 0) return;
     this.y = nexPos;
+    // console.log(`from  player ${this.x}, ${this.y}`);
+
   }
 
   handleKeyPressed(sketch: P5Sketch) {

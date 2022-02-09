@@ -9,6 +9,8 @@ import {GameConstants} from "../../Game/constants";
 import Ball from "../../Game/Objects/Ball";
 // import require from "http";
 import Net from "../../Game/Objects/Net";
+import BackGround from "../../Game/Objects/BackGround";
+
 import {Component, Vue} from "vue-property-decorator";
 import P5, {
   P5Element,
@@ -22,7 +24,7 @@ import Score from "@/common/Game/Objects/Score";
 })
 export default class Game extends Vue {
   // ({ canvas, backColor } = GameConstants)
-  backColor = GameConstants.backColor; //todo change
+  backColor: number = GameConstants.backColor; //todo change
   // xBall: number = Math.floor(Math.random() * 300) + GameConstants.ball.x;
   xBall: number = GameConstants.ball.x;
   yBall: number = GameConstants.ball.y;
@@ -35,8 +37,7 @@ export default class Game extends Vue {
   paddleWidth = GameConstants.paddle.width;
   paddleHeight = GameConstants.paddle.height;
   paddle: Paddle = new Paddle(
-      // this.xPaddle,
-      40,
+      this.xPaddle - 20,
       this.yPaddle,
       this.paddleWidth,
       this.paddleHeight
@@ -47,13 +48,15 @@ export default class Game extends Vue {
   // paddleWidth=GameConstants.paddle.width
   // paddleHeight=GameConstants.paddle.height;
   paddle2: Paddle = new Paddle(
-      GameConstants.canvas.width - 40 - this.paddleWidth / 2,
+      20,
       this.yPaddle,
       this.paddleWidth,
       this.paddleHeight
   );
 
   net: Net = new Net();
+  background: BackGround = new BackGround();
+
   score: Score = new Score(GameConstants.canvas.width / 3 - 60, 30);
   score2: Score = new Score(
       GameConstants.canvas.width - GameConstants.canvas.width / 3,
@@ -68,7 +71,10 @@ export default class Game extends Vue {
     // const hitSound = new Audio(require("@/assets/sounds/mario_coin.mp3"));
     // const hitSound = new Audio(require("@/assets/sounds/mario_coin.mp3"));
   }
-
+sleep(ms: number) {
+    console.log("Sleeeoing");
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
   setup(sketch: P5Sketch) {
     sketch.createCanvas(
         GameConstants.canvas.width,
@@ -79,26 +85,35 @@ export default class Game extends Vue {
   draw(sketch: P5Sketch) {
     if (this.isGameOver) return;
     sketch.background(this.backColor);
+    this.background.draw(sketch);
     this.net.draw(sketch);
+
 
     this.paddle.draw(sketch);
     this.paddle.update();
     this.paddle2.draw(sketch);
 
     let player: Paddle =
-        this.ball.x > GameConstants.canvas.width / 2 ? this.paddle2 : this.paddle;
+        this.ball.x < GameConstants.canvas.width / 2 ? this.paddle2 : this.paddle;
+    // this.sleep(10000000000000);
     if (this.ball.hits(player)) {
-      this.playMusic(this.sounds[0]);
+      // this.playMusic(this.sounds[0]);
       // console.log(this.sounds[0]);
+      // return;
       this.ball.reverse(player, player == this.paddle);
     }
     let ballHitsBorder = this.ball.checkBorders();
     if (ballHitsBorder) {
       this.ball.reset();
       this.scores[ballHitsBorder - 1].value++;
-      if (this.scores[ballHitsBorder - 1].value > 2) this.isGameOver = true;
+      if (this.scores[ballHitsBorder - 1].value > 2) 
+      {
+      this.isGameOver = true;
+      this.ball.y = GameConstants.canvas.height/2;
+      }
     }
-    this.ball.update();
+    if (!this.isGameOver)
+      this.ball.update();
     this.ball.draw(sketch);
 
     // this.score.setScore((this.score.value+1/1e)%10)
@@ -106,6 +121,8 @@ export default class Game extends Vue {
     // this.score2.draw(sketch);
     // this.scores.map((score) => score.draw);
     this.scores.map((score) => score.draw(sketch));
+    this.sleep(10000);
+
   }
 
   keypressed(sketch: P5Sketch) {
