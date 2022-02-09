@@ -1,10 +1,9 @@
-import { BadRequestException, Body, Controller, Get, HttpCode, HttpException, Post, Req, UploadedFile, UseGuards, UseInterceptors } from "@nestjs/common";
+import { BadRequestException, Body, Controller, Get, HttpCode, HttpException, Post, Req, Res, UploadedFile, UseGuards, UseInterceptors } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { diskStorage } from "multer";
 import { join } from "path";
 import { JwtAuthGuard } from "src/authentication/Guards/jwtAccess.guard";
 import { RequestWithUser } from "src/authentication/Interfaces/requestWithUser.interface";
-import { UpdateUserDto } from "./dtos/updateUser.dto";
 import { UserService } from "./user.service";
 
 @Controller("users")
@@ -42,5 +41,11 @@ export class  UserController
     }
 
     // until we agree how to update user informatio
-    
+    @UseGuards(JwtAuthGuard)
+    @Get("me")
+    async myProfile(@Req() request: RequestWithUser)
+    {
+        const {user} = request;
+        return user;
+    }
 }

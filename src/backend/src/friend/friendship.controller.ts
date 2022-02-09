@@ -1,8 +1,8 @@
-import { BadRequestException, Body, Controller, Get, HttpCode, HttpException, HttpStatus, InternalServerErrorException, Post, Req, UseGuards } from "@nestjs/common";
+import { BadRequestException, Body, Controller, Get, HttpCode, HttpException, HttpStatus, InternalServerErrorException, Post, Req, Res, UseGuards } from "@nestjs/common";
+import { IsNumber } from "class-validator";
 import { JwtAuthGuard } from "src/authentication/Guards/jwtAccess.guard";
 import { RequestWithUser } from "src/authentication/Interfaces/requestWithUser.interface";
 import { UserService } from "src/user/user.service";
-import { FindOneOptions } from "typeorm";
 import { FriendshipService } from "./friendship.service";
 
 @Controller("friendship")
@@ -15,7 +15,12 @@ export class FriendshipController
     ){}
 
     @UseGuards(JwtAuthGuard)
-    @Get("")
+    @Get("friendshipRequests")
+    async friendshipRequests(@Req() request: RequestWithUser)
+    {
+        const {user} = request;
+        return this.friendshipService.getFriendshipRequests(user);
+    }
 
     @UseGuards(JwtAuthGuard)
     @Post("sendFriendRequest")
@@ -42,13 +47,15 @@ export class FriendshipController
     @UseGuards(JwtAuthGuard)
     @Post("acceptFriendRequest")
     @HttpCode(200)
-    async acceptFriendRequest(request: RequestWithUser,
-                              @Body("friendshipRequestId") friendshipRequestId: number)
+    async acceptFriendRequest(@Req() request: RequestWithUser,
+                              @Body("friendshipRequestId") friendshipRequestId: number) // validation of id must done
     {
         const {user} = request;
         
-        if (this.friendshipService.changeFriendshipStatus(user, friendshipRequestId, "accepted"))
-        throw new HttpException("friendship request not exist", HttpStatus.BAD_REQUEST);
+        if (!friendshipRequestId)
+            throw new BadRequestException;
+        if (!this.friendshipService.changeFriendshipStatus(user, friendshipRequestId, "accepted"))
+            throw new HttpException("friendship request not exist", HttpStatus.BAD_REQUEST);
     }
 
     @UseGuards(JwtAuthGuard)
