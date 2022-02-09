@@ -8,12 +8,14 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { FriendshipModule } from './friend/friendship.module';
 
+console.log(`${process.env.NODE_ENV}.env`);
 @Module(
 {
   imports:
   [
     ConfigModule.forRoot(
       {
+        envFilePath: `${process.env.NODE_ENV}.env`,
         validationSchema: joi.object(
           {
             DB_HOST: joi.string().required(),
