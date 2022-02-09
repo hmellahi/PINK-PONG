@@ -31,7 +31,7 @@
 
       <div class="col-12 px-0 fa_factor" v-if="settings[2].isActive && !isVerified">
         <!-- {{process}} -->
-        <img src='http://127.0.0.1:3000/api/auth/2fa/generate' />
+        <img src='http://159.223.102.35:3000/api/auth/2fa/generate' />
         <div class="verify_factor">
           <InputField
             class="text-left"
@@ -79,13 +79,14 @@ export default class Settings extends Vue {
     // if (!files.length) return;
     // this.avatar = files[0];
     // console.log(this.avatar);
-      let input = this.$refs.avatar
+      let input: any = this.$refs.avatar
       let file = input.files
       if (file && file[0]) {
         let reader = new FileReader
         reader.onload =   (e:Event) => {
           if (e)
             this.image = e.target.result
+            
         }
         reader.readAsDataURL(file[0])
         this.$emit('input', file[0])
@@ -152,6 +153,7 @@ InputField {
 }
 .avatar_setting{
   text-align:left;
+  margin-right: 5rem;
 }
 .avatar_setting .avatar_edit{
     position: relative;
@@ -164,4 +166,5 @@ InputField {
 .avatar_edit img{
   width: 23px;
 }
+
 </style>

@@ -57,9 +57,18 @@ export default class App extends Vue {
 <style lang="scss">
 @import url('https://fonts.googleapis.com/css2?family=Coda&display=swap');
 
-* {
-font-family: 'Coda', cursive;
+@font-face {
+  font-family: "Merienda";
+  src: local("Merienda"),
+    url(../public/assets/fonts/BeatWorddemo.ttf) format("truetype");
 }
+* {
+  font-family: "Merienda";
+}
+
+// * {
+// font-family: 'Coda', cursive;
+// }
 .main {
   height: 30em;
 }

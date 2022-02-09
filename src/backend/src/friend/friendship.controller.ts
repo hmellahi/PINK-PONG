@@ -4,7 +4,7 @@ import { RequestWithUser } from "src/authentication/Interfaces/requestWithUser.i
 import { UserService } from "src/user/user.service";
 import { FindOneOptions } from "typeorm";
 import { FriendshipService } from "./friendship.service";
-import FriendshipEntity from "./entities/friendship.enitity"
+// import FriendshipEntity from "./entities/friendship.enitity"
 import { FriendshipStatus } from "./Interfaces/friendship.interface";
 
 @Controller("friendship")

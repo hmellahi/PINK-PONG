@@ -14,7 +14,8 @@ export default class Overlay extends Vue {}
   background: rgba(0, 0, 0, 0.3);
   padding: 40px;
   border-radius: 15px;
-  overlay:scroll
+  overflow:scroll;
+  height:28rem!important;
   /* height: 100%; */
 }
 </style>

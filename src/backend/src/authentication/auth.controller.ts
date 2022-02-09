@@ -129,7 +129,7 @@ export class AuthController
 
     @UseGuards(JwtAuthGuard)
     @Post("2fa/login")
-    async twoFactorAuthLogin(@Req() request: RequestWithUser,
+    async twoFactorAuthLogin(@Req() request: RequestWithUser, 
                              @Body("code") twoFactorAuthCode: string,
                              @Res() response: Response)
     {
