@@ -152,11 +152,29 @@ export class AuthController
 
     //=====================================================================//
 
-    // for testing
+    //=======================Testing=================================
     @UseGuards(JwtAuthGuard)
     @Get('isLog')
-    async isLogin(@Res() resp: Response)
+    async isLogin(@Req() request: RequestWithUser, @Res() resp: Response)
     {
-        resp.sendStatus(200);
+        const {user} = request;
+        resp.send(user)
     }
+
+    @Post("testLogin")
+    async testLogin(@Body() user: CreateUserDto, @Res() response: Response)
+    {
+        
+        let existedUser = await this.userService.getByEmail(user.email);
+
+        if (!existedUser)
+            existedUser = await this.authService.register(user);
+        const accessCookie = this.authService.getAccessJwtCookie(existedUser.id, true);
+        const refresh = this.authService.getRefreshJwtCookie(existedUser.id);
+        await this.userService.setRefreshToken(existedUser.id, refresh.token);
+        response.setHeader("set-cookie", [refresh.cookie, accessCookie]);
+        response.sendStatus(200);
+    }
+
+    //==============================================================
 }

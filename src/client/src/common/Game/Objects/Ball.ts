@@ -24,39 +24,50 @@ export default class {
     tempRadius: number,
     tempColor: number
   ) {
-    this.x = tempX;
-    this.y = tempY;
+    this.x = GameConstants.canvas.width/2;
+    // this.y = GameConstants.canvas.height/2;
+    // this.y =  Math.floor(Math.random() * GameConstants.canvas.height - 200) + 200;
+    this.y = Math.floor(Math.random() * ((GameConstants.canvas.height / 10)*8 - (GameConstants.canvas.height / 10)*2 + (GameConstants.canvas.height / 10)*2));
+
     this.radius = tempRadius;
-    this.velocityX = 5;
-    this.velocityY = 5;
-    this.speed = 4;
+    // this.velocityX = Math.floor(Math.random() * 10) + 1;;
+    // this.velocityY = Math.floor(Math.random() * 10) + 1;;
+    this.velocityX = 1;
+    this.velocityY = 1;
+    this.speed = 3;
     this.color = tempColor;
   }
 
   // draw
   draw(sketch: P5Sketch): void {
-    let { x, y, radius } = this;
+    // let x1 = GameConstants.;
+    // 
 
+    let { x, y, radius } = this;
     // sketch.fill(255, 255, 255);
     sketch.fill("red");
     sketch.noStroke();
+    // sketch.ellipse(x + radius, y - radius, radius * 2, radius * 2);
     sketch.ellipse(x, y, radius * 2, radius * 2);
+    // console.log(`from  ball ${this.x}, ${this.y}`);
+
+
   }
 
   update(): void {
-    let { velocityY, velocityX, x, y, radius } = this;
+    let { velocityY, velocityX, x, y, radius, speed } = this;
     let { canvas } = GameConstants;
     let { width, height } = canvas;
-
+    let ratio = width/80;
     if (x < radius / 2 || x > width - radius / 2) {
       this.velocityX *= -1;
     }
-    if (y < radius / 2 || y > height - radius) {
+    if (y < ratio + radius || y > height - ratio - radius) {
       this.velocityY *= -1;
     }
-
-    this.x += this.velocityX; // * (Math.random() * 10);
-    this.y += this.velocityY;
+    
+    this.x += this.velocityX * speed; // * (Math.random() * 10);
+    this.y += this.velocityY * speed;
     // console.log(this.x, this.y);
   }
 
@@ -69,6 +80,8 @@ export default class {
     // }
 
     // returns true or false
+    let { speed } = this;
+    let { width, height } = GameConstants.canvas;
     player.top = player.y;
     player.right = player.x + player.width;
     player.bottom = player.y + player.height;
@@ -78,6 +91,9 @@ export default class {
     this.right = this.x + this.radius;
     this.bottom = this.y + this.radius;
     this.left = this.x - this.radius;
+    // console.log(`player ${player.x}, ${player.y}`);
+    // console.log(`bll ${this.x}, ${this.y}`);
+
 
     return (
       this.left < player.right &&
@@ -90,36 +106,58 @@ export default class {
   reverse(player: Paddle, isFirstPlayer: boolean): void {
     // play hitSound
     // hitSound.play(); todo
+    // var tmp = loadsound('../firework.mp3');
+    // tmp();
     // default angle is 0deg in Radian
-    let angle = 0;
+    console.log(`ball speed ${this.speed}`)
+    console.log(`ball VeloX ${this.velocityX} and VeloY ${this.velocityY}`)
 
+    console.log("I am hitted");
+    console.log(`player ${player.x}, ${player.y}`);
+    console.log(`bll ${this.x}, ${this.y}`);
+
+    let collidePoint = (this.y - (player.y + player.height/2));
+    collidePoint = collidePoint / (player.height/2);
+    let angleRad = (Math.PI/4) * collidePoint;
+    let direction = isFirstPlayer ? -1 : 1;
     // if ball hit the top of paddle
-    if (this.y < player.y + player.height / 2) {
-      // then -1 * Math.PI / 4 = -45deg
-      angle = (-1 * Math.PI) / 4;
-    } else if (this.y > player.y + player.height / 2) {
-      // if it hit the bottom of paddle
-      // then angle will be Math.PI / 4 = 45deg
-      angle = Math.PI / 4;
-    }
+    // if (this.y < player.y + player.height / 2) {
+    //   // then -1 * Math.PI / 4 = -45deg
+    //   angle = (-1 * Math.PI) / 4;
+       
+    // }
+    //  // if it hit the bottom of paddle
+    //   else if (this.y > player.y + player.height / 2) {
+    //   // then angle will be Math.PI / 4 = 45deg
+    //   angle = Math.PI / 4;
+    // }
 
     /* change velocity of according to on which paddle the hitted */
-    this.velocityX = (isFirstPlayer ? 1 : -1) * this.speed * Math.cos(angle);
-    this.velocityY = this.speed * Math.sin(angle);
-
+    // this.velocityX = (isFirstPlayer ? 1 : -1) * this.speed * Math.cos(angle);
+    // this.velocityY = this.speed * Math.sin(angle);
+    this.velocityX = direction * this.speed * Math.cos(angleRad);
+    this.velocityY = this.speed * Math.sin(angleRad);
     // increase speed
-    this.speed += 0.2;
+    this.speed += 0.05;
+    console.log(`ball speed ${this.speed}`)
+    console.log(`ball VeloX ${this.velocityX} and VeloY ${this.velocityY}`)
   }
 
   reset() {
-    let { canvas } = GameConstants;
+    let { canvas ,borderWidth} = GameConstants;
     let { height: windowsHeight, width: windowsWidth } = canvas;
-    this.y = windowsHeight / 2;
+    // let {borderWidth} = GameConstants
+    // this.y = windowsHeight / 2;
+    this.y =  Math.floor(Math.random() * (windowsHeight- borderWidth) + borderWidth);
     this.x = windowsWidth / 2;
-    this.speed = 4;
+    this.speed = 3;
+    this.velocityX = 1;
+    this.velocityY = 1;
+
   }
 
   checkBorders(): number {
+    let {width, height} = GameConstants.canvas;
     if (this.x - this.radius / 2 <= 0) return 2;
     if (this.x + this.radius / 2 >= GameConstants.canvas.width) return 1;
     return 0;
