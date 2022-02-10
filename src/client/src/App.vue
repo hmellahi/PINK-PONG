@@ -21,39 +21,30 @@
 
 <script lang="ts">
 import { Component, Vue, Watch } from "vue-property-decorator";
-import SideBar from "@/common/components/Layout/SideBar.vue";
+import SideBar from "./common/components/Layout/SideBar.vue";
 import { Route, RawLocation } from "vue-router";
-import Title from "@/common/components/Layout/Title.vue";
+import Title from "./common/components/Layout/Title.vue";
 
 @Component<App>({
   components: { Title, SideBar },
   watch: {
     $route(to, from) {
-      // this.show =   false;
-      // console.log("beforeRouteLeave");
       this.updateIsLoginPage();
     },
   },
 })
+
 export default class App extends Vue {
   isLoginPage: boolean = false;
 
   mounted() {
     this.updateIsLoginPage();
-    // console.log(process.env);
-    // if (process.env.A == "true") {
-    //   console.log("yayks");
-    // }
   }
 
   updateIsLoginPage() {
+    /******  Check if the route one of this path if yes then lets update the bool val ********/
     let paths = ["/login", "/verification_code", "/auth/callback"];
     this.isLoginPage = paths.includes(this.$route.path);
   }
 }
 </script>
-
-
-<style scoped>
-
-</style>

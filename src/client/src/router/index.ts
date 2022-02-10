@@ -70,7 +70,6 @@ const routes: Array<RouteConfig> = [
   },
   {
     path: "/friends",
-    // name: "friends",
     component: Friends,
     children: [
       {
@@ -91,14 +90,8 @@ const routes: Array<RouteConfig> = [
       },
     ],
   },
-  // {
-  //   path: "/play",
-  //   name: "play",
-  //   component: Play,
-  // },
   {
     path: "/chat",
-    // name: "chat",
     component: Chat,
     children: [
       {
@@ -127,11 +120,6 @@ const routes: Array<RouteConfig> = [
     path: "/chat/directMessage/:name",
     component: directMessage,
   },
-  // {
-  //   path: "/match_history",
-  //   name: "match_history",
-  //   component: MatchHistory,
-  // },
   {
     path: "/find_match",
     name: "find_match",
@@ -160,13 +148,7 @@ const router = new VueRouter({
 });
 
 router.beforeEach((to, from, next) => {
-  // console.log("to", to, from);
   return checkAuth(to, from, next);
 });
-
-// router.beforeEach((to, from, next) => {
-//   console.log("new", to, from);
-//   return next();
-// });
 
 export default router;

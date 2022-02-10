@@ -6,7 +6,8 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - ./src/backend:/usr/src/appdocker-compose up --build --force-recreate
+      # - ./src/backend:/usr/src/app #docker-compose up --build --force-recreate
+      - ./src/backend:/usr/app
       - /usr/app/node_modules
     depends_on:
       - "dbservice"
@@ -14,6 +15,7 @@ services:
       - db-network
     restart: always
     container_name: "backend"
+    image: backend
 
   dbservice:
     image: postgres
@@ -37,6 +39,7 @@ services:
     ports:
       - "5000:8080"
     restart: always
+    image: client
     command: yarn serve
 
 networks:
