@@ -7,6 +7,7 @@ import { AuthModule } from './authentication/auth.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { FriendshipModule } from './friend/friendship.module';
+import { GameGateway } from './Game/game.gateway';
 
 console.log(`${process.env.NODE_ENV}.env`);
 @Module(
@@ -47,6 +48,7 @@ console.log(`${process.env.NODE_ENV}.env`);
     UserModule,
     FriendshipModule,
     AuthModule
-  ]
+  ],
+  providers: [GameGateway]
 })
 export class AppModule {}

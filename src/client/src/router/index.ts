@@ -25,7 +25,6 @@ import conversations from "@/pages/Chat/dms.vue";
 import directMessage from "@/pages/Chat/directMessage.vue";
 import Game from "@/pages/Game/pingpong.vue";
 import channelRoom from "@/pages/Chat/channelRoom.vue";
-import AuthCallback from "@/pages/Login/authCallback.vue";
 Vue.use(VueRouter);
 
 const routes: Array<RouteConfig> = [
@@ -48,10 +47,6 @@ const routes: Array<RouteConfig> = [
     path: "/leaderBoard",
     name: "LeaderBoard",
     component: LeaderBoard,
-  },
-  {
-    path: "/auth/callback",
-    component: AuthCallback,
   },
   {
     path: "/profile/:username",

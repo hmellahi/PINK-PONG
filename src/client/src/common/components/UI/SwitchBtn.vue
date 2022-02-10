@@ -53,7 +53,7 @@ export default class SwitchBtn extends Vue {
     return { marginLeft: this.value ? "-40%" : "50%" };
   }
   toggle() {
-    console.log("Toggling indicator");
+    // console.log("Toggling indicator");
     this.$emit("input", !this.value);
     // this.onClick();
   }
