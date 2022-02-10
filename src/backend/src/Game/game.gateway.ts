@@ -57,6 +57,10 @@ export class GameGateway {
       //
       this.server.to(roomId).emit('matchFound', roomId);
 
+      // update user status
+
+      // 
+
       // // remove playes from queue
       this.players.splice(0, 2);
       // console.log(this.players.length);
