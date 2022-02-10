@@ -1,3 +1,12 @@
+import Component from "vue-class-component";
+
+// Register the router hooks with their names
+Component.registerHooks([
+  "beforeRouteEnter",
+  "beforeRouteLeave",
+  "beforeRouteUpdate",
+]);
+
 import Vue from "vue";
 import App from "./App.vue";
 import router from "./router";
@@ -8,6 +17,11 @@ import _Vue from "vue";
 // import Swal from 'sweetalert2'
 
 import Overlay from "@/common/components/UI/Overlay.vue";
+<<<<<<< HEAD
+=======
+// class-component-hooks.js
+// import API from "./api";
+>>>>>>> 3a0345bf2663a8ea089e5ec3f0c191cd9a343a4e
 
 /************* import files  **************/
 import "../public/assets/css/bootstrap.min.css";
@@ -20,7 +34,16 @@ import "../public/assets/css/skins/blue.css";
 Vue.component("Overlay", Overlay);
 /************* Register components as global  **************/
 
+<<<<<<< HEAD
 /************* Register Axios as global (now we can access to with this.$http) **************/
+=======
+// Vue.prototype.$http = API;
+import VueAxios from "vue-axios";
+import axios from "./api";
+// import "./types/ http.d.ts"
+import _Vue from "vue";
+// import Axios from "axios";
+>>>>>>> 3a0345bf2663a8ea089e5ec3f0c191cd9a343a4e
 export function AxiosPlugin<AxiosPlugOptions>(
   Vue: typeof _Vue,
   options?: AxiosPluginOptions
@@ -37,7 +60,7 @@ declare module "vue/types/vue" {
 }
 /************* Register Axios as global  **************/
 
-Vue.use(VueAxios, axios)
+Vue.use(VueAxios, axios);
 
 new Vue({
   router,

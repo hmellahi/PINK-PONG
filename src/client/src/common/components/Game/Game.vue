@@ -1,17 +1,18 @@
 <template>
   <div id="game">
-    <P5 v-on="{ setup, draw, keyreleased, keypressed, preload }"/>
+    <P5 v-on="{ setup, draw, keyreleased, keypressed, preload }" />
   </div>
 </template>
 
 <script lang="ts">
-import {GameConstants} from "../../Game/constants";
+import { GameConstants } from "../../Game/constants";
 import Ball from "../../Game/Objects/Ball";
 // import require from "http";
 import Net from "../../Game/Objects/Net";
 import BackGround from "../../Game/Objects/BackGround";
+import { io } from "socket.io-client";
 
-import {Component, Vue} from "vue-property-decorator";
+import { Component, Vue } from "vue-property-decorator";
 import P5, {
   P5Element,
   P5Sketch, // this are the type definitions
@@ -20,9 +21,11 @@ import Paddle from "@/common/Game/Objects/Paddle";
 import Score from "@/common/Game/Objects/Score";
 
 @Component({
-  components: {P5},
+  components: { P5 },
 })
 export default class Game extends Vue {
+  socket: any = null;
+
   // ({ canvas, backColor } = GameConstants)
   backColor: number = GameConstants.backColor; //todo change
   // xBall: number = Math.floor(Math.random() * 300) + GameConstants.ball.x;
@@ -37,10 +40,10 @@ export default class Game extends Vue {
   paddleWidth = GameConstants.paddle.width;
   paddleHeight = GameConstants.paddle.height;
   paddle: Paddle = new Paddle(
-      this.xPaddle - 20,
-      this.yPaddle,
-      this.paddleWidth,
-      this.paddleHeight
+    this.xPaddle - 20,
+    this.yPaddle,
+    this.paddleWidth,
+    this.paddleHeight
   );
 
   // xPaddle2=GameConstants.paddle.firstPLayer
@@ -48,10 +51,10 @@ export default class Game extends Vue {
   // paddleWidth=GameConstants.paddle.width
   // paddleHeight=GameConstants.paddle.height;
   paddle2: Paddle = new Paddle(
-      20,
-      this.yPaddle,
-      this.paddleWidth,
-      this.paddleHeight
+    20,
+    this.yPaddle,
+    this.paddleWidth,
+    this.paddleHeight
   );
 
   net: Net = new Net();
@@ -59,9 +62,9 @@ export default class Game extends Vue {
 
   score: Score = new Score(GameConstants.canvas.width / 3 - 60, 30);
   score2: Score = new Score(
-      GameConstants.canvas.width - GameConstants.canvas.width / 3,
-      30,
-      0
+    GameConstants.canvas.width - GameConstants.canvas.width / 3,
+    30,
+    0
   );
   scores: Score[] = [this.score, this.score2];
 
@@ -70,15 +73,24 @@ export default class Game extends Vue {
     // this.sounds.push(hitSound);
     // const hitSound = new Audio(require("@/assets/sounds/mario_coin.mp3"));
     // const hitSound = new Audio(require("@/assets/sounds/mario_coin.mp3"));
+    this.socket = io("http://localhost:3000/game");
+    // this.socket.on("paddleMoves", (roomId: any) => {
+      
+    // });
+    // this.socket.emit("paddleMoves", { userId: 2 }, (data: any) => {
+    //   console.log({ data });
+    // });
   }
-sleep(ms: number) {
-    console.log("Sleeeoing");
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
+
+
+  sleep(ms: number) {
+    // console.log("Sleeeoing");
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
   setup(sketch: P5Sketch) {
     sketch.createCanvas(
-        GameConstants.canvas.width,
-        GameConstants.canvas.height
+      GameConstants.canvas.width,
+      GameConstants.canvas.height
     );
   }
 
@@ -88,13 +100,12 @@ sleep(ms: number) {
     this.background.draw(sketch);
     this.net.draw(sketch);
 
-
     this.paddle.draw(sketch);
     this.paddle.update();
     this.paddle2.draw(sketch);
 
     let player: Paddle =
-        this.ball.x < GameConstants.canvas.width / 2 ? this.paddle2 : this.paddle;
+      this.ball.x < GameConstants.canvas.width / 2 ? this.paddle2 : this.paddle;
     // this.sleep(10000000000000);
     if (this.ball.hits(player)) {
       // this.playMusic(this.sounds[0]);
@@ -106,14 +117,12 @@ sleep(ms: number) {
     if (ballHitsBorder) {
       this.ball.reset();
       this.scores[ballHitsBorder - 1].value++;
-      if (this.scores[ballHitsBorder - 1].value > 2) 
-      {
-      this.isGameOver = true;
-      this.ball.y = GameConstants.canvas.height/2;
+      if (this.scores[ballHitsBorder - 1].value > 2) {
+        this.isGameOver = true;
+        this.ball.y = GameConstants.canvas.height / 2;
       }
     }
-    if (!this.isGameOver)
-      this.ball.update();
+    if (!this.isGameOver) this.ball.update();
     this.ball.draw(sketch);
 
     // this.score.setScore((this.score.value+1/1e)%10)
@@ -122,7 +131,6 @@ sleep(ms: number) {
     // this.scores.map((score) => score.draw);
     this.scores.map((score) => score.draw(sketch));
     this.sleep(10000);
-
   }
 
   keypressed(sketch: P5Sketch) {
@@ -160,12 +168,14 @@ sleep(ms: number) {
     //     "../assets/sounds/Clairo - Sofia-L9l8zCOwEII.mp3"
     //   );
     try {
-      await music.play();
-      console.log("Playing...");
+      // await music.play();
+      // console.log("Playing...");
     } catch (err) {
-      console.log("Failed to play..." + err);
+      // console.log("Failed to play..." + err);
     }
   }
+
+  
 }
 </script>
 

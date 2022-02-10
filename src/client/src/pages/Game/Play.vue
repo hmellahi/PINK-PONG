@@ -1,7 +1,7 @@
 <template>
   <Overlay class="">
     <h3 class="mb-4">CHOOSE A MAP</h3>
-    <div class="row mb-4 ">
+    <div class="row mb-4">
       <div class="col-sm-12 col-md-4">
         <div :class="boxMapClass('map1')">
           <a href="#" @click="updateMap('map1')">
@@ -40,9 +40,10 @@ import Button from "@/common/components/UI/Button.vue";
 })
 export default class Play extends Vue {
   selected: String = "map1";
+  connection: any = null;
   updateMap(mapname: String) {
     this.selected = mapname;
-    console.log(this.selected);
+    // this.connection = new WebSocket("wss://localhost:3000/game");
   }
   boxMapClass(mapname: String) {
     return "box_map " + (mapname == this.selected ? "selected" : "");

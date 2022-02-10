@@ -31,7 +31,8 @@
 
       <div class="col-12 px-0 fa_factor" v-if="settings[2].isActive && !isVerified">
         <!-- {{process}} -->
-        <img src='http://159.223.102.35:3000/api/auth/2fa/generate' />
+        <!-- <img src='http://159.223.102.35:3000/api/auth/2fa/generate' /> -->
+        <img src='http://localhost:3000/api/auth/2fa/generate' />
         <div class="verify_factor">
           <InputField
             class="text-left"

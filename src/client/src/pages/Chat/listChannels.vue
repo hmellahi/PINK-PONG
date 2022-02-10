@@ -19,13 +19,15 @@
     </div>
     <Popup v-model="show">
       <h2>{{ currentChannel.name }}</h2>
-      <InputField
-        name="password"
-        placeholder="Enter Password"
-        type="password"
-        v-model="password"
-        class="text-left p-3 my-4"
-      ></InputField>
+      <form>
+        <InputField
+          name="password"
+          placeholder="Enter Password"
+          type="password"
+          v-model="password"
+          class="text-left p-3 my-4"
+        ></InputField>
+      </form>
       <Button :onClick="joinChannel" class="px-5">Join</Button>
     </Popup>
   </div>
