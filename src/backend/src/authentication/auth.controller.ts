@@ -58,7 +58,7 @@ export class AuthController
     }
 
     @UseGuards(JwtAuthGuard)
-    @Post("logout")
+    @Get("logout")
     async getSomthing(@Req() request: RequestWithUser ,@Res() response: Response)
     {
         const {user} = request;

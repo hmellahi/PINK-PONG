@@ -26,35 +26,70 @@ export class FriendshipService
 
     public async getFriendship(opts:any)
     {
-        console.log(opts)
         return await this.friendshipRepository
                                     .findOne(opts)
     }
 
-    public async changeFriendshipStatus(sender: UserEntity,
+    public async changeFriendshipStatus(receiverId: number,
                                         friendshipRequestId: number,
                                         requiredStatus: Friendship_Status)
     {
 
-        const friendship = await this.getFriendship({id: friendshipRequestId});
-        console.log(friendship)
-        if (!friendship || friendship.status === requiredStatus)
+        const friendship = await this.friendshipRepository
+                                    .createQueryBuilder("f")
+                                    .innerJoin("f.sender", "user", "f.receiverId = :recevierId AND f.status != :status",
+                                                        { recevierId: receiverId , status: requiredStatus})
+                                    .getOne();
+        if (!friendship)
             return false;
         friendship.status = requiredStatus;
         this.friendshipRepository.save(friendship);
         return true;
     }
 
-    public async getFriendshipRequests(user: UserEntity)
+    public async getFriendshipRequests(userId: number)
     {
-        const friendships = await this.friendshipRepository
+        const friendshipRequests = await this.friendshipRepository
                                     .createQueryBuilder("f")
-                                    .innerJoin("f.sender", "user", "f.receiverId = :recevierId AND f.status = :status",
-                                                        { recevierId: user.id , status: "pending"})
-                                    .addSelect(["user.id","user.login", "user.avatar_url"])
+                                    .innerJoin("f.sender", "s", "f.receiverId = :recevierId AND f.status = :status",
+                                                        { recevierId: userId , status: "pending"})
+                                    .addSelect(["s.id","s.login", "s.avatar_url"])
                                     .orderBy("f.create_date", "DESC")
                                     .getMany()
-        
+        return friendshipRequests;
+    }
+
+    public async getFriendships(user: UserEntity)
+    {
+        // const friendships = await this.friendshipRepository
+        //                             .createQueryBuilder("f")
+        //                             .select(["u.id", "u.email"])
+        //                             .innerJoin("f.sender","u")
+        //                             .where("status = :status", {status:"accepted"})
+        //                             // .addSelect(["s.id","s.login", "s.avatar_url"])
+        //                             .orderBy("f.create_date", "DESC")
+        //                             .getMany();
+        const friendships = await this.friendshipRepository
+                                    .find({
+                                        where:
+                                        [
+                                            {receiver: user, status: "accepted"},
+                                            {sender: user, status: "accepted"}
+                                        ],
+                                        relations: ['sender', "receiver"],
+                                        
+                                        
+                                    })
         return friendships;
+    }
+
+    public async removeFriendship(friendshipId: number, userId: number)
+    {
+        const friendship = await this.friendshipRepository
+                                .createQueryBuilder("f")
+                                .delete()
+                                .from(FriendshipEntity)
+                                .execute();
+        console.log(friendship);
     }
 }

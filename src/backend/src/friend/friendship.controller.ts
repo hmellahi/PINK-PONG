@@ -19,7 +19,15 @@ export class FriendshipController
     async friendshipRequests(@Req() request: RequestWithUser)
     {
         const {user} = request;
-        return this.friendshipService.getFriendshipRequests(user);
+        return this.friendshipService.getFriendshipRequests(user.id);
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Get("friendships")
+    async friendships(@Req() request: RequestWithUser)
+    {
+        const {user} = request;
+        return this.friendshipService.getFriendships(user);
     }
 
     @UseGuards(JwtAuthGuard)
@@ -54,19 +62,30 @@ export class FriendshipController
         
         if (!friendshipRequestId)
             throw new BadRequestException;
-        if (!this.friendshipService.changeFriendshipStatus(user, friendshipRequestId, "accepted"))
-            throw new HttpException("friendship request not exist", HttpStatus.BAD_REQUEST);
+        if (!await this.friendshipService.changeFriendshipStatus(user.id, friendshipRequestId, "accepted"))
+            throw new HttpException("Friendship Request not exist", HttpStatus.BAD_REQUEST);
+
     }
 
     @UseGuards(JwtAuthGuard)
     @Post("declineFriendRequest")
     @HttpCode(200)
-    async declineFriendRequest(request: RequestWithUser,
+    async declineFriendRequest(@Req()request: RequestWithUser,
                               @Body("friendshipRequestId") friendshipRequestId: number)
     {
         const {user} = request;
         
-        if (this.friendshipService.changeFriendshipStatus(user, friendshipRequestId, "declined"))
-        throw new HttpException("friendship request not exist", HttpStatus.BAD_REQUEST);
+        if (!await this.friendshipService.changeFriendshipStatus(user.id, friendshipRequestId, "declined")) // need to update
+            throw new HttpException("friendship request not exist", HttpStatus.BAD_REQUEST);
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Post("removeFriendship")
+    @HttpCode(200)
+    async removeFriendship(@Req() request: RequestWithUser,
+                            @Body("friendshipId") friendshipId: number)
+    {
+        const {user} = request;
+        await this.friendshipService.removeFriendship(friendshipId, user.id);
     }
 }
