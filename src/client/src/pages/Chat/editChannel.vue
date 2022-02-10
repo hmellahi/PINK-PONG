@@ -8,7 +8,7 @@
     </div>
     <Overlay>
       <div class="row">
-        <div class="text-center col-12">
+        <form class="text-center col-12">
           <InputField
               name="name"
               placeholder="Enter Name"
@@ -32,7 +32,7 @@
           <h4>{{ errors }}</h4>
           <Button :onClick="editChannel" class="mt-4 px-4">Save</Button>
           <Button :onClick="deleteChannel" class="mt-4 px-4">Delete</Button>
-        </div>
+        </form>
       </div>
     </Overlay>
   </div>

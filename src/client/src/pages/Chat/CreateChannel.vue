@@ -1,6 +1,6 @@
 <template>
   <div class="row">
-    <div class="text-center col-12">
+    <form class="text-center col-12">
       <InputField
         name="name"
         placeholder="Enter Name (*)"
@@ -21,7 +21,7 @@
       <h4>{{ errors }}</h4>
       <!-- <InputField :args="propsToPass"></InputField> -->
       <Button :onClick="createChannel" class="mt-4">Create</Button>
-    </div>
+    </form>
   </div>
 </template>
 

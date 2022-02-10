@@ -19,7 +19,7 @@
     >
     <Overlay class="p-3">
       <div class="mb-4 room px-4">
-        <b-alert show variant="primary">Primary Alert</b-alert>
+        <!-- <b-alert show variant="primary">Primary Alert</b-alert> -->
         <MessageBox
           :isDM="false"
           v-for="(message, i) in messages"
