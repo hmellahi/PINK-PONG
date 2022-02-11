@@ -1,5 +1,4 @@
 import { BadRequestException, Body, Controller, Get, HttpCode, HttpException, HttpStatus, InternalServerErrorException, Post, Req, Res, UseGuards } from "@nestjs/common";
-import { IsNumber } from "class-validator";
 import { JwtAuthGuard } from "src/authentication/Guards/jwtAccess.guard";
 import { RequestWithUser } from "src/authentication/Interfaces/requestWithUser.interface";
 import { UserService } from "src/user/user.service";
@@ -61,8 +60,8 @@ export class FriendshipController
         const {user} = request;
         
         if (!friendshipRequestId)
-            throw new BadRequestException;
-        if (!await this.friendshipService.changeFriendshipStatus(user.id, friendshipRequestId, "accepted"))
+            throw new HttpException("friendshipRequestId filed needed", HttpStatus.BAD_REQUEST);
+        if (!await this.friendshipService.changeFriendshipStatus(user, friendshipRequestId, "accepted"))
             throw new HttpException("Friendship Request not exist", HttpStatus.BAD_REQUEST);
 
     }
@@ -75,7 +74,11 @@ export class FriendshipController
     {
         const {user} = request;
         
-        if (!await this.friendshipService.changeFriendshipStatus(user.id, friendshipRequestId, "declined")) // need to update
+        
+        if (!friendshipRequestId)
+            throw new HttpException("friendshipRequestId filed needed", HttpStatus.BAD_REQUEST);
+
+        if (!await this.friendshipService.changeFriendshipStatus(user, friendshipRequestId, "declined")) // need to update
             throw new HttpException("friendship request not exist", HttpStatus.BAD_REQUEST);
     }
 
@@ -86,6 +89,10 @@ export class FriendshipController
                             @Body("friendshipId") friendshipId: number)
     {
         const {user} = request;
-        await this.friendshipService.removeFriendship(friendshipId, user.id);
+
+        if (!friendshipId)
+            throw new HttpException("friendshipId filed needed", HttpStatus.BAD_REQUEST);
+        if (!await this.friendshipService.removeFriendship(friendshipId, user))
+            throw new HttpException("friendship not exist", HttpStatus.BAD_REQUEST);
     }
 }
