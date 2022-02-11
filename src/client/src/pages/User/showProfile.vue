@@ -65,7 +65,7 @@ import Button from "@/common/components/UI/Button.vue";
   components: { MatchHistory, Button },
 })
 export default class Profile extends Vue {
-  user: User = null;
+  user = {};
   created() {
     this.getUser();
   }
