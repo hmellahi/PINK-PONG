@@ -142,7 +142,7 @@ export default class Game extends Vue {
         this.ball.y = GameConstants.canvas.height / 2;
       }
     }
-    if (!this.isGameOver) this.ball.update();
+    // if (!this.isGameOver) this.ball.update();
     this.ball.draw(sketch);
 
     // this.score.setScore((this.score.value+1/1e)%10)

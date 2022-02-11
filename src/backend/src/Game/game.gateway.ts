@@ -22,7 +22,10 @@ export class GameGateway {
   // usersInQueue: number[] = [];
   players: any[] = [];
   liveGames: Game[] = [];
+<<<<<<< HEAD
   username:string = "";
+=======
+>>>>>>> 86769a23c09f55c69f5c66cf058a9ab996a5e8fa
   private logger: Logger = new Logger('AppGateway');
 
   @SubscribeMessage('leaveQueue')
@@ -45,20 +48,34 @@ export class GameGateway {
     // let playerId = getuser().id;
 
     // TODO CHECK FOR USERID
+<<<<<<< HEAD
     // if (this.players.indexOf(this.username) != -1)
       this.players.push(player);
 
     if (this.players.length >= 2) {
       // console.log(this.players);
       const roomId = this.players[0].id + '' + this.players[1].id;
+=======
+    // if (this.players.indexOfx(playerId) != -1)
+    this.players.push(player);
+
+    if (this.players.length >= 2) {
+      // console.log(this.players);
+      let roomId = this.players[0].id + '' + this.players[1].id;
+>>>>>>> 86769a23c09f55c69f5c66cf058a9ab996a5e8fa
       // join room
       this.players[0].join(roomId);
       this.players[1].join(roomId);
 
       // register the game
       this.liveGames.push({
+<<<<<<< HEAD
         player1: this.username,
         player2: this.username,
+=======
+        player1: this.players[0],
+        player2: this.players[1],
+>>>>>>> 86769a23c09f55c69f5c66cf058a9ab996a5e8fa
         roomId,
       });
 
@@ -101,18 +118,27 @@ export class GameGateway {
     // );
 
     // if () 
+<<<<<<< HEAD
     // console.log(data, player.rooms);
     // player.join();
     // player.join(room)
     // player.to(roomId).emit('paddleMoves', { players:[{'velocity':velocity, ''}]});
     player.to(roomId).emit('paddleMoves', velocity);
     console.log(`player emitting: ${velocity}`);
+=======
+    console.log(data, player.rooms);
+    // player.join();
+    // player.join(room)
+    player.to(roomId).emit('paddleMoves', velocity);
+    // console.log(`client joined: ${velocity}`);
+>>>>>>> 86769a23c09f55c69f5c66cf058a9ab996a5e8fa
 
     // this.server.to(spectactoRoom).emit()
   }
 
   @SubscribeMessage('joinGame')
   joinGame(@MessageBody() data: any, @ConnectedSocket() player: Socket) {
+<<<<<<< HEAD
     const { roomId, userId } = data;
 
     const currentPlayerGame: Game = this.liveGames.find(
@@ -148,6 +174,19 @@ export class GameGateway {
     if (!currentPlayerRoom)
       return this.server.to(player.id).emit('roomNotFound');
     player.join(roomId);
+=======
+    let { roomId, userId } = data;
+
+    let currentPlayerRoom: Game = this.liveGames.find(
+      (game) => game.roomId === roomId,
+    );
+    console.table(this.liveGames);
+    console.table(currentPlayerRoom);
+    // room doesnt exist
+    if (!currentPlayerRoom)
+      return this.server.to(player.id).emit('roomNotFound');
+    player.join(roomId)
+>>>>>>> 86769a23c09f55c69f5c66cf058a9ab996a5e8fa
   }
 
   // handleDisconnect(client: Socket, ...args: any[]) {
