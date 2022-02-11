@@ -3,6 +3,7 @@
   <section class="title-section text-left text-sm-center no-transform revealator-within ">
 <!--    revealator-slideup revealator-once revealator-delay1-->
     <h1>Ping <span>Pong</span></h1>
+    <!-- <h1>Ping Pong</h1> -->
     <!-- <span class="title-bg">TRASANDENCE</span> -->
   </section>
   <!-- Page Title Ends -->
@@ -15,5 +16,7 @@ export default {
 </script>
 
 <style scoped>
-
+h1{
+  font-size: 3.4rem!important;
+}
 </style>

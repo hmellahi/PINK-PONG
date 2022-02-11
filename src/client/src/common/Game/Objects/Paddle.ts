@@ -48,28 +48,30 @@ export default class Ball {
     if (nexPos + this.height > windowHeight || nexPos < 0) return;
     this.y = nexPos;
     // console.log(`from  player ${this.x}, ${this.y}`);
-
   }
 
-  handleKeyPressed(sketch: P5Sketch) {
+  handleKeyPressed(sketch: P5Sketch): Boolean {
     let { UP_ARROW, DOWN_ARROW, keyCode } = sketch;
     // console.log(keyCode== LEFT_ARROW);
     if (keyCode === UP_ARROW) {
       this.velocity = -1;
+      return true;
     } else if (keyCode === DOWN_ARROW) {
       this.velocity = 1;
+      return true;
     }
-    // console.log(this.velocity);
+    return false;
   }
 
-  handleKeyReleased(sketch: P5Sketch) {
+  handleKeyReleased(sketch: P5Sketch): Boolean {
     let { UP_ARROW, DOWN_ARROW, keyCode } = sketch;
-    // console.log(keyCode== LEFT_ARROW);
     if (keyCode === UP_ARROW) {
       this.velocity = 0;
+      return true;
     } else if (keyCode === DOWN_ARROW) {
       this.velocity = 0;
+      return true;
     }
-    // console.log(this.velocity);
+    return false;
   }
 }
