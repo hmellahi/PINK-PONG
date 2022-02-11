@@ -2,7 +2,7 @@ export interface Channel {
   name: string;
   password?: string;
   membersCount?: Number;
-  isPrivate: Boolean;
+  isPrivate?: Boolean;
   // more
 }
 

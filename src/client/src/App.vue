@@ -2,10 +2,9 @@
   <div id="app">
     <router-view v-if="isLoginPage"></router-view>
     <span v-else>
-      <!-- <SideBar></SideBar> -->
-      <Title></Title>
       <div class="container">
-        <div class="col-md-12 m-auto main">
+        <div class="col-md-12 mx-auto main">
+          <Title class="text-left"></Title>
           <div class="row">
             <div class="col-md-3">
               <SideBar></SideBar>
@@ -22,16 +21,14 @@
 
 <script lang="ts">
 import { Component, Vue, Watch } from "vue-property-decorator";
-import SideBar from "@/common/components/Layout/SideBar.vue";
+import SideBar from "./common/components/Layout/SideBar.vue";
 import { Route, RawLocation } from "vue-router";
-import Title from "@/common/components/Layout/Title.vue";
-// console.log("----------------------------------------------------------------", Vue.prototype)
+import Title from "./common/components/Layout/Title.vue";
+
 @Component<App>({
   components: { Title, SideBar },
   watch: {
     $route(to, from) {
-      // this.show =   false;
-      // console.log("beforeRouteLeave");
       this.updateIsLoginPage();
     },
   },
@@ -41,36 +38,12 @@ export default class App extends Vue {
 
   mounted() {
     this.updateIsLoginPage();
-    // console.log(process.env);
-    // if (process.env.A == "true") {
-    //   console.log("yayks");
-    // }
   }
 
   updateIsLoginPage() {
+    /******  Check if the route one of this path if yes then lets update the bool val ********/
     let paths = ["/login", "/verification_code", "/auth/callback"];
     this.isLoginPage = paths.includes(this.$route.path);
   }
 }
 </script>
-
-<style lang="scss">
-@import url('https://fonts.googleapis.com/css2?family=Coda&display=swap');
-
-@font-face {
-  font-family: "Merienda";
-  src: local("Merienda"),
-    url(../public/assets/fonts/BeatWorddemo.ttf) format("truetype");
-}
-* {
-  font-family: "Merienda";
-}
-
-// * {
-// font-family: 'Coda', cursive;
-// }
-.main {
-  height: 30em;
-}
-// CSS rules to specify families
-</style>
