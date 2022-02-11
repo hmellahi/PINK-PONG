@@ -73,7 +73,7 @@ export default class Game extends Vue {
     0
   );
   scores: Score[] = [this.score, this.score2];
-  roomId: String | String[] = "";
+  roomId: any = "";
 
   mounted() {
     // const hitSound = new Audio(require("@/../../../../public/assets/sounds/mario_coin.mp3"));

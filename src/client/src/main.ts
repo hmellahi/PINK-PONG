@@ -30,10 +30,6 @@ Vue.component("Overlay", Overlay);
 /************* Register components as global  **************/
 
 // Vue.prototype.$http = API;
-import VueAxios from "vue-axios";
-import axios from "./api";
-// import "./types/ http.d.ts"
-import _Vue from "vue";
 // import Axios from "axios";
 export function AxiosPlugin<AxiosPlugOptions>(
   Vue: typeof _Vue,

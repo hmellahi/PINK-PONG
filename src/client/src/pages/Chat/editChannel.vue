@@ -10,10 +10,10 @@
       <div class="row">
         <form class="text-center col-12">
           <InputField
-              name="name"
-              placeholder="Enter Name"
-              v-model="channel.name"
-              class="input-text p-3 col-md-6 my-4"
+            name="name"
+            placeholder="Enter Name"
+            v-model="channel.name"
+            class="input-text p-3 col-md-6 my-4"
           ></InputField>
           <!-- <InputField
             name="password"
@@ -23,11 +23,11 @@
             v-model="channel.oldPassword"
           ></InputField> -->
           <InputField
-              name="password"
-              type="password"
-              placeholder="Enter New Password"
-              class="input-text p-3 col-md-6 my-4"
-              v-model="channel.password"
+            name="password"
+            type="password"
+            placeholder="Enter New Password"
+            class="input-text p-3 col-md-6 my-4"
+            v-model="channel.password"
           ></InputField>
           <h4>{{ errors }}</h4>
           <Button :onClick="editChannel" class="mt-4 px-4">Save</Button>
@@ -49,7 +49,7 @@ import { isValidInput } from "@/common/helpers/Validations";
   components: { InputField, Button },
 })
 export default class editChannel extends Vue {
-  channel: Channel = { name: "", password: "" };
+  channel: Channel = { name: "", password: "", isPrivate: false };
   oldPassword = "";
   newPassword = "";
   errors = "";
@@ -84,5 +84,4 @@ export default class editChannel extends Vue {
 }
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>
