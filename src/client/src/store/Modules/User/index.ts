@@ -3,7 +3,7 @@ import actions from "./actions";
 import mutations from "./mutations";
 
 const state = () => ({
-  isAuthenticated: true, //false
+  isAuthenticated: false, //false
   // user: null,
   // user: {
   //   avatarUrl: "/assets/img/avatars/Avatar.png",
