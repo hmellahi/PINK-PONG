@@ -22,6 +22,12 @@ import Score from "@/common/Game/Objects/Score";
 
 @Component({
   components: { P5 },
+  // props:{
+  //   roomId:{
+  //     type: String,
+  //     required: true
+  //   }
+  // }
 })
 export default class Game extends Vue {
   socket: any = null;
@@ -67,26 +73,39 @@ export default class Game extends Vue {
     0
   );
   scores: Score[] = [this.score, this.score2];
+  roomId: any = "";
 
   mounted() {
     // const hitSound = new Audio(require("@/../../../../public/assets/sounds/mario_coin.mp3"));
     // this.sounds.push(hitSound);
     // const hitSound = new Audio(require("@/assets/sounds/mario_coin.mp3"));
     // const hitSound = new Audio(require("@/assets/sounds/mario_coin.mp3"));
+    // console.log({ roomId: this.roomId });
+    this.roomId = this.$route.query.id;
+    console.log("here The id is: " + this.$route.query.id);
     this.socket = io("http://localhost:3000/game");
-    // this.socket.on("paddleMoves", (roomId: any) => {
-      
-    // });
+    this.socket.on("paddleMoves", (velocity: any) => {
+      this.paddle2.velocity = velocity;
+      console.log("paddle2: " + velocity);
+    });
+    this.socket.on("connect_failed", function () {
+      console.log("Connection Failed");
+    });
+    this.socket.on("roomNotFound", () => {
+      // console.log("Connection Failed");
+      this.$router.push({ path: "/" });
+    });
+    this.socket.emit("joinGame", { userId: 2, roomId: this.roomId });
     // this.socket.emit("paddleMoves", { userId: 2 }, (data: any) => {
     //   console.log({ data });
     // });
   }
 
-
   sleep(ms: number) {
     // console.log("Sleeeoing");
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
+
   setup(sketch: P5Sketch) {
     sketch.createCanvas(
       GameConstants.canvas.width,
@@ -103,6 +122,7 @@ export default class Game extends Vue {
     this.paddle.draw(sketch);
     this.paddle.update();
     this.paddle2.draw(sketch);
+    this.paddle2.update();
 
     let player: Paddle =
       this.ball.x < GameConstants.canvas.width / 2 ? this.paddle2 : this.paddle;
@@ -118,11 +138,11 @@ export default class Game extends Vue {
       this.ball.reset();
       this.scores[ballHitsBorder - 1].value++;
       if (this.scores[ballHitsBorder - 1].value > 2) {
-        this.isGameOver = true;
+        // this.isGameOver = true;
         this.ball.y = GameConstants.canvas.height / 2;
       }
     }
-    if (!this.isGameOver) this.ball.update();
+    // if (!this.isGameOver) this.ball.update();
     this.ball.draw(sketch);
 
     // this.score.setScore((this.score.value+1/1e)%10)
@@ -134,16 +154,27 @@ export default class Game extends Vue {
   }
 
   keypressed(sketch: P5Sketch) {
-    this.paddle.handleKeyPressed(sketch);
+    if (this.paddle.handleKeyPressed(sketch)) this.sendNewPaddleVelocity();
   }
 
   keyreleased(sketch: P5Sketch) {
-    this.paddle.handleKeyReleased(sketch);
+    if (this.paddle.handleKeyReleased(sketch)) this.sendNewPaddleVelocity();
   }
+
+  sendNewPaddleVelocity() {
+    console.log("emitting", this.roomId);
+    this.socket.emit("paddleMoves", {
+      roomId: this.roomId,
+      velocity: this.paddle.velocity,
+      userId: 2, // TODO CHANGE
+    });
+  }
+
+  // socket.emit("paddleMoves", { userId: 2, velocity: this.velocity, this.roomId});
 
   reset() {
     this.ball.reset();
-    // this.paddle.reset();
+    // this.paddle.reset(); 
     // this.paddle2.reset();
   }
 
@@ -174,8 +205,6 @@ export default class Game extends Vue {
       // console.log("Failed to play..." + err);
     }
   }
-
-  
 }
 </script>
 

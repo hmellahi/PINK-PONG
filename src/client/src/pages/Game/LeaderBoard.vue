@@ -10,7 +10,7 @@
       <Button :onClick="showDaily" :class="isDaily ? 'active px-5' : 'px-5'"
         >Daily</Button
       >
-      <Button :onClick="showLifetime" :class="!isDaily ? 'active px-5' : 'px-5'"
+      <Button :onClick="showLifetime" :cla00ss="!isDaily ? 'active px-5' : 'px-5'"
         >Lifetime</Button
       >
       <img

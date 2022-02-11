@@ -37,18 +37,18 @@ export default class Net {
     sketch.stroke(255);
     sketch.strokeWeight(ratio);
     sketch.noFill();
-    sketch.ellipse(x,y,size,size)
-    sketch.fill(255, 255, 255);
-    sketch.noStroke();
-    // for (let i = 0; i < height; i += ratio*2) {
-    // sketch.rect(x - 8/2, i, 8, ratio);
-    // }
-    for (let i = 0; i < y - size/2; i += ratio*2) {
-      sketch.rect(x - ratio/2, i, ratio, ratio);
-      }
-      for (let i = y + size/2; i < height; i += ratio*2) {
-        sketch.rect(x - ratio/2, i, ratio, ratio);
-      }
+    // sketch.ellipse(x,y,size,size)
+    // sketch.fill(255, 255, 255);
+    // sketch.noStroke();
+    for (let i = 0; i < height; i += ratio*2) {
+    sketch.rect(x - ratio/2, i, ratio, ratio);
+    }
+    // for (let i = 0; i < y - size/2; i += ratio*2) {
+    //   sketch.rect(x - ratio/2, i, ratio, ratio);
+    //   }
+    //   for (let i = y + size/2; i < height; i += ratio*2) {
+    //     sketch.rect(x - ratio/2, i, ratio, ratio);
+    //   }
     sketch = sketchTmp;
     // sketch.rect(x - 3, 0, 6, height);
     // console.log("ratio " + ratio + " " + height);
