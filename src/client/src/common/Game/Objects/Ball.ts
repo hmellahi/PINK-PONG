@@ -25,9 +25,9 @@ export default class {
     tempColor: number
   ) {
     this.x = GameConstants.canvas.width/2;
-    // this.y = GameConstants.canvas.height/2;
+    this.y = GameConstants.canvas.height/2;
     // this.y =  Math.floor(Math.random() * GameConstants.canvas.height - 200) + 200;
-    this.y = Math.floor(Math.random() * ((GameConstants.canvas.height / 10)*8 - (GameConstants.canvas.height / 10)*2 + (GameConstants.canvas.height / 10)*2));
+   // this.y = Math.floor(Math.random() * ((GameConstants.canvas.height / 10)*8 - (GameConstants.canvas.height / 10)*2 + (GameConstants.canvas.height / 10)*2));
 
     this.radius = tempRadius;
     // this.velocityX = Math.floor(Math.random() * 10) + 1;;
@@ -147,8 +147,8 @@ export default class {
     let { canvas ,borderWidth} = GameConstants;
     let { height: windowsHeight, width: windowsWidth } = canvas;
     // let {borderWidth} = GameConstants
-    // this.y = windowsHeight / 2;
-    this.y =  Math.floor(Math.random() * (windowsHeight- borderWidth) + borderWidth);
+    this.y = windowsHeight / 2; // TODO
+    // this.y =  Math.floor(Math.random() * (windowsHeight- borderWidth) + borderWidth);
     this.x = windowsWidth / 2;
     this.speed = 3;
     this.velocityX = 1;

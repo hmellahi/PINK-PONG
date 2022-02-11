@@ -1,21 +1,21 @@
 <template>
   <div id="app">
-	<router-view v-if="isLoginPage"></router-view>
-	<span v-else>
-	  <Title></Title>
-	  <div class="container">
-		<div class="col-md-12 m-auto main">
-		  <div class="row">
-			<div class="col-md-3">
-			  <SideBar></SideBar>
-			</div>
-			<div class="col-md-9 dashboard_main text-center">
-			  <router-view></router-view>
-			</div>
-		  </div>
-		</div>
-	  </div>
-	</span>
+    <router-view v-if="isLoginPage"></router-view>
+    <span v-else>
+      <div class="container">
+        <div class="col-md-12 mx-auto main">
+          <Title class="text-left"></Title>
+          <div class="row">
+            <div class="col-md-3">
+              <SideBar></SideBar>
+            </div>
+            <div class="col-md-9 dashboard_main text-center">
+              <router-view></router-view>
+            </div>
+          </div>
+        </div>
+      </div>
+    </span>
   </div>
 </template>
 
@@ -33,7 +33,6 @@ import Title from "./common/components/Layout/Title.vue";
     },
   },
 })
-
 export default class App extends Vue {
   isLoginPage: boolean = false;
 

@@ -1,6 +1,6 @@
 export interface Game {
     id?: number;
-    roomId:number;
-    player1:number;
-    player2:number;
+    roomId:string;
+    player1:string;
+    player2:string;
 }
