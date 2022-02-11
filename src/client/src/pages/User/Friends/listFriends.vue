@@ -58,7 +58,7 @@ export default class listFriends extends Vue {
     this.$store.dispatch("Friends/unFriend", friend);
   }
   sendMessage(friend: any) {
-    this.$router.push("/chat/channel/" + friend.username);
+    this.$router.push("/chat/channel/" + friend.id);
   }
   get friends(): any[] {
     // TODO change type

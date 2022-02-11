@@ -5,7 +5,7 @@
       <div class="mt-4 update_info">
         <div class="setting_user">
           <div class="avatar_setting">
-            <img :src="image" class="avatar_change" />
+            <img :src="user.avatar_url" class="avatar_change" />
             <input
               type="file"
               id="upload"
@@ -22,7 +22,7 @@
               name="username"
               placeholder="Change Your Name"
               class="text-left p-3 my-4"
-              v-model="user.username"
+              v-model="user.login"
             ></InputField>
             <p class="success_msg" v-if="success">{{ success }}</p>
             <!-- <Button class="text-left px-5 m-0 mb-2" :onClick="UpdateUsername">Update</Button> -->
@@ -35,13 +35,11 @@
         <!-- :onClick="toggle(i)" -->
       </div>
 
-      <div
+      <!-- <div
         class="col-12 px-0 fa_factor"
         v-if="settings[2].isActive && !isVerified"
       >
-        <!-- {{process}} -->
-        <!-- <img src='http://159.223.102.35:3000/api/auth/2fa/generate' /> -->
-        <img src="http://localhost:3000/api/auth/2fa/generate" />
+        <img src="http://127.0.0.1:3000/api/auth/2fa/generate" />
         <div class="verify_factor">
           <InputField
             class="text-left"
@@ -53,7 +51,7 @@
             >Verify</Button
           >
         </div>
-      </div>
+      </div> -->
     </div>
 
     <div class="text-right">
@@ -85,22 +83,39 @@ export default class Settings extends Vue {
   isActive = false;
   isVerified = false;
   success = "";
-  image = this.user.avatarUrl;
   onFileChange(e: any) {
-    // var files = e.target.files || e.dataTransfer.files;
-    // if (!files.length) return;
-    // this.avatar = files[0];
-    // console.log(this.avatar);
     let input: any = this.$refs.avatar;
     let file = input.files;
     if (file && file[0]) {
       let reader = new FileReader();
       reader.onload = (e: Event) => {
-        if (e && e.target) this.image = reader.result;
-        
+        if (e && e.target)
+          this.$store.commit("User/setAvatar",  reader.result);
       };
       reader.readAsDataURL(file[0]);
       this.$emit("input", file[0]);
+      this.updateAvatar();
+    }
+    
+  }
+  async updateAvatar() {
+    try {
+      let data = await this.$http({
+        method: "post",
+        url: "users/updateAvatar",
+        data: {
+          user: this.email,
+        },
+        withCredentials: true,
+        headers: {
+          "Access-Control-Allow-Origin": "http://localhost:5000",
+          "Access-Control-Allow-Credentials": "true",
+        },
+      });
+      console.log({ data });
+    } catch (e) {
+      console.log({ e });
+      return;
     }
   }
   async verify() {
@@ -109,12 +124,12 @@ export default class Settings extends Vue {
         method: "post",
         url: "auth/2fa/enableTwoFactorAuth",
         data: {
-          code: this.email,
+          user: this.user,
         },
         withCredentials: true,
 
         headers: {
-          "Access-Control-Allow-Origin": "http://127.0.0.1:5000",
+          "Access-Control-Allow-Origin": "http://localhost:5000",
           "Access-Control-Allow-Credentials": "true",
         },
       });
@@ -142,10 +157,10 @@ export default class Settings extends Vue {
     this.settings = [
       { name: "Music", isActive: true },
       { name: "Sound", isActive: true },
-      {
-        name: "2-Factor Authentication",
-        isActive: this.user.two_factor_auth_enabled,
-      },
+      // {
+      //   name: "2-Factor Authentication",
+      //   isActive: this.user ? this.user.two_factor_auth_enabled : false,
+      // },
     ];
   }
   toggle(i: any) {}

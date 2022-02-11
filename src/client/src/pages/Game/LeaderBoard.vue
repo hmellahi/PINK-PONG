@@ -29,7 +29,7 @@
               <!-- <img src="/assets/img/2.jpg" alt="" /> -->
               <!-- </div> -->
               <div class="right2">
-                <h4>{{ user.username }}</h4>
+                <h4>{{ user.login }}</h4>
               </div>
             </div>
           </div>
@@ -84,7 +84,7 @@ export default class LeaderBoard extends Vue {
     this.isDaily = false;
   }
   showProfile(user: User) {
-    this.$router.push(`/profile/${user.username}`);
+    this.$router.push(`/profile/${user.id}`);
   }
 }
 </script>

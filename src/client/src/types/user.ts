@@ -10,8 +10,8 @@ export interface UserState {
 }
 
 export interface User {
-  username: string;
-  avatarUrl: string;
+  login: string;
+  avatar_url: string;
   matches: any[];
   wins: Number;
   loses: Number;

@@ -5,6 +5,7 @@ import notFound from "../pages/notFound.vue";
 import Settings from "@/pages/User/Settings.vue";
 import LeaderBoard from "@/pages/Game/LeaderBoard.vue";
 import Profile from "@/pages/User/Profile.vue";
+import showProfile from "@/pages/User/showProfile.vue";
 import Friends from "@/pages/User/Friends/index.vue";
 import Play from "@/pages/Game/Play.vue";
 import MatchHistory from "@/pages/Game/MatchHistory.vue";
@@ -49,11 +50,6 @@ const routes: Array<RouteConfig> = [
     component: LeaderBoard,
   },
   {
-    path: "/profile/:username",
-    name: "profile",
-    component: Profile,
-  },
-  {
     path: "/game",
     name: "game",
     component: Game,
@@ -62,6 +58,11 @@ const routes: Array<RouteConfig> = [
     path: "/profile/mine",
     name: "profile/mine",
     component: Profile,
+  },
+  {
+    path: "/profile/:id",
+    name: "profile",
+    component: showProfile,
   },
   {
     path: "/friends",

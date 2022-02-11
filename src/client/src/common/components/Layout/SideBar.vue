@@ -83,8 +83,22 @@ export default class SideBar extends Vue {
     className += currentRoute.includes(path) && path != "/" ? " active" : "" ;
     return className;
   }
-  logout(){
-    this.$router.push("/login")
+  async logout(){
+     try {
+       let data = await this.$http({
+        method: 'post',
+        url:'auth/logout',
+        withCredentials: true,
+        headers:{
+          'Access-Control-Allow-Origin':'http://localhost:5000/',
+          'Access-Control-Allow-Credentials': 'true'
+        }
+      })
+      this.$router.push('/login')
+    }catch(e){
+      console.log({e})
+      return;
+    }
   }
 }
 </script>

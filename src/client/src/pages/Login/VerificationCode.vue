@@ -45,7 +45,7 @@ export default class VerificationCode extends Vue {
         withCredentials: true,
 
         headers:{
-          'Access-Control-Allow-Origin':'http://127.0.0.1:5000',
+          'Access-Control-Allow-Origin':'http://localhost:5000',
           'Access-Control-Allow-Credentials': 'true'
         }
       })

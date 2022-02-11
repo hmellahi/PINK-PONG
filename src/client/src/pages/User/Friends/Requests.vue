@@ -4,8 +4,8 @@
       <div class="friend-info">
         <img src="/assets/img/2.jpg" alt="" />
         <div class="content">
-          <h6>{{ request.username }}</h6>
-          <span>Last online {{ request.lastSeen }}</span>
+          <h6>{{ request.login }}</h6>
+          <span>Online</span>
         </div>
       </div>
       <div class="friend_actions">

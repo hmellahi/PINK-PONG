@@ -12,10 +12,10 @@
             <p class="user-name p-0 text-center my-auto">{{
               user.login
             }}</p>
-          </div>
-          <!-- <Button class="w-100 m-0 mb-0 f1" :onClick="sendFriendReq"
+            <Button class="w-100 m-0 mb-0 f1" :onClick="sendFriendReq"
             >Send Friend Request</Button
-          > -->
+          >
+          </div>
           <div class="row mt-2 states">
             <div class="col-md-6">
               <div class="col-md-12">Games</div>
@@ -65,11 +65,25 @@ import Button from "@/common/components/UI/Button.vue";
   components: { MatchHistory, Button },
 })
 export default class Profile extends Vue {
+  user: User = null;
   created() {
-    
+    this.getUser();
   }
-  get user() {
-    return this.$store.getters["User/getCurrentUser"];
+  // get user() {
+  //   return this.$store.getters["User/getCurrentUser"];
+  // }
+  async getUser() {
+    console.log("this id ", this.$route.params.id)
+    try {
+       let data = await this.$http({
+        method: 'get',
+        url:'users/info' + this.$route.params.id,
+        withCredentials: true,
+      })
+      this.user = data.data
+    }catch(e){
+      console.log({e})
+    }
   }
   goBackward() {
     this.$router.go(-1);
