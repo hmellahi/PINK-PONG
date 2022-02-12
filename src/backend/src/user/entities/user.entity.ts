@@ -1,5 +1,5 @@
 import { Exclude } from "class-transformer";
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, Index, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import Friendship from "src/friend/entities/friendship.entity";
 @Entity()
 export default class  User
@@ -13,8 +13,9 @@ export default class  User
     @Column()
     last_name: string;
 
+    @Index()
     @Column({unique: true})
-    login?: string;
+    login: string;
 
     @Column({nullable: true, select: false})
     password: string;

@@ -1,9 +1,13 @@
-import { BadRequestException, Body, Controller, Get, HttpCode, HttpException, HttpStatus, InternalServerErrorException, Post, Req, Res, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, HttpCode,
+         HttpException, HttpStatus, Post,
+         Req, Res, UseGuards
+        } from "@nestjs/common";
 import { JwtAuthGuard } from "src/authentication/Guards/jwtAccess.guard";
 import { RequestWithUser } from "src/authentication/Interfaces/requestWithUser.interface";
 import { UserService } from "src/user/user.service";
 import { FriendshipService } from "./friendship.service";
 
+@UseGuards(JwtAuthGuard)
 @Controller("friendship")
 
 export class FriendshipController
@@ -13,7 +17,6 @@ export class FriendshipController
         private userService: UserService
     ){}
 
-    @UseGuards(JwtAuthGuard)
     @Get("friendshipRequests")
     async friendshipRequests(@Req() request: RequestWithUser)
     {
@@ -21,7 +24,6 @@ export class FriendshipController
         return this.friendshipService.getFriendshipRequests(user.id);
     }
 
-    @UseGuards(JwtAuthGuard)
     @Get("friendships")
     async friendships(@Req() request: RequestWithUser)
     {
@@ -29,7 +31,6 @@ export class FriendshipController
         return this.friendshipService.getFriendships(user);
     }
 
-    @UseGuards(JwtAuthGuard)
     @Post("sendFriendRequest")
     @HttpCode(200)
     async sendFriendRequest(@Req() request: RequestWithUser,@Body("recieverLogin") recieverLogin: string)
@@ -51,7 +52,6 @@ export class FriendshipController
         this.friendshipService.createFriendship(user, receiverUser);    
     }
 
-    @UseGuards(JwtAuthGuard)
     @Post("acceptFriendRequest")
     @HttpCode(200)
     async acceptFriendRequest(@Req() request: RequestWithUser,
@@ -66,7 +66,6 @@ export class FriendshipController
 
     }
 
-    @UseGuards(JwtAuthGuard)
     @Post("declineFriendRequest")
     @HttpCode(200)
     async declineFriendRequest(@Req()request: RequestWithUser,
@@ -82,7 +81,6 @@ export class FriendshipController
             throw new HttpException("friendship request not exist", HttpStatus.BAD_REQUEST);
     }
 
-    @UseGuards(JwtAuthGuard)
     @Post("removeFriendship")
     @HttpCode(200)
     async removeFriendship(@Req() request: RequestWithUser,
