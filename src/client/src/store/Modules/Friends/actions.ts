@@ -76,14 +76,14 @@ const actions = {
   async fetchRequests({ commit }: ActionContext<FriendsState, any>) {
     try {
       // TODO make an api call
-      // let requests = [{ username: "bro", lastSeen: "10m ago" }];
+      // let requests = [{id: 1, login: "bro", avatar_url: "/assets/img/avatars/Avatar.png", status: "Online"}];
       const requests = await axios.get(`${API_URL}/friendship/friendshipRequests`, {
         headers: {
           "Access-Control-Allow-Origin": "*",
         },
         // crossDomain: true,
       });
-      commit("SET_ENTITY", ["requests", requests.data]);
+      commit("SET_ENTITY", ["requests", requests]);
     } catch (e) {}
   },
   fetchBlockedUsers({ commit }: any) {
@@ -123,7 +123,9 @@ const actions = {
     try {
       // TODO make an api call
       const requestData = await axios.post(`${API_URL}/friendship/acceptFriendRequest`, {
-        request,
+        data: {
+          friendshipRequestId: request
+        },
         headers: {
           "Access-Control-Allow-Origin": "*",
         },
@@ -141,7 +143,9 @@ const actions = {
     try {
       // TODO make an api call
       const requestData = await axios.post(`${API_URL}/friendship/declineFriendRequest`, {
-        request,
+        data: {
+          friendshipRequestId: request
+        },
         headers: {
           "Access-Control-Allow-Origin": "*",
         },

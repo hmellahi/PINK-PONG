@@ -34,22 +34,23 @@
         <SwitchBtn class="ml-0 col-4" v-model="setting.isActive"></SwitchBtn>
         <!-- :onClick="toggle(i)" -->
       </div>
-
-      <div
-        class="col-12 px-0 fa_factor"
-        v-if="settings[2].isActive && !isVerified"
-      >
-        <img src="http://127.0.0.1:3000/api/auth/2fa/generate" />
+      <div class="row">
+        <h2 class="text-left col-8">2-Factor Authentication</h2>
+        <Button class="text-left px-5 m-0 mb-2" :onClick="showModal" v-if="!user.two_factor_auth_enabled">Enable</Button>
+        <Button class="text-left px-5 m-0 mb-2" :onClick="showModal" v-if="user.two_factor_auth_enabled">Disable</Button>
+        <!-- :onClick="toggle(i)" -->
+      </div>
+      <div class="col-12 px-0 fa_factor" v-if="showVerify">
+        <img src="http://127.0.0.1:3000/api/auth/2fa/generate" v-if="!user.two_factor_auth_enabled" />
         <div class="verify_factor">
           <InputField
             class="text-left"
-            v-model="email"
+            v-model="pin_code"
             placeholder="Enter the pin code"
           ></InputField>
           {{ error }}
-          <Button class="text-left px-5 m-0 mb-2" :onClick="verify"
-            >Verify</Button
-          >
+          <Button class="text-left px-5 m-0 mb-2" :onClick="enableFactor" v-if="!user.two_factor_auth_enabled">Verify</Button>
+          <Button class="text-left px-5 m-0 mb-2" :onClick="disableFactor" v-if="user.two_factor_auth_enabled">Verify</Button>
         </div>
       </div>
     </div>
@@ -77,12 +78,12 @@ import { mapActions } from "vuex";
 })
 export default class Settings extends Vue {
   settings: any[] = [];
-  email = "";
+  pin_code = "";
   error = "";
   avatar = {};
   isActive = false;
-  isVerified = false;
   success = "";
+  showVerify = false;
   onFileChange(e: any) {
     let input: any = this.$refs.avatar;
     let file = input.files;
@@ -103,9 +104,6 @@ export default class Settings extends Vue {
       let data = await this.$http({
         method: "post",
         url: "users/updateAvatar",
-        data: {
-          user: this.email,
-        },
         withCredentials: true,
         headers: {
           "Access-Control-Allow-Origin": "http://localhost:5000",
@@ -118,26 +116,53 @@ export default class Settings extends Vue {
       return;
     }
   }
-  async verify() {
+  showModal() {
+    this.showVerify = true;
+  }
+  async enableFactor() {
     try {
       let data = await this.$http({
         method: "post",
         url: "auth/2fa/enableTwoFactorAuth",
         data: {
+          code: this.pin_code,
           user: this.user,
         },
         withCredentials: true,
-
         headers: {
           "Access-Control-Allow-Origin": "http://localhost:5000",
           "Access-Control-Allow-Credentials": "true",
         },
       });
-      // http://159.223.102.35:3000/api/auth/2fa/generate
-      console.log({ data });
-      this.isVerified = true;
+      this.showVerify = false;
+      this.pin_code = '';
+      this.error = '';
+      this.$store.commit("User/setEnableFactor",  true);
     } catch (e) {
-      console.log({ e });
+      this.error = "verification code isnt valid";
+      return;
+    }
+  }
+  async disableFactor() {
+    try {
+      let data = await this.$http({
+        method: "post",
+        url: "auth/2fa/disableTwoFactorAuth",
+        data: {
+          code: this.pin_code,
+          user: this.user,
+        },
+        withCredentials: true,
+        headers: {
+          "Access-Control-Allow-Origin": "http://localhost:5000",
+          "Access-Control-Allow-Credentials": "true",
+        },
+      });
+      this.showVerify = false;
+      this.pin_code = '';
+      this.error = '';
+       this.$store.commit("User/setEnableFactor",  false);
+    } catch (e) {
       this.error = "verification code isnt valid";
       return;
     }
@@ -157,10 +182,10 @@ export default class Settings extends Vue {
     this.settings = [
       { name: "Music", isActive: true },
       { name: "Sound", isActive: true },
-      {
-        name: "2-Factor Authentication",
-        isActive: this.user.two_factor_auth_enabled,
-      },
+      // {
+      //   name: "2-Factor Authentication",
+      //   isActive: this.user.two_factor_auth_enabled,
+      // },
     ];
   }
   toggle(i: any) {}

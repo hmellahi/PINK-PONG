@@ -38,6 +38,9 @@ const routes: Array<RouteConfig> = [
     path: "/verification_code",
     name: "verification_code",
     component: VerificationCode,
+    meta: {
+      requiresAuth: false,
+    },
   },
   {
     path: "/settings",
