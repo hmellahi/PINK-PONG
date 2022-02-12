@@ -80,7 +80,7 @@ export default class Game extends Vue {
     // this.sounds.push(hitSound);
     // const hitSound = new Audio(require("@/assets/sounds/mario_coin.mp3"));
     // const hitSound = new Audio(require("@/assets/sounds/mario_coin.mp3"));
-    // console.log({ roomId: this.roomId });
+    // console.log({ roomId: this.roomId }) ;
     this.roomId = this.$route.query.id;
     console.log("here The id is: " + this.$route.query.id);
     this.socket = io("http://localhost:3000/game");
@@ -99,11 +99,6 @@ export default class Game extends Vue {
     // this.socket.emit("paddleMoves", { userId: 2 }, (data: any) => {
     //   console.log({ data });
     // });
-  }
-
-  sleep(ms: number) {
-    // console.log("Sleeeoing");
-    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
   setup(sketch: P5Sketch) {
@@ -138,7 +133,7 @@ export default class Game extends Vue {
       this.ball.reset();
       this.scores[ballHitsBorder - 1].value++;
       if (this.scores[ballHitsBorder - 1].value > 2) {
-        // this.isGameOver = true;
+        this.isGameOver = true;
         this.ball.y = GameConstants.canvas.height / 2;
       }
     }
@@ -150,10 +145,10 @@ export default class Game extends Vue {
     // this.score2.draw(sketch);
     // this.scores.map((score) => score.draw);
     this.scores.map((score) => score.draw(sketch));
-    this.sleep(10000);
   }
 
   keypressed(sketch: P5Sketch) {
+    console.log("key pressed");
     if (this.paddle.handleKeyPressed(sketch)) this.sendNewPaddleVelocity();
   }
 
@@ -162,7 +157,7 @@ export default class Game extends Vue {
   }
 
   sendNewPaddleVelocity() {
-    console.log("emitting", this.roomId);
+    console.log("sending", this.roomId);
     this.socket.emit("paddleMoves", {
       roomId: this.roomId,
       velocity: this.paddle.velocity,
