@@ -29,7 +29,7 @@ export default class Ball {
     this.width = tempWidth;
     this.height = tempHeight;
     this.color = tempColor;
-    this.speed = 6;
+    this.speed = GameConstants.canvas.height / 50;
     this.velocity = 0;
   }
 

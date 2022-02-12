@@ -34,7 +34,7 @@ export default class {
     // this.velocityY = Math.floor(Math.random() * 10) + 1;;
     this.velocityX = 1;
     this.velocityY = 1;
-    this.speed = 3;
+    this.speed = GameConstants.canvas.width / 120;
     this.color = tempColor;
   }
 

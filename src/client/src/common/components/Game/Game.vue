@@ -72,6 +72,10 @@ export default class Game extends Vue {
     30,
     0
   );
+  countdown: Score = new Score(
+    GameConstants.canvas.width / 2,
+    GameConstants.canvas.height / 2
+  );
   scores: Score[] = [this.score, this.score2];
   roomId: any = "";
 
@@ -100,16 +104,27 @@ export default class Game extends Vue {
     //   console.log({ data });
     // });
   }
-
+  countDown(sketch: P5Sketch) {
+    setInterval((sketch) => {
+      // const element = array[index];
+      if (this.countdown.value < 0) return;
+      this.countdown.draw(sketch);
+      this.countdown.value--;
+    }, 1000);
+  }
   setup(sketch: P5Sketch) {
     sketch.createCanvas(
       GameConstants.canvas.width,
       GameConstants.canvas.height
     );
+    this.countdown.value = 5;
+    this.countDown(sketch);
+    this.isGameOver = false;
   }
 
   draw(sketch: P5Sketch) {
     if (this.isGameOver) return;
+
     sketch.background(this.backColor);
     this.background.draw(sketch);
     this.net.draw(sketch);
@@ -169,7 +184,7 @@ export default class Game extends Vue {
 
   reset() {
     this.ball.reset();
-    // this.paddle.reset(); 
+    // this.paddle.reset();
     // this.paddle2.reset();
   }
 
