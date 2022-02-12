@@ -115,7 +115,7 @@ export default class SideBar extends Vue {
     font-size:1.5rem;
   }
   a {
-    border: 3px solid #53137e;
+    border: 3px solid rgb(83, 19, 126);
     background-color: transparent !important;
     color: white;
     box-shadow: inset 0px 0px 5px 1px #7a0baf73;

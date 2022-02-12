@@ -73,8 +73,8 @@ export default class Game extends Vue {
     0
   );
   countdown: Score = new Score(
-    GameConstants.canvas.width / 2,
-    GameConstants.canvas.height / 2
+    GameConstants.canvas.width / 2 - 15,
+    GameConstants.canvas.height / 2 - 25
   );
   scores: Score[] = [this.score, this.score2];
   roomId: any = "";
@@ -106,15 +106,23 @@ export default class Game extends Vue {
   }
   drawGameObjects(sketch: P5Sketch) {
     sketch.background(this.backColor);
+    this.background.draw(sketch);
     this.net.draw(sketch);
     this.ball.draw(sketch);
     this.paddle.draw(sketch);
     this.scores.map((score) => score.draw(sketch));
     this.paddle2.draw(sketch);
     // TODO draw overlay
+    sketch.fill(83,19,126,127);
+    sketch.noStroke();
+    sketch.rect(0, 0,GameConstants.canvas.width , GameConstants.canvas.height);
     this.countdown.draw(sketch);
     this.countdown.value--;
     console.log(this.countdown.value);
+            sketch.textSize(GameConstants.canvas.width / 10);
+        // sketch.textAlign(GameConstants.canvas.width/2, GameConstants.canvas.height/2);
+        sketch.fill(0, 102, 153);
+        sketch.text('Game Over Bro!!', GameConstants.canvas.width/2, GameConstants.canvas.height/2,70, 80);
   }
   countDown(sketch: P5Sketch) {
       this.drawGameObjects(sketch);
@@ -132,7 +140,11 @@ export default class Game extends Vue {
       GameConstants.canvas.width,
       GameConstants.canvas.height
     );
-    this.isGameOver = false;
+
+  //   sketch.textSize(GameConstants.canvas.width / 3);
+  // sketch.textAlign(GameConstants.canvas.width/2, GameConstants.canvas.height/2);
+
+    this.isGameOver = true;
     this.countdown.value = 5;
     this.countDown(sketch);
   }
@@ -143,7 +155,6 @@ export default class Game extends Vue {
     sketch.background(this.backColor);
     this.background.draw(sketch);
     this.net.draw(sketch);
-
     this.paddle.draw(sketch);
     this.paddle.update();
     this.paddle2.draw(sketch);
@@ -151,7 +162,6 @@ export default class Game extends Vue {
 
     let player: Paddle =
       this.ball.x < GameConstants.canvas.width / 2 ? this.paddle2 : this.paddle;
-    // this.sleep(10000000000000);
     if (this.ball.hits(player)) {
       // this.playMusic(this.sounds[0]);
       // console.log(this.sounds[0]);
@@ -161,19 +171,21 @@ export default class Game extends Vue {
     let ballHitsBorder = this.ball.checkBorders();
     if (ballHitsBorder) {
       this.ball.reset();
+    // this.isGameOver = true;
+    // this.countdown.value = 5;
+    // this.countDown(sketch);
       this.scores[ballHitsBorder - 1].value++;
       if (this.scores[ballHitsBorder - 1].value > 2) {
         this.isGameOver = true;
-        this.ball.y = GameConstants.canvas.height / 2;
+        sketch.textSize(GameConstants.canvas.width / 5);
+        // sketch.textAlign(GameConstants.canvas.width/2, GameConstants.canvas.height/2);
+        sketch.fill(0, 102, 153);
+        sketch.text('Game Over Bro!!', GameConstants.canvas.width/2, GameConstants.canvas.height/2);
+        // this.ball.y = GameConstants.canvas.height / 2;
       }
     }
-    // if (!this.isGameOver) this.ball.update();
+    if (!this.isGameOver) this.ball.update();
     this.ball.draw(sketch);
-
-    // this.score.setScore((this.score.value+1/1e)%10)
-    // this.score.draw(sketch);
-    // this.score2.draw(sketch);
-    // this.scores.map((score) => score.draw);
     this.scores.map((score) => score.draw(sketch));
   }
 
