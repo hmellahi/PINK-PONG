@@ -1,6 +1,7 @@
 import { BadRequestException, Body, 
         Controller, Get, HttpCode,
         HttpException,
+        HttpStatus,
         Param, Post, Query, Redirect, Req, Request, Res,
         UnauthorizedException,
         UseGuards
@@ -87,6 +88,9 @@ export class AuthController
                                     @Res() response: Response)
     {
         const {user} = request;
+
+        if (user.two_factor_auth_enabled)
+            throw new HttpException("2fa alerady enabled!!", HttpStatus.BAD_REQUEST);
         const {
             otpauthUrl,
             base32
