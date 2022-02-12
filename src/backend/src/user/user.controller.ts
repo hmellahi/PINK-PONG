@@ -1,10 +1,13 @@
 import { BadRequestException, Body, Controller, Get, HttpCode, HttpException, HttpStatus, Param, Post, Req, Res, UploadedFile, UseGuards, UseInterceptors } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { FileInterceptor } from "@nestjs/platform-express";
+import { request } from "express";
 import { diskStorage } from "multer";
 import { join } from "path";
 import { JwtAuthGuard } from "src/authentication/Guards/jwtAccess.guard";
 import { RequestWithUser } from "src/authentication/Interfaces/requestWithUser.interface";
+import { isNumber } from "util";
+import { isNumberObject } from "util/types";
 import { UserService } from "./user.service";
 import { editFileName, imageFileFilter } from "./utils/user.utils";
 
@@ -69,7 +72,7 @@ export class  UserController
         return user;
     }
 
-    @Get(":login")
+    @Get("profile/:login")
     async getUserByLogin(@Param("login") login: string)
     {
         if (!login)
@@ -78,5 +81,36 @@ export class  UserController
         if (!user)
             throw new HttpException("user not exist", HttpStatus.NOT_FOUND);
         return user;
+    }
+
+    @Post("blockUser")
+    @HttpCode(200)
+    async blockUser(@Req() request: RequestWithUser, @Body("userId") userId: number)
+    {
+        if (!userId || isNaN(Number(userId)))
+            throw new BadRequestException;
+        const {user} = request;
+        if (!await this.userService.blockUser(user,userId))
+            throw new HttpException("user not exist or already blocked", HttpStatus.BAD_REQUEST);
+    }
+
+
+    @Post("unblockUser")
+    @HttpCode(200)
+    async unblockUser(@Req() request: RequestWithUser, @Body("blockId") blockId: number)
+    {
+        if (!blockId || isNaN(Number(blockId)))
+            throw new BadRequestException;
+        const {user} = request;
+        if (!await this.userService.unblockUser(user,blockId))
+            throw new HttpException("blockedList not exist", HttpStatus.BAD_REQUEST);
+    }
+
+    @Get("blockedList")
+    async blockedList(@Req() request: RequestWithUser)
+    {
+        const {user} = request;
+
+        return await this.userService.getBlockedList(user.id);
     }
 }
