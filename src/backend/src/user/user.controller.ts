@@ -1,4 +1,5 @@
 import { BadRequestException, Body, Controller, Get, HttpCode, HttpException, HttpStatus, Param, Post, Req, Res, UploadedFile, UseGuards, UseInterceptors } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { diskStorage } from "multer";
 import { join } from "path";
@@ -12,7 +13,8 @@ import { editFileName, imageFileFilter } from "./utils/user.utils";
 export class  UserController
 {
     constructor(
-        private userService: UserService
+        private userService: UserService,
+        private configService: ConfigService
         ){}
 
     @UseInterceptors(FileInterceptor('avatar', {
@@ -31,7 +33,8 @@ export class  UserController
         const {user} = request;
         if (file)
         {
-            const avatar_url: string  = join(__dirname, "..", "..","public/users", file?.originalname);
+            const avatar_url: string  = this.configService.get("BACKEND_URL") + `/public/users/${file.filename}`;
+
             await this.userService.findByIdAndUpdate(user.id, {avatar_url})
             const response = {
                 originalname: file.originalname,
