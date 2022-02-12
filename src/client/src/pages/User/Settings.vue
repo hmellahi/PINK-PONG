@@ -137,8 +137,8 @@ export default class Settings extends Vue {
 					// crossDomain: true,
 				}
 			);
-		} catch (e) {
-			console.log({ e });
+		} catch (e: any) {
+			this.success = e.response.data.message;
 			return;
 		}
 	}
@@ -153,12 +153,7 @@ export default class Settings extends Vue {
 				data: {
 					code: this.pin_code,
 					user: this.user,
-				},
-				withCredentials: true,
-				headers: {
-					"Access-Control-Allow-Origin": "http://localhost:5000",
-					"Access-Control-Allow-Credentials": "true",
-				},
+				}
 			});
 			this.showVerify = false;
 			this.pin_code = "";
@@ -177,12 +172,7 @@ export default class Settings extends Vue {
 				data: {
 					code: this.pin_code,
 					user: this.user,
-				},
-				withCredentials: true,
-				headers: {
-					"Access-Control-Allow-Origin": "http://localhost:5000",
-					"Access-Control-Allow-Credentials": "true",
-				},
+				}
 			});
 			this.showVerify = false;
 			this.pin_code = "";
@@ -213,24 +203,23 @@ export default class Settings extends Vue {
 	}
 	toggle(i: any) {}
 	async saveData() {
+		if (this.user.login == this.login)
+		{
+			this.success = "wtf brooo aslan rah mbdltihach"
+			return ;
+		}
 		try {
 			let data = await this.$http({
 				method: "post",
 				url: "users/updateLogin",
 				data: {
 					login: this.login,
-				},
-				withCredentials: true,
-				headers: {
-					"Access-Control-Allow-Origin": "http://localhost:5000",
-					"Access-Control-Allow-Credentials": "true",
-				},
+				}
 			});
 			this.$store.commit("User/setUsername", this.login);
 			this.success = "Updated succefully";
-		} catch (e) {
-			console.log(e)
-			this.success = "Something wrong with your data";
+		} catch (e: any) {
+			this.success = e.response.data.message;
 			return;
 		}
 	}

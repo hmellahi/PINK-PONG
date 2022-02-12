@@ -5,7 +5,6 @@ import notFound from "../pages/notFound.vue";
 import Settings from "@/pages/User/Settings.vue";
 import LeaderBoard from "@/pages/Game/LeaderBoard.vue";
 import Profile from "@/pages/User/Profile.vue";
-import showProfile from "@/pages/User/showProfile.vue";
 import Friends from "@/pages/User/Friends/index.vue";
 import Play from "@/pages/Game/Play.vue";
 import MatchHistory from "@/pages/Game/MatchHistory.vue";
@@ -25,6 +24,7 @@ import checkAuth from "@/middlewares/checkAuth";
 import conversations from "@/pages/Chat/dms.vue";
 import directMessage from "@/pages/Chat/directMessage.vue";
 import Game from "@/pages/Game/pingpong.vue";
+import Games from "@/pages/Game/Games.vue";
 import channelRoom from "@/pages/Chat/channelRoom.vue";
 Vue.use(VueRouter);
 
@@ -58,14 +58,19 @@ const routes: Array<RouteConfig> = [
     component: Game,
   },
   {
+    path: "/games",
+    name: "games",
+    component: Games,
+  },
+  {
     path: "/profile/mine",
     name: "profile/mine",
     component: Profile,
   },
   {
-    path: "/profile/:id",
+    path: "/profile/:login",
     name: "profile",
-    component: showProfile,
+    component: Profile,
   },
   {
     path: "/friends",

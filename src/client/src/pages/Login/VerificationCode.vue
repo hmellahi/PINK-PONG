@@ -41,12 +41,6 @@ export default class VerificationCode extends Vue {
         url:'auth/2fa/login',
         data:{
           code:this.verificationCode
-        },
-        withCredentials: true,
-
-        headers:{
-          'Access-Control-Allow-Origin':'http://localhost:5000',
-          'Access-Control-Allow-Credentials': 'true'
         }
       })
       // http://159.223.102.35:3000/api/auth/2fa/generate

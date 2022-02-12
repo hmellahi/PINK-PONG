@@ -41,32 +41,37 @@ const actions = {
       commit("SET_ENTITY", ["requests", data.data]);
     } catch (e) {}
   },
-  fetchBlockedUsers({ commit }: any) {
+  async fetchBlockedUsers({ commit }: any) {
     try {
       // TODO make an api call
-      let blockedUsers = [{ username: "john", lastSeen: "10m ago" }];
-      commit("SET_ENTITY", ["blockedUsers", blockedUsers]);
+      // let blockedUsers = [{ username: "john", lastSeen: "10m ago" }];
+      const data = await api.get('users/blockedList');
+      console.log(data.data)
+      commit("SET_ENTITY", ["blockedUsers", data.data]);
     } catch (e) {}
   },
-  blockUser({ commit, state }: any, userToBlock: any) {
+  async blockUser({ commit, state }: any, userToBlock: any) {
     let friendsBackup = [...state.friends];
     let blockedUsersBackup = [...state.blockedUsers];
     commit("REMOVE_FROM", ["friends", userToBlock]);
     commit("ADD_TO_ENTITY", ["blockedUsers", userToBlock]);
     try {
       // TODO make an api call
+      // console.log(userToBlock)
+      const data = await api.post('users/blockUser',{userId: userToBlock.user.id});
     } catch (e) {
       commit("SET_ENTITY", ["friends", friendsBackup]);
       commit("SET_ENTITY", ["blockedUsers", blockedUsersBackup]);
     }
   },
-  unBlockUser({ state, commit }: any, userToUnblock: any) {
+  async unBlockUser({ state, commit }: any, userToUnblock: any) {
     let blockedUsersBackup = [...state.blockedUsers];
     let friendsBackup = [...state.friends];
     commit("REMOVE_FROM", ["blockedUsers", userToUnblock]);
     commit("ADD_TO_ENTITY", ["friends", userToUnblock]);
     try {
       // TODO make an api call
+      const data = await api.post('users/blockUser',{userId: userToUnblock.user.id});
     } catch (e) {
       commit("SET_ENTITY", ["friends", friendsBackup]);
       commit("SET_ENTITY", ["blockedUsers", blockedUsersBackup]);

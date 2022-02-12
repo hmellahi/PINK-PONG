@@ -50,7 +50,7 @@ export default class Friends extends Vue {
 
 <style lang="scss" scoped>
 .overlay {
-  max-height: 20rem;
+  max-height: 25rem;
   overflow-y: scroll;
 }
 .a{

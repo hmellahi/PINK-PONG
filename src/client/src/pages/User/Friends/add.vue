@@ -6,7 +6,9 @@
         type="text"
         class="form-control change_name_input"
         placeholder="Enter Name"
+        v-model="login"
       />
+      <p class="success_msg" v-if="message">{{ message }}</p>
     </div>
 
     <Button class="mt-4" :onClick="sendFriendRequest"
@@ -23,10 +25,26 @@ import { Component, Vue } from "vue-property-decorator";
   components: { Button },
 })
 export default class blockedUsers extends Vue {
-  sendFriendRequest() {}
+  login = "";
+  message = "";
+  async sendFriendRequest() {
+      try {
+        let data = await this.$http.post("friendship/sendFriendRequest", {recieverLogin: this.login});
+        this.message = "Added User succefuly";
+      } catch (e) {
+        this.message = e.response.data.message
+      }
+  }
 }
 // TODO
 // show a response shows if the request is send or not
 </script>
 
-<style scoped></style>
+<style scoped>
+.overlay{
+    display: flex;
+    flex-wrap: wrap;
+    align-content: space-around;
+    justify-content: space-evenly;
+}
+</style>
