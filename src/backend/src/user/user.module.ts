@@ -4,10 +4,13 @@ import { UserController } from "./user.controller";
 import  UserEntity from "./entities/user.entity";
 import { UserService } from "./user.service";
 import { ConfigModule } from "@nestjs/config";
+import BlockListEntity  from "./entities/blockedUserList.entity";
 
 @Module({
     imports: [
-        TypeOrmModule.forFeature([UserEntity]),
+        TypeOrmModule.forFeature(
+            [UserEntity, BlockListEntity]
+            ),
         ConfigModule
     ],
     controllers: [UserController],
