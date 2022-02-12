@@ -90,7 +90,7 @@ export default class Game extends Vue {
     this.socket = io("http://localhost:3000/game");
     this.socket.on("paddleMoves", (velocity: any) => {
       this.paddle2.velocity = velocity;
-      console.log("paddle2: " + velocity);
+      console.log("second player velo: " + velocity);
     });
     this.socket.on("connect_failed", function () {
       console.log("Connection Failed");
@@ -104,12 +104,27 @@ export default class Game extends Vue {
     //   console.log({ data });
     // });
   }
+  drawGameObjects(sketch: P5Sketch) {
+    sketch.background(this.backColor);
+    this.net.draw(sketch);
+    this.ball.draw(sketch);
+    this.paddle.draw(sketch);
+    this.scores.map((score) => score.draw(sketch));
+    this.paddle2.draw(sketch);
+    // TODO draw overlay
+    this.countdown.draw(sketch);
+    this.countdown.value--;
+    console.log(this.countdown.value);
+  }
   countDown(sketch: P5Sketch) {
-    setInterval((sketch) => {
+      this.drawGameObjects(sketch);
+    setInterval(() => {
       // const element = array[index];
-      if (this.countdown.value < 0) return;
-      this.countdown.draw(sketch);
-      this.countdown.value--;
+      if (this.countdown.value <= 0) {
+        this.isGameOver = false;
+        return;
+      }
+      this.drawGameObjects(sketch);
     }, 1000);
   }
   setup(sketch: P5Sketch) {
@@ -117,9 +132,9 @@ export default class Game extends Vue {
       GameConstants.canvas.width,
       GameConstants.canvas.height
     );
+    this.isGameOver = false;
     this.countdown.value = 5;
     this.countDown(sketch);
-    this.isGameOver = false;
   }
 
   draw(sketch: P5Sketch) {
@@ -168,6 +183,7 @@ export default class Game extends Vue {
   }
 
   keyreleased(sketch: P5Sketch) {
+    console.log("key pressed");
     if (this.paddle.handleKeyReleased(sketch)) this.sendNewPaddleVelocity();
   }
 
