@@ -17,6 +17,12 @@ const mutations = {
   },
   setAvatar(state: UserState, avatar: string){
     state.user.avatar_url = avatar;
+  },
+  setEnableFactor(state: UserState, enable: boolean){
+    state.user.two_factor_auth_enabled = enable;
+  },
+  setUsername(state: UserState, username: string){
+    state.user.login = username;
   }
 };
 

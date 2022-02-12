@@ -1,11 +1,12 @@
 <template>
   <div class="">
-    <div class="friend_list" v-for="request of requests">
+  <div v-if="requests.length">
+    <div class="friend_list" v-for="request of requests" >
       <div class="friend-info">
-        <img src="/assets/img/2.jpg" alt="" />
+        <img :src="request.sender.avatar_url" alt="" />
         <div class="content">
-          <h6>{{ request.login }}</h6>
-          <span>Online</span>
+          <h6>{{ request.sender.login }}</h6>
+          <!-- <span>{{ request.sender.status }}</span> -->
         </div>
       </div>
       <div class="friend_actions">
@@ -21,6 +22,8 @@
         </div>
       </div>
     </div>
+  </div>
+  <h3 v-else> There is no requests yet </h3>
   </div>
 </template>
 

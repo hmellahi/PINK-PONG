@@ -9,7 +9,6 @@ type Payload = [friendShipStatus, any];
 
 const mutations = {
   SET_ENTITY(state: FriendsState, [entityName, entity]: Payload): void {
-      console.log("hey");
       state[entityName] = entity;
   },
   REMOVE_FROM(state: FriendsState, [entityName, entity]: Payload): boolean {
@@ -26,10 +25,7 @@ const mutations = {
     state[entityName].push(entityToAdd);
   },
   RESET_STATE(state: any, prevstate: any): void {
-    console.log("rr", prevstate);
-    console.log("be", state);
     state = prevstate;
-    console.log("state", state);
   },
 };
 

@@ -31,9 +31,8 @@ const checkAuth = async (to: Route, from: Route, next: NavigationGuardNext) => {
   )
     return next();
   let authLog = await isAuthenticated();
-  console.log(authLog);
   if (authLog) return next();
-  return next("/login");
+    return next("/login");
 };
 
 export default checkAuth;

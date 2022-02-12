@@ -27,8 +27,8 @@ services:
     networks:
       - db-network
     container_name: "dbservice"
-    volumes:
-      - pgdata:/var/lib/postgresql/data
+    # volumes:
+      # - pgdata:/var/lib/postgresql/data
   
   client:
     volumes:
