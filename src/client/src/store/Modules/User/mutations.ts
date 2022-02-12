@@ -12,6 +12,7 @@ const mutations = {
     state.isAuthenticated = false;
   },
   setUser(state: UserState, user: User){
+    state.isAuthenticated = true;
     state.user = Object.assign({}, user);
   },
   setAvatar(state: UserState, avatar: string){

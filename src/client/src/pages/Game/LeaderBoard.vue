@@ -84,7 +84,7 @@ export default class LeaderBoard extends Vue {
     this.isDaily = false;
   }
   showProfile(user: User) {
-    this.$router.push(`/profile/${user.id}`);
+    // this.$router.push(`/profile/${user.id}`);
   }
 }
 </script>

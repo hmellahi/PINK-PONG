@@ -35,7 +35,7 @@
         <!-- :onClick="toggle(i)" -->
       </div>
 
-      <!-- <div
+      <div
         class="col-12 px-0 fa_factor"
         v-if="settings[2].isActive && !isVerified"
       >
@@ -51,7 +51,7 @@
             >Verify</Button
           >
         </div>
-      </div> -->
+      </div>
     </div>
 
     <div class="text-right">
@@ -157,10 +157,10 @@ export default class Settings extends Vue {
     this.settings = [
       { name: "Music", isActive: true },
       { name: "Sound", isActive: true },
-      // {
-      //   name: "2-Factor Authentication",
-      //   isActive: this.user ? this.user.two_factor_auth_enabled : false,
-      // },
+      {
+        name: "2-Factor Authentication",
+        isActive: this.user.two_factor_auth_enabled,
+      },
     ];
   }
   toggle(i: any) {}

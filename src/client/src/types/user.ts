@@ -15,5 +15,6 @@ export interface User {
   matches: any[];
   wins: Number;
   loses: Number;
+  two_factor_auth_enabled:Boolean;
 }
 export type friendShipStatus = "friends" | "blockedUsers";

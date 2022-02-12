@@ -86,7 +86,7 @@ export default class SideBar extends Vue {
   async logout(){
      try {
        let data = await this.$http({
-        method: 'post',
+        method: 'get',
         url:'auth/logout',
         withCredentials: true,
         headers:{
