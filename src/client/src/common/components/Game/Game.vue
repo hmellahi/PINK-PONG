@@ -72,6 +72,7 @@ export default class Game extends Vue {
     30,
     0
   );
+  countdown: Score = new Score(GameConstants.canvas.width / 2, GameConstants.canvas.height/ 2);
   scores: Score[] = [this.score, this.score2];
   roomId: any = "";
 
@@ -105,16 +106,28 @@ export default class Game extends Vue {
     // console.log("Sleeeoing");
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
-
+  countDown(sketch: P5Sketch) {
+    setInterval((sketch) => {
+      // const element = array[index];
+      if (this.countdown.value < 0)
+        return ;
+      this.countdown.draw(sketch);
+      this.countdown.value--;
+    }, 1000);
+  }
   setup(sketch: P5Sketch) {
     sketch.createCanvas(
       GameConstants.canvas.width,
       GameConstants.canvas.height
     );
+  this.countdown.value = 5;
+  this.countDown(sketch);
+  this.isGameOver = false;
   }
 
   draw(sketch: P5Sketch) {
     if (this.isGameOver) return;
+
     sketch.background(this.backColor);
     this.background.draw(sketch);
     this.net.draw(sketch);
@@ -138,8 +151,9 @@ export default class Game extends Vue {
       this.ball.reset();
       this.scores[ballHitsBorder - 1].value++;
       if (this.scores[ballHitsBorder - 1].value > 2) {
-        // this.isGameOver = true;
+        this.isGameOver = true;
         this.ball.y = GameConstants.canvas.height / 2;
+        
       }
     }
     // if (!this.isGameOver) this.ball.update();
