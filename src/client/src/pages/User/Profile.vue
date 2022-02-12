@@ -2,7 +2,7 @@
   <div class="text-left h-100 overflow-hidde profile">
     <Button
       class="text-left px-5 m-0 mb-2 mb-3"
-      v-if="this.$route.path != '/profile/mine'"
+      v-if="!isMyProfile"
       :onClick="goBackward"
       >Back</Button
     >
@@ -12,6 +12,8 @@
             <p class="user-name p-0 text-center my-auto">{{
               user.login
             }}</p>
+             <Button class="w-100 m-0 mb-0 f1" v-if="!isMyProfile" :onClick="sendFriendReq">Send Friend Request</Button>
+          <p v-if="message" class="success_msg">{{ message }}</p>
           </div>
           <!-- <Button class="w-100 m-0 mb-0 f1" :onClick="sendFriendReq"
             >Send Friend Request</Button
@@ -39,9 +41,8 @@
               <!-- <div class="col-md-12 ml-0">{{ user.loses }}</div> -->
             </div>
           </div>
-        </div>
+    </div>
     <Overlay class="px-3 pt-3">
-      <!-- // col-md-10"> -->
       <div class="text-center">
         
         <div class="">
@@ -61,20 +62,50 @@ import MatchHistory from "../Game/MatchHistory.vue";
 import { User } from "../../types/user";
 import Button from "@/common/components/UI/Button.vue";
 
-@Component({
+@Component<Profile>({
   components: { MatchHistory, Button },
 })
 export default class Profile extends Vue {
-  created() {
-    
+  user: object = [];
+  message = "";
+  isMyProfile: boolean = false;
+   mounted() {
+    this.checkUser();
   }
-  get user() {
+  get userCurrent() {
     return this.$store.getters["User/getCurrentUser"];
   }
   goBackward() {
     this.$router.go(-1);
   }
-  sendFriendReq() {}
+  async checkUser(){
+    if (this.$route.path == '/profile/mine')
+    {
+      this.user = this.userCurrent;
+      this.isMyProfile = true;
+    }
+    else{
+      try {
+        let data = await this.$http({
+          method: "get",
+          url: "users/profile/"+ this.$route.params.login,
+        });
+        this.user = data.data
+        if (data.data.login == this.userCurrent.login)
+          this.isMyProfile = true;
+      } catch (e) {
+        this.$router.push("/notFound");
+      }
+    }
+  }
+  async sendFriendReq() {
+      try {
+        let data = await this.$http.post("friendship/sendFriendRequest", {recieverLogin: this.$route.params.login});
+        this.message = "Added User succefuly";
+      } catch (e) {
+        this.message = e.response.data.message
+      }
+  }
 }
 </script>
 
@@ -84,8 +115,6 @@ export default class Profile extends Vue {
     padding: 0rem;
     font-size: 1.2rem;
     border: 1px solid black;
-    // border-radius: 25px;
-  // margin-left:2rem
 }
 
 .user-name {
@@ -94,27 +123,4 @@ export default class Profile extends Vue {
 .leader_box{
   justify-content: space-evenly!important;
 }
-// .infos {
-//   // border-right: 1px solid white;
-//   overflow: hidden;
-//   position: relative;
-// }
-// .infos:after {
-//   content: ""; // todo read abt wt content is
-//   height: 80%; //You can change this if you want smaller/bigger borders
-//   width: 1px;
-
-//   position: absolute;
-//   right: 0;
-//   top: 10%; // If you want to set a smaller height and center it, change this value
-
-//   background-color: white; // The color of your border
-// }
-// .f1 {
-//   font-size: 10rem !important;
-// }
-// .profile .overlay {
-//   height: 90%; // tod00o
-//   // height: 100%; // todo
-// }
 </style>

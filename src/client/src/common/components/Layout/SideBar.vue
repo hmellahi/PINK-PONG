@@ -88,11 +88,6 @@ export default class SideBar extends Vue {
        let data = await this.$http({
         method: 'get',
         url:'auth/logout',
-        withCredentials: true,
-        headers:{
-          'Access-Control-Allow-Origin':'http://localhost:5000/',
-          'Access-Control-Allow-Credentials': 'true'
-        }
       })
       this.$router.push('/login')
     }catch(e){

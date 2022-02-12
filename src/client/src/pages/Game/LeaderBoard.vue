@@ -62,10 +62,10 @@ export default class LeaderBoard extends Vue {
 
   created() {
     // mock
-    this.dailyRankedUsers = [{ username: "Hamid Boo", wins: 50, img: "" }];
+    this.dailyRankedUsers = [{ login: "Hamid Boo", wins: 50, img: "" }];
     for (let i = 0; i < 10; i++)
       this.dailyRankedUsers.push(this.dailyRankedUsers[0]);
-    this.lifeTimeRankedUsers = [{ username: "Doo ", wins: 20, img: "" }];
+    this.lifeTimeRankedUsers = [{ login: "Doo ", wins: 20, img: "" }];
     for (let i = 0; i < 10; i++)
       this.lifeTimeRankedUsers.push(this.lifeTimeRankedUsers[0]);
     //================================================================

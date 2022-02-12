@@ -2,10 +2,10 @@
   <div class="friends_lists">
     <div class="friend_list" v-for="friend of blockedFriends">
       <div class="friend-info">
-        <img src="/assets/img/2.jpg" alt="" />
+        <img :src="friend.user.avatar_url" alt="" />
         <div class="content">
-          <h6>{{ friend.username }}</h6>
-          <span>Last online {{ friend.lastSeen }}</span>
+          <h6>{{ friend.user.login }}</h6>
+          <span> online</span>
         </div>
       </div>
       <div class="friend_actions">
