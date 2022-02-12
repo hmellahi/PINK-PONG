@@ -1,35 +1,38 @@
 <template>
   <div class="friends_lists">
-    <div class="friend_list" v-for="friend of friends">
-      <!-- <Friend/> -->
-      <div class="friend-info">
-        <img :src="friend.avatarUrl" />
-        <!-- <img src="/assets/img/2.jpg" alt="" /> -->
-        <div class="content">
-          <h6>{{ friend.username }}</h6>
-          <span>Last online {{ friend.lastSeen }}</span>
+    <div v-if="friends.length">
+      <div class="friend_list" v-for="friend of friends">
+        <!-- <Friend/> -->
+        <div class="friend-info">
+          <img :src="friend.user.avatar_url" />
+          <!-- <img src="/assets/img/2.jpg" alt="" /> -->
+          <div class="content">
+            <h6>{{ friend.user.login }}</h6>
+            <!-- <span>{{ friend.user.status }}</span> -->
+          </div>
         </div>
-      </div>
-      <div class="friend_actions">
-        <div @click="sendMessage(friend)" class="friend_action">
-          <!-- <DMSSVG /> -->
-          <img src="/assets/svg/dms.svg" />
-          <span>DM</span>
-          <!-- </div> -->
-        </div>
-        <div @click="unFriend(friend)" class="friend_action">
-          <img src="/assets/svg/unfriend.svg" />
-          <span>Unfriend</span>
-        </div>
-        <!-- <Button :onClick=blockFriend"> -->
-        <div @click="blockUser(friend)" class="friend_action">
-          <img src="/assets/svg/close.svg" />
-          <!-- <CloseSVG /> -->
-          <span> Block</span>
-          <!-- </Button> -->
+        <div class="friend_actions">
+          <div @click="sendMessage(friend)" class="friend_action">
+            <!-- <DMSSVG /> -->
+            <img src="/assets/svg/dms.svg" />
+            <span>DM</span>
+            <!-- </div> -->
+          </div>
+          <div @click="unFriend(friend)" class="friend_action">
+            <img src="/assets/svg/unfriend.svg" />
+            <span>Unfriend</span>
+          </div>
+          <!-- <Button :onClick=blockFriend"> -->
+          <div @click="blockUser(friend)" class="friend_action">
+            <img src="/assets/svg/close.svg" />
+            <!-- <CloseSVG /> -->
+            <span> Block</span>
+            <!-- </Button> -->
+          </div>
         </div>
       </div>
     </div>
+    <h3 v-else> There is no friends Yet</h3>
     <!-- <PulseLoader /> -->
     <!-- <div class="spiner">
 

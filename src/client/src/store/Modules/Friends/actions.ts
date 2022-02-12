@@ -2,17 +2,17 @@ import { Logger } from "@/common/helpers/Logger";
 import { FriendsState } from "@/types/user";
 import Vue from "vue";
 import { ActionContext } from "vuex";
-import axios from "axios";
+import api from "@/api";
 // actions
 const { VUE_APP_API_URL: API_URL } = process.env;
 
 const actions = {
 
-  unFriend({ commit, state }: ActionContext<FriendsState, any>, friend: any) {
+  async unFriend({ commit, state }: ActionContext<FriendsState, any>, friend: any) {
     let friendsListBackup = [...state.friends];
     commit("REMOVE_FROM", ["friends", friend]);
     try {
-      // TODO make an api call
+      const data = await api.post('friendship/removeFriendship',{friendshipId: friend.id});
     } catch (e) {
       commit("SET_ENTITY", ["friends", friendsListBackup]);
     }
@@ -30,60 +30,15 @@ const actions = {
   
   async fetchFriends({ commit }: ActionContext<FriendsState, any>) {
     try {
-      // TODO make an api call
-      // const friends = await axios.get(`${API_URL}/friendship/friendship`, {
-      //   headers: {
-      //     "Access-Control-Allow-Origin": "*",
-      //   },
-      //   // crossDomain: true,
-      // });
-
-      // Vue.$http
-      // .get("https://api.github.com/users/mapbox")
-      // .then((response));
-      // console.log(this._vm)
-      // console.log({ friend });
-
-      let friends = [
-        {
-          id: 1,
-          username: "hamid",
-          lastSeen: "10m ago",
-          avatarUrl: "/assets/svg/Avatar.svg",
-        },
-        {
-          id: 2,
-          username: "hamid",
-          lastSeen: "10m ago",
-          avatarUrl: "/assets/svg/Avatar-2.svg",
-        },
-        {
-          id: 3,
-          username: "hamid",
-          lastSeen: "10m ago",
-          avatarUrl: "/assets/svg/Avatar-1.svg",
-        },
-        {
-          id: 4,
-          username: "hamid",
-          lastSeen: "10m ago",
-          avatarUrl: "/assets/svg/Avatar-3.svg",
-        },
-      ];
-      commit("SET_ENTITY", ["friends", friends]);
+      const data = await api.get('friendship/friendships');
+      commit("SET_ENTITY", ["friends", data.data]);
     } catch (e) {}
   },
   async fetchRequests({ commit }: ActionContext<FriendsState, any>) {
     try {
       // TODO make an api call
-      // let requests = [{id: 1, login: "bro", avatar_url: "/assets/img/avatars/Avatar.png", status: "Online"}];
-      const requests = await axios.get(`${API_URL}/friendship/friendshipRequests`, {
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-        },
-        // crossDomain: true,
-      });
-      commit("SET_ENTITY", ["requests", requests]);
+      const data = await api.get('friendship/friendshipRequests');
+      commit("SET_ENTITY", ["requests", data.data]);
     } catch (e) {}
   },
   fetchBlockedUsers({ commit }: any) {
@@ -120,19 +75,19 @@ const actions = {
   async acceptRequest({ commit, state }: any, request: any) {
     let savedRequests = [...state.requests];
     let savedFriends = [...state.friends];
+    console.log(request)
+    console.log(savedFriends)
+    let newFriend = {
+      id:request.id,
+      status:request.status,
+      user:request.sender,
+      create_date:request.create_date
+    }
+    commit("ADD_TO_ENTITY", ["friends", newFriend]);
+    commit("REMOVE_FROM", ["requests", request]);
     try {
-      // TODO make an api call
-      const requestData = await axios.post(`${API_URL}/friendship/acceptFriendRequest`, {
-        data: {
-          friendshipRequestId: request
-        },
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-        },
-        // crossDomain: true,
-      });
-      commit("ADD_TO_ENTITY", ["friends", requestData.data]);
-      commit("REMOVE_FROM", ["requests", requestData.data]);
+      const requestData = await api.post('friendship/acceptFriendRequest',{friendshipRequestId: request.id});
+      console.log(requestData)
     } catch (e) {
       commit("SET_ENTITY", ["friends", savedFriends]);
       commit("SET_ENTITY", ["requests", savedRequests]);
@@ -140,18 +95,9 @@ const actions = {
   },
   async declineRequest({ commit, state }: any, request: any) {
     let savedRequests = [...state.requests];
+    commit("REMOVE_FROM", ["requests", request]);
     try {
-      // TODO make an api call
-      const requestData = await axios.post(`${API_URL}/friendship/declineFriendRequest`, {
-        data: {
-          friendshipRequestId: request
-        },
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-        },
-        // crossDomain: true,
-      });
-      commit("REMOVE_FROM", ["requests", requestData.data]);
+      const requestData = await api.post('friendship/declineFriendRequest',{friendshipRequestId: request.id});
     } catch (e) {
       commit("SET_ENTITY", ["requests", savedRequests]);
     }
@@ -180,7 +126,7 @@ const actions = {
 
 export async function catchAction(store: any, action: string) {
   let prevstate = store.state.Friends;
-  console.log({prevstate});
+  // console.log({prevstate});
   try {
     await store.dispatch(action);
   } catch (err) {

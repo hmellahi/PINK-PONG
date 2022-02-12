@@ -25,7 +25,6 @@ const state = () => ({
 // getters
 const getters = {
   getCurrentUser(state: UserState): User {
-    console.log("lets get user", state.user)
     return state.user;
   },
 };

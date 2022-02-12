@@ -20,6 +20,9 @@ const mutations = {
   },
   setEnableFactor(state: UserState, enable: boolean){
     state.user.two_factor_auth_enabled = enable;
+  },
+  setUsername(state: UserState, username: string){
+    state.user.login = username;
   }
 };
 
