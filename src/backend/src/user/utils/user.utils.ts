@@ -1,6 +1,5 @@
 import { HttpException, HttpStatus } from "@nestjs/common";
 import { extname } from "path/posix";
-import { RequestWithUser } from "src/authentication/Interfaces/requestWithUser.interface";
 
 export const imageFileFilter = (req, file, callback) => {
     if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {

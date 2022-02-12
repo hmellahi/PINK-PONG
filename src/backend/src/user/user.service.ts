@@ -4,14 +4,16 @@ import { DeleteResult, Repository } from 'typeorm';
 import { CreateUserDto } from './dtos/createUser.dto';
 import UserEntity from './entities/user.entity';
 import * as bcrypt from "bcrypt";
-import { use } from 'passport';
+import BlockListEntity from './entities/blockedUserList.entity';
 
 @Injectable()
 export class UserService {
 
     constructor(
         @InjectRepository(UserEntity)
-        private userRepository: Repository<UserEntity>
+        private userRepository: Repository<UserEntity>,
+        @InjectRepository(BlockListEntity)
+        private blockListRepository: Repository<BlockListEntity>
     ){}
 
     public async createUser(user: CreateUserDto)
@@ -83,4 +85,40 @@ export class UserService {
         throw new UnauthorizedException;  // need to update
     }
 
+    async blockUser(user: UserEntity,id: number)
+    {
+        const toBlockUser = await this.getById(id);
+        
+        if (!toBlockUser || 
+            await this.blockListRepository.findOne({blocker: user, blocked: toBlockUser}))
+            return false;
+        
+        const newBlockList = new BlockListEntity();
+        newBlockList.blocker = user;
+        newBlockList.blocked = toBlockUser;
+        await this.blockListRepository.save(newBlockList);
+        return true;
+    }
+
+    async unblockUser(user: UserEntity, id: number)
+    {
+        const blockList =  await this.blockListRepository
+                                    .findOne({blocker: user, id});
+        if (!blockList)
+            return false;
+        await this.blockListRepository.remove(blockList);
+        return true;
+    }
+
+    async getBlockedList(userId: number)
+    {
+        return (await this.blockListRepository
+                            .createQueryBuilder("l")
+                            .innerJoin("l.blocker", "b", "l.blockerId = :blockerId",
+                                        { blockerId: userId})
+                            .addSelect(["b.id","b.login", "b.avatar_url"])
+                            .orderBy("l.create_date", "DESC")
+                            .getMany())
+                            .map(({blocker,...res}) => { return ({...res, user: blocker})});
+    }
 }
