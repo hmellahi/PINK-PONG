@@ -15,8 +15,11 @@
     <Button
       class="mb-3 col-md-2 right-btn"
       :link="'/chat/edit/' + $route.params.name"
-      >Edit</Button
-    >
+      >Edit</Button>
+    <Button
+      class="mb-3 col-md-2"
+      :onClick="InviteToPrivate"
+      >Invite</Button>
     <Overlay class="p-3">
       <div class="mb-4 room px-4">
         <!-- <b-alert show variant="primary">Primary Alert</b-alert> -->
@@ -109,6 +112,40 @@ export default class channelRoom extends Vue {
       // Use el.scrollIntoView() to instantly scroll to the element
       el.scrollIntoView();
     }
+  }
+  InviteToPrivate(){
+      this.$swal({
+        title: 'invite User to this channel',
+        input: 'text',
+        inputAttributes: {
+          autocapitalize: 'off'
+        },
+        showCancelButton: true,
+        confirmButtonText: 'Invite',
+        showLoaderOnConfirm: true,
+        preConfirm: (login) => {
+          return fetch(`//api.github.com/users/${login}`)
+            .then(response => {
+              if (!response.ok) {
+                throw new Error(response.statusText)
+              }
+              return response.json()
+            })
+            .catch(error => {
+              this.$swal.showValidationMessage(
+                `Request failed: ${error}`
+              )
+            })
+        },
+        allowOutsideClick: () => !this.$swal.isLoading()
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.$swal({
+            title: `${result.value.login}'s avatar`,
+            imageUrl: result.value.avatar_url
+          })
+        }
+      })
   }
 }
 </script>

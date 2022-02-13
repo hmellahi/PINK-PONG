@@ -40,7 +40,6 @@ export default class App extends Vue {
   isLoginPage: boolean = false;
   
   mounted() {
-    this.$notify('hi my friend how are you ?')
     this.updateIsLoginPage();
   }
 

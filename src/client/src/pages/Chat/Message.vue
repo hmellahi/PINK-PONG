@@ -117,7 +117,10 @@ export default class MessageBox extends Vue {
     };
   }
   InviteToPlay(){
-    console.log('invited to play')
+    this.$notify({
+      title: 'You have a request',
+      text: 'Someone want to play with you'
+    });
   }
 }
 </script>
