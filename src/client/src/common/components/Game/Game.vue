@@ -45,7 +45,7 @@ export default class Game extends Vue {
   paddleWidth = GameConstants.paddle.width;
   paddleHeight = GameConstants.paddle.height;
   paddle: Paddle = new Paddle(
-    this.xPaddle - 20,
+    GameConstants.canvas.width - this.paddleWidth - 20,
     this.yPaddle,
     this.paddleWidth,
     this.paddleHeight
@@ -65,9 +65,9 @@ export default class Game extends Vue {
   net: Net = new Net();
   background: BackGround = new BackGround();
 
-  score: Score = new Score(GameConstants.canvas.width / 3 - 60, 30);
+  score: Score = new Score(GameConstants.canvas.width / 4 - 60, 30);
   score2: Score = new Score(
-    GameConstants.canvas.width - GameConstants.canvas.width / 3,
+    GameConstants.canvas.width - GameConstants.canvas.width / 4,
     30,
     0
   );
@@ -105,23 +105,28 @@ export default class Game extends Vue {
     this.scores.map((score) => score.draw(sketch));
     this.paddle2.draw(sketch);
     // TODO draw overlay
-    sketch.fill(83, 19, 126, 127);
-    sketch.noStroke();
-    sketch.rect(0, 0, GameConstants.canvas.width, GameConstants.canvas.height);
+    this.overlay(sketch);
     this.countdown.draw(sketch);
     this.countdown.value--;
     console.log(this.countdown.value);
-    sketch.textSize(GameConstants.canvas.width / 10);
-    sketch.fill(0, 102, 153);
+
+  }
+  overlay(sketch: P5Sketch){
+    sketch.fill(83, 19, 126, 127);
+    sketch.noStroke();
+    sketch.rect(0, 0, GameConstants.canvas.width, GameConstants.canvas.height);
+  }
+  gameOver(sketch: P5Sketch){
+    this.overlay(sketch);
+    sketch.textSize(GameConstants.canvas.width / 8);
+    sketch.textAlign(sketch.CENTER, sketch.CENTER);
+    sketch.fill(255, 0, 0);
     sketch.text(
-      "Game Over Bro!!",
+      "Game Over",
       GameConstants.canvas.width / 2,
-      GameConstants.canvas.height / 2,
-      70,
-      80
+      GameConstants.canvas.height / 2
     );
   }
-
   countDown(sketch: P5Sketch) {
     this.drawGameObjects(sketch);
     setInterval(() => {
@@ -135,17 +140,28 @@ export default class Game extends Vue {
   }
 
   setup(sketch: P5Sketch) {
+    var game = document.getElementById('game');
+    console.log('game width',game.offsetWidth);
+    console.log('game height',game.offsetHeight);
+    console.log('game height',game.clientHeight);
+    console.log('game height',game.style.height);
+
+  GameConstants.canvas.width = game.offsetWidth;
+
+    // sketch.createCanvas(
+    //   GameConstants.canvas.width,
+    //   GameConstants.canvas.height
+    // );
     sketch.createCanvas(
       GameConstants.canvas.width,
       GameConstants.canvas.height
     );
-
     //   sketch.textSize(GameConstants.canvas.width / 3);
     // sketch.textAlign(GameConstants.canvas.width/2, GameConstants.canvas.height/2);
 
-    this.isGameOver = false;// change to true
-    this.countdown.value = 5;
-    // this.countDown(sketch);
+    this.isGameOver = true;// change to true
+    this.countdown.value = 3;
+    this.countDown(sketch);
   }
 
   draw(sketch: P5Sketch) {
@@ -158,7 +174,6 @@ export default class Game extends Vue {
     this.paddle.update();
     this.paddle2.draw(sketch);
     this.paddle2.update();
-
     let player: Paddle =
       this.ball.x < GameConstants.canvas.width / 2 ? this.paddle2 : this.paddle;
     if (this.ball.hits(player)) {
@@ -170,12 +185,15 @@ export default class Game extends Vue {
     let ballHitsBorder = this.ball.checkBorders();
     if (ballHitsBorder) {
       this.ball.reset();
-      // this.isGameOver = true;
-      // this.countdown.value = 5;
-      // this.countDown(sketch);
+    this.isGameOver = true;// change to true
+    this.countdown.value = 3;
+    this.countDown(sketch);
+    console.log("countdown**********");
       this.scores[ballHitsBorder - 1].value++;
       if (this.scores[ballHitsBorder - 1].value > 2) {
         this.isGameOver = true;
+        this.gameOver(sketch);
+        return;
       //   sketch.textSize(GameConstants.canvas.width / 5);
       //   // sketch.textAlign(GameConstants.canvas.width/2, GameConstants.canvas.height/2);
       //   sketch.fill(0, 102, 153);
@@ -240,4 +258,11 @@ export default class Game extends Vue {
 #game {
   filter: drop-shadow(8px 10px 20px rgba(0, 0, 0, 0.5));
 }
+/* #defaultCanvas0 { 
+  width: 100%; 
+  min-width: 100%; 
+ 
+  min-height: 100%; 
+  height: 100%; 
+}  */
 </style>
