@@ -1,6 +1,6 @@
 # pingpong front end
 
-## lunch the front end
+## setup
 ```
 yarn run start --port=5000
 ```
