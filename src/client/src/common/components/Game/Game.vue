@@ -46,6 +46,7 @@ export default class Game extends Vue {
   isGameOver: boolean = false;
   xPaddle = GameConstants.paddle.x;
   yPaddle = GameConstants.paddle.y;
+  sketch:P5Sketch = null;
   paddleWidth = GameConstants.paddle.width;
   paddleHeight = GameConstants.paddle.height;
   paddle: Paddle = new Paddle(
@@ -60,8 +61,8 @@ export default class Game extends Vue {
     this.paddleWidth,
     this.paddleHeight
   );
-
-  net: Net = new Net(GameConstants.canvas.width, GameConstants.canvas.height);
+  map: string = "map1";
+  net: Net = new Net(GameConstants.canvas.width, GameConstants.canvas.height, this.map);
   background: BackGround = new BackGround();
 
   score: Score = new Score(GameConstants.canvas.width / 4 - 60, 30);
@@ -79,13 +80,11 @@ export default class Game extends Vue {
 init(){
     console.log("setup")
     var game = document.getElementById('game');
-    console.log('game width1',game.offsetWidth);
-    console.log('game width2',GameConstants.canvas.width);
-    console.log('game height',game.offsetHeight);
 
-    GameConstants.canvas.width = game.offsetWidth;
-    GameConstants.canvas.height = game.offsetHeight;
-  
+    if (game){
+      GameConstants.canvas.width = game.offsetWidth;
+      GameConstants.canvas.height = game.offsetHeight;
+    }
   this.socket = null;
   this.backColor = GameConstants.backColor; //todo change
   this.xBall = GameConstants.ball.x;
@@ -111,7 +110,7 @@ init(){
     this.paddleHeight
   );
 
-  this.net = new Net(GameConstants.canvas.width, GameConstants.canvas.height);
+  this.net = new Net(GameConstants.canvas.width, GameConstants.canvas.height, this.map);
   this.background = new BackGround();
 
   this.score= new Score(GameConstants.canvas.width / 4 - 60, 30);
@@ -128,10 +127,13 @@ init(){
   this.roomId = "";
 }
   mounted() {
+     window.addEventListener("resize", this.resize);
     console.log("mounted")
     this.init();
     this.roomId = this.$route.query.id;
     console.log("here The id is: " + this.$route.query.id);
+
+
     this.socket = io("http://localhost:3000/game");
     this.socket.on("paddleMoves", (velocity: any) => {
       this.paddle2.velocity = velocity;
@@ -148,7 +150,16 @@ init(){
   }
 
   resize(){
+    console.log("resizessssssss");
+    var game = document.getElementById('game');
+
+    if (game){
+      GameConstants.canvas.width = game.offsetWidth;
+      GameConstants.canvas.height = game.offsetHeight;
+    }
     this.init();
+    this.sketch.resizeCanvas(GameConstants.canvas.width, GameConstants.canvas.height);
+
   }
   drawGameObjects(sketch: P5Sketch) {
     
@@ -162,8 +173,6 @@ init(){
     // TODO draw overlay
     this.drawOerlay(sketch);
     this.countdown.draw(sketch);
-    this.countdown.value--;
-    console.log(this.countdown.value);
 
   }
   drawOerlay(sketch: P5Sketch){
@@ -185,17 +194,24 @@ init(){
   }
   countDown(sketch: P5Sketch) {
     this.drawGameObjects(sketch);
-    setInterval(() => {
+    this.countdown.value = 3;
+    const countDownInterval = setInterval(() => {
       // const element = array[index];
       if (this.countdown.value <= 0) {
         this.isGameOver = false;
+        this.countdown.value = 3;
+        clearInterval(countDownInterval);
         return;
       }
       this.drawGameObjects(sketch);
+        this.countdown.value--;
+      console.log(this.countdown.value);
     }, 1000);
   }
 
   setup(sketch: P5Sketch) {
+    // window.onresize = this.resize;
+    this.sketch = sketch;
     var font = sketch.loadFont('assets/fonts/pricedownBl.otf');
     sketch.textFont(font);
     sketch.createCanvas(
@@ -211,7 +227,6 @@ init(){
   }
 
   draw(sketch: P5Sketch) {
-    window.onresize = this.resize;
     if (this.isGameOver) return;
 
     sketch.background(this.backColor);
@@ -224,9 +239,6 @@ init(){
     let player: Paddle =
       this.ball.x < GameConstants.canvas.width / 2 ? this.paddle2 : this.paddle;
     if (this.ball.hits(player)) {
-      // this.playMusic(this.sounds[0]);
-      // console.log(this.sounds[0]);
-      // return;
       this.ball.reverse(player, player == this.paddle);
     }
     let ballHitsBorder = this.ball.checkBorders();
@@ -236,22 +248,12 @@ init(){
       this.scores[ballHitsBorder - 1].value++;
       if (this.scores[ballHitsBorder - 1].value > 2) {
         this.isGameOver = true;
+        this.scores.map((score) => score.draw(sketch));
         this.gameOver(sketch);
         return;
-      //   sketch.textSize(GameConstants.canvas.width / 5);
-      //   // sketch.textAlign(GameConstants.canvas.width/2, GameConstants.canvas.height/2);
-      //   sketch.fill(0, 102, 153);
-      //   sketch.text(
-      //     "Game Over Bro!!",
-      //     GameConstants.canvas.width / 2,
-      //     GameConstants.canvas.height / 2
-      //   );
-      //   // this.ball.y = GameConstants.canvas.height / 2;
       }
-    // this.isGameOver = true;// change to true
-    // this.countdown.value = 3;
-    // this.countDown(sketch);
-    // console.log("countdown**********");
+    this.isGameOver = true;// change to true
+    this.countDown(sketch);
     }else{
     if (!this.isGameOver) this.ball.update();
     this.ball.draw(sketch);
