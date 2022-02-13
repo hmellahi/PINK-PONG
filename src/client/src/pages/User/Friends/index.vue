@@ -5,10 +5,10 @@
       <Button link="/friends/requests" class="col"
         >Requests ({{ requestCount }})</Button
       >
-      <Button link="/friends/blocked" class="col">Ignore</Button>
+      <Button link="/friends/blocked" class="col">Blocked</Button>
       <Button link="/friends/add" class="col">Add Friends</Button>
     </div>
-    <Overlay class="py-3 ">
+    <Overlay class="py-3">
       <router-view></router-view>
       <!-- <div class="spiner">
 
@@ -24,8 +24,6 @@ import Button from "@/common/components/UI/Button.vue";
 import { catchAction } from "../../../store/Modules/Friends/actions";
 @Component({
   components: { Button, ListFriends },
-
-  // components: {Title, SideBar },
 })
 export default class Friends extends Vue {
   // TODO change type
@@ -53,7 +51,7 @@ export default class Friends extends Vue {
   max-height: 25rem;
   overflow-y: scroll;
 }
-.a{
-     height: 100%;
+.a {
+  height: 100%;
 }
 </style>

@@ -40,7 +40,7 @@ export default class FindMatch extends Vue {
   }
 
   beforeUnmount() {
-    console.log("bruh");
+    console.log("am leaving...");
     this.socket.emit("leaveQueue", { userId: 2 });
   }
 
@@ -68,21 +68,22 @@ export default class FindMatch extends Vue {
     }, 1000);
   }
 
-  // beforeRouteEnter(to: any, from: any, next: any) {
-  //   console.log("beforeRouteEnter");
-  //   next();
-  // }
+  beforeRouteEnter(to: any, from: any, next: any) {
+    console.log("beforeRouteEnter");
+    next();
+  }
 
-  // beforeRouteUpdate(to: any, from: any, next: any) {
-  //   console.log("beforeRouteUpdate");
-  //   next();
-  // }
+  beforeRouteUpdate(to: any, from: any, next: any) {
+    console.log("beforeRouteUpdate");
+    next();
+  }
 
   beforeRouteLeave(to: any, from: any, next: any) {
-    // console.log("beforeRouteLeave");
+    console.log("beforeRouteLeave", to.path, from.path);
     this.leaveQueue();
     next();
   }
+
 }
 </script>
 

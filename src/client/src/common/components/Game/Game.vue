@@ -19,7 +19,8 @@ import P5, {
 } from "vue-p5-component";
 import Paddle from "@/common/Game/Objects/Paddle";
 import Score from "@/common/Game/Objects/Score";
-
+var game = document.getElementById("game");
+// GameConstants.canvas.width = game.offƒsetWidth;  
 @Component({
   components: { P5 },
   // props:{
@@ -31,7 +32,6 @@ import Score from "@/common/Game/Objects/Score";
 })
 export default class Game extends Vue {
   socket: any = null;
-
   // ({ canvas, backColor } = GameConstants)
   backColor: number = GameConstants.backColor; //todo change
   // xBall: number = Math.floor(Math.random() * 300) + GameConstants.ball.x;
@@ -72,21 +72,20 @@ export default class Game extends Vue {
     30,
     0
   );
+  countdown: Score = new Score(
+    GameConstants.canvas.width / 2 - 15,
+    GameConstants.canvas.height / 2 - 25
+  );
   scores: Score[] = [this.score, this.score2];
   roomId: any = "";
 
   mounted() {
-    // const hitSound = new Audio(require("@/../../../../public/assets/sounds/mario_coin.mp3"));
-    // this.sounds.push(hitSound);
-    // const hitSound = new Audio(require("@/assets/sounds/mario_coin.mp3"));
-    // const hitSound = new Audio(require("@/assets/sounds/mario_coin.mp3"));
-    // console.log({ roomId: this.roomId });
     this.roomId = this.$route.query.id;
     console.log("here The id is: " + this.$route.query.id);
     this.socket = io("http://localhost:3000/game");
     this.socket.on("paddleMoves", (velocity: any) => {
       this.paddle2.velocity = velocity;
-      console.log("paddle2: " + velocity);
+      console.log("second player velo: " + velocity);
     });
     this.socket.on("connect_failed", function () {
       console.log("Connection Failed");
@@ -96,14 +95,44 @@ export default class Game extends Vue {
       this.$router.push({ path: "/" });
     });
     this.socket.emit("joinGame", { userId: 2, roomId: this.roomId });
-    // this.socket.emit("paddleMoves", { userId: 2 }, (data: any) => {
-    //   console.log({ data });
-    // });
   }
 
-  sleep(ms: number) {
-    // console.log("Sleeeoing");
-    return new Promise((resolve) => setTimeout(resolve, ms));
+  drawGameObjects(sketch: P5Sketch) {
+    sketch.background(this.backColor);
+    this.background.draw(sketch);
+    this.net.draw(sketch);
+    this.ball.draw(sketch);
+    this.paddle.draw(sketch);
+    this.scores.map((score) => score.draw(sketch));
+    this.paddle2.draw(sketch);
+    // TODO draw overlay
+    sketch.fill(83, 19, 126, 127);
+    sketch.noStroke();
+    sketch.rect(0, 0, GameConstants.canvas.width, GameConstants.canvas.height);
+    this.countdown.draw(sketch);
+    this.countdown.value--;
+    console.log(this.countdown.value);
+    sketch.textSize(GameConstants.canvas.width / 10);
+    sketch.fill(0, 102, 153);
+    sketch.text(
+      "Game Over Bro!!",
+      GameConstants.canvas.width / 2,
+      GameConstants.canvas.height / 2,
+      70,
+      80
+    );
+  }
+
+  countDown(sketch: P5Sketch) {
+    this.drawGameObjects(sketch);
+    setInterval(() => {
+      // const element = array[index];
+      if (this.countdown.value <= 0) {
+        this.isGameOver = false;
+        return;
+      }
+      this.drawGameObjects(sketch);
+    }, 1000);
   }
 
   setup(sketch: P5Sketch) {
@@ -111,14 +140,21 @@ export default class Game extends Vue {
       GameConstants.canvas.width,
       GameConstants.canvas.height
     );
+
+    //   sketch.textSize(GameConstants.canvas.width / 3);
+    // sketch.textAlign(GameConstants.canvas.width/2, GameConstants.canvas.height/2);
+
+    this.isGameOver = true;// change to true
+    this.countdown.value = 5;
+    this.countDown(sketch);
   }
 
   draw(sketch: P5Sketch) {
     if (this.isGameOver) return;
+
     sketch.background(this.backColor);
     this.background.draw(sketch);
     this.net.draw(sketch);
-
     this.paddle.draw(sketch);
     this.paddle.update();
     this.paddle2.draw(sketch);
@@ -126,7 +162,6 @@ export default class Game extends Vue {
 
     let player: Paddle =
       this.ball.x < GameConstants.canvas.width / 2 ? this.paddle2 : this.paddle;
-    // this.sleep(10000000000000);
     if (this.ball.hits(player)) {
       // this.playMusic(this.sounds[0]);
       // console.log(this.sounds[0]);
@@ -136,33 +171,42 @@ export default class Game extends Vue {
     let ballHitsBorder = this.ball.checkBorders();
     if (ballHitsBorder) {
       this.ball.reset();
+      // this.isGameOver = true;
+      // this.countdown.value = 5;
+      // this.countDown(sketch);
       this.scores[ballHitsBorder - 1].value++;
       if (this.scores[ballHitsBorder - 1].value > 2) {
-        // this.isGameOver = true;
-        this.ball.y = GameConstants.canvas.height / 2;
+        this.isGameOver = true;
+        sketch.textSize(GameConstants.canvas.width / 5);
+        // sketch.textAlign(GameConstants.canvas.width/2, GameConstants.canvas.height/2);
+        sketch.fill(0, 102, 153);
+        sketch.text(
+          "Game Over Bro!!",
+          GameConstants.canvas.width / 2,
+          GameConstants.canvas.height / 2
+        );
+      //   // this.ball.y = GameConstants.canvas.height / 2;
       }
     }
-    // if (!this.isGameOver) this.ball.update();
+    if (!this.isGameOver) this.ball.update();
     this.ball.draw(sketch);
-
-    // this.score.setScore((this.score.value+1/1e)%10)
-    // this.score.draw(sketch);
-    // this.score2.draw(sketch);
-    // this.scores.map((score) => score.draw);
     this.scores.map((score) => score.draw(sketch));
-    this.sleep(10000);
   }
 
   keypressed(sketch: P5Sketch) {
+    if (this.isGameOver) return;
+    console.log("key pressed");
     if (this.paddle.handleKeyPressed(sketch)) this.sendNewPaddleVelocity();
   }
 
   keyreleased(sketch: P5Sketch) {
+    if (this.isGameOver) return;
+    console.log("key released");
     if (this.paddle.handleKeyReleased(sketch)) this.sendNewPaddleVelocity();
   }
 
   sendNewPaddleVelocity() {
-    console.log("emitting", this.roomId);
+    console.log("sending", this.roomId);
     this.socket.emit("paddleMoves", {
       roomId: this.roomId,
       velocity: this.paddle.velocity,
@@ -174,30 +218,15 @@ export default class Game extends Vue {
 
   reset() {
     this.ball.reset();
-    // this.paddle.reset(); 
+    // this.paddle.reset();
     // this.paddle2.reset();
   }
 
   async preload(sketch: P5Sketch) {
-    // sketch.soundFormats("mp3");
-    // sketch.soundFormats("ogg", "mp3");
-    // sketch.loadSound("../assets/sounds/mario_coin.mp3");
-    // this.sounds.push(hitSound);
-    // this.sounds.push(sketch.loadSound("@/assets/sounds/scoreSound.js"));
-    // this.sounds.push(sketch.loadSound("@/assets/sounds/wallHitSound.js"));
-    // some sounds
-    // /assets/sounds/hitSound.wav");
-    // this.sounds.push(hitSound);
-    // new Audio("../assets/sounds/Clairo - Sofia-L9l8zCOwEII.mp3")
-    // );
-    // this.sounds[0].type = "audio/wav";
-    // const wallHitSound = new Audio("wallHitSound.wav");
+    
   }
 
   async playMusic(music: any) {
-    //  music = await new Audio(
-    //     "../assets/sounds/Clairo - Sofia-L9l8zCOwEII.mp3"
-    //   );
     try {
       // await music.play();
       // console.log("Playing...");
