@@ -1,5 +1,8 @@
 var game = document.getElementById('game');
+console.log(game);
 let canvas;
+
+
 if (game){
   canvas = { width: game.offsetWidth, height: 400 };
 }

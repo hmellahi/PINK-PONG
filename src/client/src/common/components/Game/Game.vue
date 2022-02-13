@@ -30,8 +30,11 @@ import Score from "@/common/Game/Objects/Score";
   // }
 })
 export default class Game extends Vue {
+  
+
   socket: any = null;
   // ({ canvas, backColor } = GameConstants)
+  // canvasWidth: 
   backColor: number = GameConstants.backColor; //todo change
   // xBall: number = Math.floor(Math.random() * 300) + GameConstants.ball.x;
   xBall: number = GameConstants.ball.x;
@@ -50,11 +53,6 @@ export default class Game extends Vue {
     this.paddleWidth,
     this.paddleHeight
   );
-
-  // xPaddle2=GameConstants.paddle.firstPLayer
-  // yPaddle2=GameConstants.paddle.y
-  // paddleWidth=GameConstants.paddle.width
-  // paddleHeight=GameConstants.paddle.height;
   paddle2: Paddle = new Paddle(
     20,
     this.yPaddle,
@@ -62,7 +60,7 @@ export default class Game extends Vue {
     this.paddleHeight
   );
 
-  net: Net = new Net();
+  net: Net = new Net(GameConstants.canvas.width, GameConstants.canvas.height);
   background: BackGround = new BackGround();
 
   score: Score = new Score(GameConstants.canvas.width / 4 - 60, 30);
@@ -77,8 +75,11 @@ export default class Game extends Vue {
   );
   scores: Score[] = [this.score, this.score2];
   roomId: any = "";
-
+init(){
+  
+}
   mounted() {
+    console.log("mounted")
     this.roomId = this.$route.query.id;
     console.log("here The id is: " + this.$route.query.id);
     this.socket = io("http://localhost:3000/game");
@@ -97,6 +98,7 @@ export default class Game extends Vue {
   }
 
   drawGameObjects(sketch: P5Sketch) {
+    
     sketch.background(this.backColor);
     this.background.draw(sketch);
     this.net.draw(sketch);
@@ -140,13 +142,16 @@ export default class Game extends Vue {
   }
 
   setup(sketch: P5Sketch) {
+    console.log("setup")
     var game = document.getElementById('game');
-    console.log('game width',game.offsetWidth);
-    console.log('game height',game.offsetHeight);
-    console.log('game height',game.clientHeight);
-    console.log('game height',game.style.height);
+    console.log('game width1',game.offsetWidth);
+    console.log('game width2',GameConstants.canvas.width);
 
-  GameConstants.canvas.width = game.offsetWidth;
+    // console.log('game height',game.offsetHeight);
+    // console.log('game height',game.clientHeight);
+    // console.log('game height',game.style.height);
+
+  // GameConstants.canvas.width = game.offsetWidth;
 
     // sketch.createCanvas(
     //   GameConstants.canvas.width,
@@ -185,10 +190,7 @@ export default class Game extends Vue {
     let ballHitsBorder = this.ball.checkBorders();
     if (ballHitsBorder) {
       this.ball.reset();
-    this.isGameOver = true;// change to true
-    this.countdown.value = 3;
-    this.countDown(sketch);
-    console.log("countdown**********");
+
       this.scores[ballHitsBorder - 1].value++;
       if (this.scores[ballHitsBorder - 1].value > 2) {
         this.isGameOver = true;
@@ -204,10 +206,16 @@ export default class Game extends Vue {
       //   );
       //   // this.ball.y = GameConstants.canvas.height / 2;
       }
-    }
+    // this.isGameOver = true;// change to true
+    // this.countdown.value = 3;
+    // this.countDown(sketch);
+    // console.log("countdown**********");
+    }else{
     if (!this.isGameOver) this.ball.update();
     this.ball.draw(sketch);
     this.scores.map((score) => score.draw(sketch));
+    }
+
   }
 
   keypressed(sketch: P5Sketch) {
