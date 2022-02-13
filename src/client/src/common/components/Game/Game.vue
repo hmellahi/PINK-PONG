@@ -19,7 +19,8 @@ import P5, {
 } from "vue-p5-component";
 import Paddle from "@/common/Game/Objects/Paddle";
 import Score from "@/common/Game/Objects/Score";
-
+var game = document.getElementById("game");
+// GameConstants.canvas.width = game.offƒsetWidth;  
 @Component({
   components: { P5 },
   // props:{
