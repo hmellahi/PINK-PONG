@@ -1,5 +1,5 @@
 <template>
-  <div id="game">
+  <div id="game" class="h-100">
     <P5 v-on="{ setup, draw, keyreleased, keypressed, preload }" />
   </div>
 </template>
@@ -76,10 +76,59 @@ export default class Game extends Vue {
   scores: Score[] = [this.score, this.score2];
   roomId: any = "";
 init(){
+    console.log("setup")
+    var game = document.getElementById('game');
+    console.log('game width1',game.offsetWidth);
+    console.log('game width2',GameConstants.canvas.width);
+    console.log('game height',game.offsetHeight);
+
+    GameConstants.canvas.width = game.offsetWidth;
+    GameConstants.canvas.height = game.offsetHeight;
   
+  this.socket = null;
+  this.backColor = GameConstants.backColor; //todo change
+  this.xBall = GameConstants.ball.x;
+  this.yBall = GameConstants.ball.y;
+  this.radius = 10;
+  this.sounds = [];
+  this.ball = new Ball(this.xBall, this.yBall, this.radius, 0);
+  this.isGameOver = false;
+  this.xPaddle = GameConstants.paddle.x;
+  this.yPaddle = GameConstants.paddle.y;
+  this.paddleWidth = GameConstants.paddle.width;
+  this.paddleHeight = GameConstants.paddle.height;
+  this.paddle = new Paddle(
+    GameConstants.canvas.width - this.paddleWidth - 20,
+    this.yPaddle,
+    this.paddleWidth,
+    this.paddleHeight
+  );
+  this.paddle2= new Paddle(
+    20,
+    this.yPaddle,
+    this.paddleWidth,
+    this.paddleHeight
+  );
+
+  this.net = new Net(GameConstants.canvas.width, GameConstants.canvas.height);
+  this.background = new BackGround();
+
+  this.score= new Score(GameConstants.canvas.width / 4 - 60, 30);
+  this.score2 = new Score(
+    GameConstants.canvas.width - GameConstants.canvas.width / 4,
+    30,
+    0
+  );
+  this.countdown = new Score(
+    GameConstants.canvas.width / 2 - 15,
+    GameConstants.canvas.height / 2 - 25
+  );
+  this.scores = [this.score, this.score2];
+  this.roomId = "";
 }
   mounted() {
     console.log("mounted")
+    this.init();
     this.roomId = this.$route.query.id;
     console.log("here The id is: " + this.$route.query.id);
     this.socket = io("http://localhost:3000/game");
@@ -97,6 +146,9 @@ init(){
     this.socket.emit("joinGame", { userId: 2, roomId: this.roomId });
   }
 
+  resize(){
+    this.init();
+  }
   drawGameObjects(sketch: P5Sketch) {
     
     sketch.background(this.backColor);
@@ -107,19 +159,19 @@ init(){
     this.scores.map((score) => score.draw(sketch));
     this.paddle2.draw(sketch);
     // TODO draw overlay
-    this.overlay(sketch);
+    this.drawOerlay(sketch);
     this.countdown.draw(sketch);
     this.countdown.value--;
     console.log(this.countdown.value);
 
   }
-  overlay(sketch: P5Sketch){
+  drawOerlay(sketch: P5Sketch){
     sketch.fill(83, 19, 126, 127);
     sketch.noStroke();
     sketch.rect(0, 0, GameConstants.canvas.width, GameConstants.canvas.height);
   }
   gameOver(sketch: P5Sketch){
-    this.overlay(sketch);
+    this.drawOerlay(sketch);
     sketch.textSize(GameConstants.canvas.width / 8);
     sketch.textAlign(sketch.CENTER, sketch.CENTER);
     sketch.fill(255, 0, 0);
@@ -128,6 +180,7 @@ init(){
       GameConstants.canvas.width / 2,
       GameConstants.canvas.height / 2
     );
+    // this.$router.push('/')
   }
   countDown(sketch: P5Sketch) {
     this.drawGameObjects(sketch);
@@ -142,21 +195,8 @@ init(){
   }
 
   setup(sketch: P5Sketch) {
-    console.log("setup")
-    var game = document.getElementById('game');
-    console.log('game width1',game.offsetWidth);
-    console.log('game width2',GameConstants.canvas.width);
-
-    // console.log('game height',game.offsetHeight);
-    // console.log('game height',game.clientHeight);
-    // console.log('game height',game.style.height);
-
-  // GameConstants.canvas.width = game.offsetWidth;
-
-    // sketch.createCanvas(
-    //   GameConstants.canvas.width,
-    //   GameConstants.canvas.height
-    // );
+    var font = sketch.loadFont('assets/fonts/pricedownBl.otf');
+    sketch.textFont(font);
     sketch.createCanvas(
       GameConstants.canvas.width,
       GameConstants.canvas.height
@@ -170,6 +210,7 @@ init(){
   }
 
   draw(sketch: P5Sketch) {
+    window.onresize = this.resize;
     if (this.isGameOver) return;
 
     sketch.background(this.backColor);
