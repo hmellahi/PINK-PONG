@@ -1,6 +1,11 @@
 export interface Game {
-    id?: number;
+    // id?: number;
     roomId:string;
-    player1:string;
-    player2:string;
+    player1:number;
+    player2:number;
+    score1:number;
+    score2:number;
+    map:number;
+    created_at:Date;
+    ff:number;
 }
