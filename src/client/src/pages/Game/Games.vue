@@ -17,8 +17,8 @@
             <div class="content_play">
               <!-- <h6>{{ match.map }}</h6> -->
               <div class="play_time">
-                <!-- <span>{{ match.duration }} </span> 
-                duration => now - match.created_at (count up)
+              <span> {{ showCount(match.created_at) }} </span>
+                <!--  duration => now - match.created_at (count up)
                 -->
               </div>
             </div>
@@ -28,7 +28,7 @@
           </div>
         </div>
       </div>
-      <div v-else>no matches right now</div>
+      <h3 v-else>no matches right now</h3>
     </Overlay>
   </div>
   <!--  </section>-->
@@ -42,60 +42,19 @@ import { User } from "../../types/user";
 import Button from "@/common/components/UI/Button.vue";
 import Overlay from "@/common/components/UI/Overlay.vue";
 import { io } from "socket.io-client";
+import moment from 'moment';
 
 @Component({
   components: { Button, Overlay },
 })
 export default class MatchHistory extends Vue {
-  matches = [
-    // {
-    //   id: 1,
-    //   user1_point: 5,
-    //   user2_point: 9,
-    //   map: "Classic",
-    //   duration: "06:55",
-    //   date: "2022/05/12",
-    //   link: "/",
-    // },
-    // {
-    //   id: 2,
-    //   user1_point: 5,
-    //   user2_point: 9,
-    //   map: "Classic",
-    //   duration: "06:55",
-    //   date: "2022/05/12",
-    //   link: "/",
-    // },
-    // {
-    //   id: 3,
-    //   user1_point: 5,
-    //   user2_point: 9,
-    //   map: "Classic",
-    //   duration: "06:55",
-    //   date: "2022/05/12",
-    //   link: "/",
-    // },
-    // {
-    //   id: 4,
-    //   user1_point: 5,
-    //   user2_point: 9,
-    //   map: "Classic",
-    //   duration: "06:55",
-    //   date: "2022/05/12",
-    //   link: "/",
-    // },
-    // {
-    //   id: 5,
-    //   user1_point: 5,
-    //   user2_point: 9,
-    //   map: "Classic",
-    //   duration: "06:55",
-    //   date: "2022/05/12",
-    //   link: "/",
-    // },
-  ];
+  matches = [];
   socket: any = null;
+  count = { seconds: 0, minutes: 0 };
 
+  showCount(date: Date){
+    return moment(date).fromNow();
+  }
   created() {
     this.socket = io("http://localhost:3000/game");
     // this.socket.on("matchFound", (roomId: any) => {

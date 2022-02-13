@@ -71,7 +71,7 @@ const actions = {
     commit("ADD_TO_ENTITY", ["friends", userToUnblock]);
     try {
       // TODO make an api call
-      const data = await api.post('users/blockUser',{userId: userToUnblock.user.id});
+      const data = await api.post('users/blockUser',{userId: userToUnblock.id});
     } catch (e) {
       commit("SET_ENTITY", ["friends", friendsBackup]);
       commit("SET_ENTITY", ["blockedUsers", blockedUsersBackup]);

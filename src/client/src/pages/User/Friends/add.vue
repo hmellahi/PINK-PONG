@@ -31,6 +31,7 @@ export default class blockedUsers extends Vue {
       try {
         let data = await this.$http.post("friendship/sendFriendRequest", {recieverLogin: this.login});
         this.message = "Added User succefuly";
+        this.login = "";
       } catch (e) {
         this.message = e.response.data.message
       }

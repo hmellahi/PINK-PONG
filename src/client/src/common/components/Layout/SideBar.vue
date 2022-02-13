@@ -69,9 +69,10 @@ export default class SideBar extends Vue {
   mounted() {
     this.links = [
       { name: "Play", icon: "fa fa-table-tennis", path: "/" },
-      { name: "Friends", icon: "fa fa-user-friends", path: "/friends" },
       { name: "Profile", icon: "fa fa-user", path: "/profile/mine" },
+      { name: "Friends", icon: "fa fa-user-friends", path: "/friends" },
       { name: "LeaderBoard", icon: "fa fa-trophy", path: "/leaderBoard" },
+      { name: "Games", icon: "fa fa-trophy", path: "/games" },
       { name: "Chat", icon: "fa fa-comment", path: "/chat" },
       { name: "Settings", icon: "fa fa-cogs", path: "/settings" },
     ];
@@ -117,7 +118,7 @@ export default class SideBar extends Vue {
 
     font-weight: bold;
     border-radius: 10px;
-    height: 3.8rem;
+    height: 3.2rem;
     :hover {
       // background-color: white !important;
     }

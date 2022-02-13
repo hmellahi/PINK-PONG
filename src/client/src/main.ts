@@ -1,4 +1,27 @@
 import Component from "vue-class-component";
+import Vue from "vue";
+import App from "./App.vue";
+import router from "./router";
+import store from "./store";
+import VueAxios from 'vue-axios';
+import axios from './api';
+import _Vue from "vue";
+import Overlay from "@/common/components/UI/Overlay.vue";
+import moment from 'moment-timezone'
+import VueSweetalert2 from 'vue-sweetalert2';
+import Notifications from 'vue-notification'
+
+// for games page timer
+moment.tz.setDefault('Africa/Casablanca')
+
+/************* import files  **************/
+import "../public/assets/css/bootstrap.min.css";
+import "../public/assets/css/style.css";
+// import "../public/assets/css/circle.css";
+import "../public/assets/css/skins/blue.css";
+import 'sweetalert2/dist/sweetalert2.min.css';
+
+/************* import files  **************/
 
 // Register the router hooks with their names
 Component.registerHooks([
@@ -7,23 +30,6 @@ Component.registerHooks([
   "beforeRouteUpdate",
 ]);
 
-import Vue from "vue";
-import App from "./App.vue";
-import router from "./router";
-import store from "./store";
-import VueAxios from 'vue-axios';
-import axios from './api';
-import _Vue from "vue";
-// import Swal from 'sweetalert2'
-
-import Overlay from "@/common/components/UI/Overlay.vue";
-
-/************* import files  **************/
-import "../public/assets/css/bootstrap.min.css";
-import "../public/assets/css/style.css";
-// import "../public/assets/css/circle.css";
-import "../public/assets/css/skins/blue.css";
-/************* import files  **************/
 
 /************* Register components as global  **************/
 Vue.component("Overlay", Overlay);
@@ -48,7 +54,8 @@ declare module "vue/types/vue" {
 /************* Register Axios as global  **************/
 
 Vue.use(VueAxios, axios);
-
+Vue.use(VueSweetalert2);
+Vue.use(Notifications);
 new Vue({
   router,
   store,

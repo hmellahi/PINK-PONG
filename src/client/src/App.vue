@@ -1,5 +1,6 @@
 <template>
   <div id="app">
+    <notifications/>
     <router-view v-if="isLoginPage"></router-view>
     <span v-else>
       <div class="container">
@@ -39,6 +40,7 @@ export default class App extends Vue {
   isLoginPage: boolean = false;
   
   mounted() {
+    this.$notify('hi my friend how are you ?')
     this.updateIsLoginPage();
   }
 
