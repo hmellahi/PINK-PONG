@@ -19,7 +19,8 @@ import P5, {
 } from "vue-p5-component";
 import Paddle from "@/common/Game/Objects/Paddle";
 import Score from "@/common/Game/Objects/Score";
-
+var game = document.getElementById("game");
+// GameConstants.canvas.width = game.offƒsetWidth;  
 @Component({
   components: { P5 },
   // props:{
@@ -143,9 +144,9 @@ export default class Game extends Vue {
     //   sketch.textSize(GameConstants.canvas.width / 3);
     // sketch.textAlign(GameConstants.canvas.width/2, GameConstants.canvas.height/2);
 
-    this.isGameOver = false;// change to true
+    this.isGameOver = true;// change to true
     this.countdown.value = 5;
-    // this.countDown(sketch);
+    this.countDown(sketch);
   }
 
   draw(sketch: P5Sketch) {
@@ -176,14 +177,14 @@ export default class Game extends Vue {
       this.scores[ballHitsBorder - 1].value++;
       if (this.scores[ballHitsBorder - 1].value > 2) {
         this.isGameOver = true;
-      //   sketch.textSize(GameConstants.canvas.width / 5);
-      //   // sketch.textAlign(GameConstants.canvas.width/2, GameConstants.canvas.height/2);
-      //   sketch.fill(0, 102, 153);
-      //   sketch.text(
-      //     "Game Over Bro!!",
-      //     GameConstants.canvas.width / 2,
-      //     GameConstants.canvas.height / 2
-      //   );
+        sketch.textSize(GameConstants.canvas.width / 5);
+        // sketch.textAlign(GameConstants.canvas.width/2, GameConstants.canvas.height/2);
+        sketch.fill(0, 102, 153);
+        sketch.text(
+          "Game Over Bro!!",
+          GameConstants.canvas.width / 2,
+          GameConstants.canvas.height / 2
+        );
       //   // this.ball.y = GameConstants.canvas.height / 2;
       }
     }
