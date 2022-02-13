@@ -1,24 +1,11 @@
-# pingpong
+# pingpong front end
 
-## Project setup
+## lunch the front end
 ```
-yarn install
-```
-
-### Compiles and hot-reloads for development
-```
-yarn serve
+yarn run start --port=5000
 ```
 
-### Compiles and minifies for production
+### the tools
 ```
-yarn build
+vue3 with typescript
 ```
-
-### Run your unit tests
-```
-yarn test:unit
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
