@@ -1,4 +1,14 @@
-let canvas = { width: 400, height: 400 };
+var game = document.getElementById('game');
+console.log(game);
+let canvas;
+
+
+if (game){
+  canvas = { width: game.offsetWidth, height: 400 };
+}
+else{
+canvas = { width: 600, height: 400 };
+}
 let paddle = {    width: 10,height: 60}
 let gridSize = 80;
 export const GameConstants = {

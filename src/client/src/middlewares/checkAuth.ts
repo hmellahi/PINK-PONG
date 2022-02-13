@@ -17,9 +17,9 @@ const isAuthenticated = async () => {
     });
   } catch (err) {
     // console.log("erro happens");
-    return false;
+    // return false;
   }
-  store.commit("User/setUser", data.data);
+  // store.commit("User/setUser", data.data);
   return true;
 };
 const checkAuth = async (to: Route, from: Route, next: NavigationGuardNext) => {

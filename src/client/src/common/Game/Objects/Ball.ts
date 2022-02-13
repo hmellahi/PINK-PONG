@@ -72,16 +72,6 @@ export default class {
   }
 
   hits(player: Paddle): boolean {
-    // let { x, y, radius } = this;
-    // let { x: xPaddle, y: yPaddle, width } = paddle;
-    // if (x + radius > xPaddle - width/2&& x < xPaddle + width && y + radius / 2 >= yPaddle) {
-    //   this.velocityX *= -1;
-    //   this.velocityY *= -1;
-    // }
-
-    // returns true or false
-    let { speed } = this;
-    let { width, height } = GameConstants.canvas;
     player.top = player.y;
     player.right = player.x + player.width;
     player.bottom = player.y + player.height;
@@ -91,10 +81,6 @@ export default class {
     this.right = this.x + this.radius;
     this.bottom = this.y + this.radius;
     this.left = this.x - this.radius;
-    // console.log(`player ${player.x}, ${player.y}`);
-    // console.log(`bll ${this.x}, ${this.y}`);
-
-
     return (
       this.left < player.right &&
       this.top < player.bottom &&
@@ -157,7 +143,6 @@ export default class {
   }
 
   checkBorders(): number {
-    let {width, height} = GameConstants.canvas;
     if (this.x - this.radius / 2 <= 0) return 2;
     if (this.x + this.radius / 2 >= GameConstants.canvas.width) return 1;
     return 0;
