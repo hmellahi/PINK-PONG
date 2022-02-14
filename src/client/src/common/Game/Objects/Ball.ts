@@ -93,12 +93,12 @@ export default class {
     // var tmp = loadsound('../firework.mp3');
     // tmp();
     // default angle is 0deg in Radian
-    console.log(`ball speed ${this.speed}`);
-    console.log(`ball VeloX ${this.velocityX} and VeloY ${this.velocityY}`);
+    // console.log(`ball speed ${this.speed}`);
+    // console.log(`ball VeloX ${this.velocityX} and VeloY ${this.velocityY}`);
 
-    console.log("I am hitted");
-    console.log(`player ${player.x}, ${player.y}`);
-    console.log(`bll ${this.x}, ${this.y}`);
+    // console.log("I am hitted");
+    // console.log(`player ${player.x}, ${player.y}`);
+    // console.log(`bll ${this.x}, ${this.y}`);
 
     let collidePoint = this.y - (player.y + player.height / 2);
     collidePoint = collidePoint / (player.height / 2);
@@ -123,8 +123,8 @@ export default class {
     this.velocityY = this.speed * Math.sin(angleRad);
     // increase speed
     // this.speed += 0.05; TODO CHange
-    console.log(`ball speed ${this.speed}`);
-    console.log(`ball VeloX ${this.velocityX} and VeloY ${this.velocityY}`);
+    // console.log(`ball speed ${this.speed}`);
+    // console.log(`ball VeloX ${this.velocityX} and VeloY ${this.velocityY}`);
   }
 
   reset() {

@@ -41,6 +41,7 @@ import Score from "@/common/Game/Objects/Score";
   },
 })
 export default class Game extends Vue {
+  gameData: any;
   socket: any = null;
   // ({ canvas, backColor } = GameConstants)
   // canvasWidth:
@@ -91,7 +92,7 @@ export default class Game extends Vue {
   roomId: any = "";
   countInter: any;
   init() {
-    console.log("setup");
+    // console.log("setup");
     var game = document.getElementById("game");
 
     if (game) {
@@ -144,15 +145,26 @@ export default class Game extends Vue {
     this.roomId = "";
   }
   resizeObjects(){
-    console.log("setup");
+    // console.log("setup");
+
+    console.log(`before ball speed ${this.ball.speed}`);
+    console.log(`before ball VeloX ${this.ball.velocityX} and VeloY ${this.ball.velocityY}`);
+    console.log(`before ball X ${this.ball.x} and Y ${this.ball.y}`);
+
     var game = document.getElementById("game");
+
+    var xF = this.ball.x / GameConstants.canvas.width;
+    var yF = this.ball.y / GameConstants.canvas.height;
 
     if (game) {
       GameConstants.canvas.width = game.offsetWidth;
       GameConstants.canvas.height = game.offsetHeight;
     }
     this.radius = 10;
-    this.ball = new Ball(this.ball.x, this.ball.y, this.radius, 0);
+    this.ball = new Ball(xF * GameConstants.canvas.width, yF * GameConstants.canvas.height, this.radius, 0);
+    console.log(`after ball speed ${this.ball.speed}`);
+    console.log(`after ball VeloX ${this.ball.velocityX} and VeloY ${this.ball.velocityY}`);
+    console.log(`after ball X ${this.ball.x} and Y ${this.ball.y}`);
     this.isGameOver = false;
     this.paddleWidth = GameConstants.paddle.width;
     this.paddleHeight = GameConstants.paddle.height;
@@ -225,10 +237,13 @@ export default class Game extends Vue {
     });
     this.socket.on("incrementScore", (ballHitsBorder: any) => {
       this.scores[ballHitsBorder - 1].value++;
-
     });
-    this.socket.emit("joinGame", { userId: 2, roomId: this.roomId }, (msg) => {
-        console.log(msg)
+    this.socket.emit("joinGame", { userId: 2, roomId: this.roomId }, (msg: any) => {
+        console.log(msg);
+        if (msg === "roomNotFound") {
+          this.$router.push({ path: "/" });
+        }
+        this.gameData = msg;
     });
   }
 
