@@ -82,6 +82,14 @@ export class  UserController
         return fetchedUser;
     }
 
+    @Get(":id")
+    async getUserById(@Param("id") id: number)
+    {
+        if (!id || isNaN(Number(id)))
+            throw new BadRequestException;
+        return await this.userService.getById(id);
+    }
+
     @Post("blockUser")
     @HttpCode(200)
     async blockUser(@Req() request: RequestWithUser, @Body("userId") userId: number)
