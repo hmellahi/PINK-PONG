@@ -5,15 +5,15 @@
       <div v-if="matches.length">
         <div v-for="match in matches" class="leader_box match_box">
           <div class="left match_history">
-            <img src="/assets/img/2.jpg" alt="" />
+            <img :src="match.user1.avatar_url" alt="" />
             <div class="match_content">
               <!-- <h4 class="victory">VICTORY</h4> -->
               <h3>{{ match.score1 }} - {{ match.score2 }}</h3>
             </div>
-            <img class="img_right" src="/assets/img/2.jpg" alt="" />
+            <img class="img_right" :src="match.user2.avatar_url" alt="" />
           </div>
           <div class="match_right">
-            <img src="/assets/img/map1.jpg" alt="" />
+            <img :src="`/assets/img/map${match.map}.jpg`" alt="" />
             <div class="content_play">
               <!-- <h6>{{ match.map }}</h6> -->
               <div class="play_time">
@@ -48,14 +48,22 @@ import moment from 'moment';
   components: { Button, Overlay },
 })
 export default class MatchHistory extends Vue {
-  matches = [];
+  matches:any = [];
   socket: any = null;
   count = { seconds: 0, minutes: 0 };
 
   showCount(date: Date){
     return moment(date).fromNow();
   }
-  created() {
+  async fetchUser(id: Number){
+    try {
+      const player1 = await this.$http.get(`users/${id}`);
+      return player1;
+    } catch (error) {
+      return ;
+    }
+  }
+  async created() {
     this.socket = io("http://localhost:3000/game");
     // this.socket.on("matchFound", (roomId: any) => {
     //   // console.log({ roomId });
@@ -65,9 +73,11 @@ export default class MatchHistory extends Vue {
       console.log("Connection Failed");
     });
     this.socket.emit("getLiveGames", (data: any) => {
-      // console.log({ data });
-      this.matches = data;
-      console.log(this.matches);
+      const newData = data.map(async (object: any) => {
+        const user1 = await this.fetchUser(object.player1) as any | undefined
+        const user2 = await this.fetchUser(object.player1) as any | undefined
+        this.matches.push({...object, user1: user1.data, user2: user2.data})
+      });
     });
   }
 }
