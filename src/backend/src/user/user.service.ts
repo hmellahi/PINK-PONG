@@ -1,10 +1,11 @@
-import { HttpCode, HttpException, HttpStatus, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { forwardRef, HttpCode, HttpException, HttpStatus, Inject, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeleteResult, Repository } from 'typeorm';
 import { CreateUserDto } from './dtos/createUser.dto';
 import UserEntity from './entities/user.entity';
 import * as bcrypt from "bcrypt";
 import BlockListEntity from './entities/blockedUserList.entity';
+import { FriendshipService } from 'src/friend/friendship.service';
 
 @Injectable()
 export class UserService {
@@ -12,8 +13,12 @@ export class UserService {
     constructor(
         @InjectRepository(UserEntity)
         private userRepository: Repository<UserEntity>,
+
         @InjectRepository(BlockListEntity)
-        private blockListRepository: Repository<BlockListEntity>
+        private blockListRepository: Repository<BlockListEntity>,
+
+        @Inject(forwardRef(()=> FriendshipService))
+        private friendshipService: FriendshipService
     ){}
 
     public async createUser(user: CreateUserDto)
@@ -40,9 +45,16 @@ export class UserService {
         throw new HttpException("User not found", HttpStatus.NOT_FOUND);
     }
 
-    public async getByLogin(login: string)
+    public async getByLogin(user: UserEntity,login: string)
     {
-        return  await this.userRepository.findOne({login}); //need opt
+        const fetchedUser = await this.userRepository.findOne({login});
+
+        if (!fetchedUser)
+            return fetchedUser;
+        const isFriend = await this.friendshipService.isFriend(user, fetchedUser);
+
+        console.log(isFriend);
+        return  {...fetchedUser, isFriend}; //need opt
     }
 
     public async findByIdAndUpdate(id:number, updatedUser)
@@ -108,11 +120,6 @@ export class UserService {
             return false;
         await this.blockListRepository.remove(blockList);
         return true;
-    }
-
-    getBlockListQuery(userId: number)
-    {
-
     }
 
     async getBlockedList(userId: number)

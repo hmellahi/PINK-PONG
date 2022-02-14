@@ -209,5 +209,6 @@ export class GameGateway {
   handleConnection(client: Socket, ...args: any[]) {
     // console.log(`client joined: ${client.id}`);
     // this.logger.log(`Client connected: ${client.id}`);
+    
   }
 }
