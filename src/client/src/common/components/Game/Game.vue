@@ -20,20 +20,10 @@ import P5, {
 import Paddle from "@/common/Game/Objects/Paddle";
 import Score from "@/common/Game/Objects/Score";
 
+let MAX_SCORE = 5;
+
 @Component<Game>({
   components: { P5 },
-  // props:{
-  //   roomId:{
-  //     type: String,
-  //     required: true
-  //   }
-  // }
-  // watch: {
-  //   $route(to, from) {
-  //     console.log("route switched");
-  //     this.leaveGame();
-  //   },
-  // },
   async beforeRouteLeave(to, from, next) {
     console.log("beforeRouteLeave", to.path, from.path);
     await this.leaveGame();
@@ -41,6 +31,7 @@ import Score from "@/common/Game/Objects/Score";
   },
 })
 export default class Game extends Vue {
+  intervals: Array<any> = [];
   socket: any = null;
   // ({ canvas, backColor } = GameConstants)
   // canvasWidth:
@@ -89,7 +80,7 @@ export default class Game extends Vue {
   );
   scores: Score[] = [this.score, this.score2];
   roomId: any = "";
-  gameData:any = {};
+  gameData: any = {};
   init() {
     console.log("setup");
     var game = document.getElementById("game");
@@ -97,7 +88,7 @@ export default class Game extends Vue {
     if (game) {
       // GameConstants.canvas.width = game.offsetWidth;
       // GameConstants.canvas.height = game.offsetHeight;
-      console.log(game.offsetWidth, game.offsetHeight)
+      console.log(game.offsetWidth, game.offsetHeight);
       GameConstants.canvas.width = 400;
       GameConstants.canvas.height = 400;
     }
@@ -152,7 +143,7 @@ export default class Game extends Vue {
     window.addEventListener("resize", this.resize);
     this.init();
     this.roomId = this.$route.query.id;
-    console.log("here The id is: " ,this.currentUser.id);
+    console.log("here The id is: ", this.currentUser.id);
 
     this.listenToGameEvents();
   }
@@ -170,28 +161,38 @@ export default class Game extends Vue {
     });
     this.socket.on("gameOver", () => {
       this.isGameOver = true;
+      this.intervals.map((interval) => {
+        clearInterval(interval);
+      });
       this.showGameOver(this.sketch);
       // TODO show to the player the he won because the other player quits
       // TODO clear all running intervals...
     });
-    this.socket.on("ballMoves",(data:any)=>{
-        if (this.gameData.isPlayer1)return;
-        let {ball, canvasWidth } = data;
-        this.ball.x = ball.x;
-        this.ball.y = ball.y;
-    })
-    this.socket.on("incrementScore",(ballHitsBorder:number)=>{
+    this.socket.on("ballMoves", (data: any) => {
+      if (this.gameData.isPlayer1) return;
+      let { ball, canvas } = data;
+      this.ball.x = ball.x;
+      this.ball.y = ball.y;
+    });
+    this.socket.on("incrementScore", (ballHitsBorder: number) => {
       this.scores[ballHitsBorder - 1].value++;
-      console.log(this.scores[ballHitsBorder - 1].value)
-    })
-   this.socket.emit("joinGame", { userId: this.currentUser.id, roomId: this.roomId }, (data:any)=>{
-     console.log({data})
-     this.gameData = data;
-   })
+      console.log(this.scores[ballHitsBorder - 1].value);
+    });
+    this.socket.emit(
+      "joinGame",
+      { userId: this.currentUser.id, roomId: this.roomId },
+      (data: any) => {
+        console.log({ data });
+        this.gameData = data;
+      }
+    );
   }
 
   async leaveGame() {
-    await this.socket.emit("leaveGame", { userId: this.currentUser.id, roomId: this.roomId });
+    await this.socket.emit("leaveGame", {
+      userId: this.currentUser.id,
+      roomId: this.roomId,
+    });
   }
 
   resize() {
@@ -243,7 +244,7 @@ export default class Game extends Vue {
   countDown(sketch: P5Sketch) {
     this.drawGameObjects(sketch);
     this.countdown.value = 3;
-    const countDownInterval = setInterval(() => {
+    let countDownInterval = setInterval(() => {
       if (this.countdown.value <= 0) {
         this.countdown.value = 3;
         this.isGameOver = false;
@@ -253,6 +254,7 @@ export default class Game extends Vue {
       this.drawGameObjects(sketch);
       this.countdown.value--;
     }, 1000);
+    this.intervals.push(countDownInterval);
   }
 
   setup(sketch: P5Sketch) {
@@ -290,7 +292,7 @@ export default class Game extends Vue {
       // send
 
       // this.scores[ballHitsBorder - 1].value++;
-      if (this.scores[ballHitsBorder - 1].value > 9) {
+      if (this.scores[ballHitsBorder - 1].value > MAX_SCORE) {
         this.isGameOver = true;
         this.scores.map((score) => score.draw(sketch));
         this.showGameOver(sketch);
@@ -306,13 +308,13 @@ export default class Game extends Vue {
   }
 
   keydown(e: any) {
-    if (this.gameData.isSpectator)return;
+    if (this.gameData.isSpectator) return;
     console.log(e);
     if (this.isGameOver) return;
     if (this.paddle.handleKeyPressed(e)) this.sendNewPaddleVelocity();
   }
   keyup(e: any) {
-    if (this.gameData.isSpectator)return;
+    if (this.gameData.isSpectator) return;
     console.log(e);
     if (this.isGameOver) return;
     if (this.paddle.handleKeyReleased(e)) this.sendNewPaddleVelocity();
@@ -330,15 +332,19 @@ export default class Game extends Vue {
     });
   }
   sendNewBallPostion() {
-    if (!this.gameData.isPlayer1)return;
+    if (!this.gameData.isPlayer1) return;
     console.log("sending", this.roomId);
     this.socket.emit("ballMoves", {
       roomId: this.roomId,
       ball: {
         y: this.ball.y,
         x: this.ball.x,
+        radius: this.ball.radius,
       },
-      canvasWidth:  GameConstants.canvas.width,
+      canvas: {
+        width: GameConstants.canvas.width,
+        height: GameConstants.canvas.height,
+      },
       userId: this.currentUser.id, // TODO CHANGE
     });
   }

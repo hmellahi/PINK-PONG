@@ -87,9 +87,9 @@ export class GameGateway {
     // return 'Hello world!';
   }
 
-  checkBorders(canvasWidth: any, ball: any): number {
+  checkBorders(canvas: any, ball: any): number {
     if (ball.x - ball.radius / 2 <= 0) return 2;
-    if (ball.x + ball.radius / 2 >= canvasWidth) return 1;
+    if (ball.x + ball.radius / 2 >= canvas.width) return 1;
     return 0;
   }
 
@@ -114,7 +114,7 @@ export class GameGateway {
 
   @SubscribeMessage('ballMoves')
   ballMoves(@MessageBody() data: any, @ConnectedSocket() player: Socket) {
-    let { ball, canvasWidth, roomId, userId } = data;
+    let { ball, canvas, roomId, userId } = data;
 
     const currentPlayerRoom: Game = this.liveGames.find(
       (game) => game.roomId === roomId,
@@ -125,9 +125,9 @@ export class GameGateway {
       return this.server.to(player.id).emit('roomNotFound');
     if (userId != currentPlayerRoom.player1) return '';
 
-    player.to(roomId).emit('ballMoves', { ball, canvasWidth });
-    console.log(`player emitting: ${ball}, ${canvasWidth}`);
-    const ballHitsBorder = this.checkBorders(canvasWidth, ball);
+    player.to(roomId).emit('ballMoves', { ball, canvas });
+    console.log(`player emitting: ${ball}, ${canvas}`);
+    const ballHitsBorder = this.checkBorders(canvas, ball);
     if (ballHitsBorder) {
       this.server.to(roomId).emit('incrementScore', ballHitsBorder);
       const roomIndex = this.liveGames.indexOf(currentPlayerRoom);
@@ -139,11 +139,17 @@ export class GameGateway {
       if (
         this.liveGames[roomIndex].score1 >= MAX_SCORE ||
         this.liveGames[roomIndex].score2 >= MAX_SCORE
-      )
+      ) {
+        // Inform everyone that game ends
         this.server.to(roomId).emit('gameOver');
+        // TODO SAVE IN DATABASE
+        this.removeGame(roomId);
+      }
     }
   }
 
+  //eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlzVHdvRmFjdG9yQXV0aGVudGljYXRlZCI6dHJ1ZSwiaWF0IjoxNjQ0ODY4ODA0LCJleHAiOjE2NDQ4Njk0MDh9.P8wLet77uTbOby7rEL0LT3TYfXThL9naZ6mN1Itar2U
+//eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlzVHdvRmFjdG9yQXV0aGVudGljYXRlZCI6dHJ1ZSwiaWF0IjoxNjQ0ODY4ODA0LCJleHAiOjE2NDQ4NzQ4MDR9.AQWbyKkCD3KPBkjfFZduMe-hlXgs2VIkWawfIL2bB_c
   @SubscribeMessage('joinGame')
   joinGame(@MessageBody() data: any, @ConnectedSocket() player: Socket) {
     const { roomId, userId } = data;
