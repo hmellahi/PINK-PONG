@@ -6,7 +6,7 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Socket, Server } from 'socket.io';
-import { Logger } from '@nestjs/common';
+import { Logger, UseGuards } from '@nestjs/common';
 import { Game } from './Interfaces/Game.interface';
 import { HttpStatus, HttpException } from '@nestjs/common';
 
@@ -18,6 +18,8 @@ let MAX_SCORE = 5;
     origin: '*',
   },
 })
+
+@UseGuards()
 export class GameGateway {
   @WebSocketServer() server: Server;
 
