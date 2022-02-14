@@ -320,10 +320,12 @@ export default class Game extends Vue {
       this.ball.x < GameConstants.canvas.width / 2 ? this.paddle2 : this.paddle;
     if (this.ball.hits(player)) {
       this.ball.reverse(player, player == this.paddle);
+      // send
     }
     let ballHitsBorder = this.ball.checkBorders();
     if (ballHitsBorder) {
       this.ball.reset();
+      // send
 
       this.scores[ballHitsBorder - 1].value++;
       if (this.scores[ballHitsBorder - 1].value > 2) {
@@ -356,10 +358,9 @@ export default class Game extends Vue {
     console.log("sending", this.roomId);
     this.socket.emit("paddleMoves", {
       roomId: this.roomId,
-      // velocity: this.paddle.velocity,
-      paddle:{
-        y:this.paddle.y,
-        velocity:this.paddle.velocity,
+      paddle: {
+        y: this.paddle.y,
+        velocity: this.paddle.velocity,
       },
       userId: 2, // TODO CHANGE
     });

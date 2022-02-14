@@ -6,8 +6,6 @@ import { diskStorage } from "multer";
 import { join } from "path";
 import { JwtAuthGuard } from "src/authentication/Guards/jwtAccess.guard";
 import { RequestWithUser } from "src/authentication/Interfaces/requestWithUser.interface";
-import { isNumber } from "util";
-import { isNumberObject } from "util/types";
 import { UserService } from "./user.service";
 import { editFileName, imageFileFilter } from "./utils/user.utils";
 
@@ -101,6 +99,7 @@ export class  UserController
     {
         if (!blockId || isNaN(Number(blockId)))
             throw new BadRequestException;
+
         const {user} = request;
         if (!await this.userService.unblockUser(user,blockId))
             throw new HttpException("blockedList not exist", HttpStatus.BAD_REQUEST);

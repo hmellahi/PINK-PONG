@@ -91,16 +91,33 @@ export class GameGateway {
     const currentPlayerRoom: Game = this.liveGames.find(
       (game) => game.roomId === roomId,
     );
+    // room doesnt exist
+    if (!currentPlayerRoom)
+      return this.server.to(player.id).emit('roomNotFound');
+
+    player.to(roomId).emit('paddleMoves', { paddle });
+    console.log(`player emitting: ${paddle}`);
+  }
+
+  @SubscribeMessage('ballMoves')
+  ballMoves(@MessageBody() data: any, @ConnectedSocket() player: Socket) {
+    let { ball, roomId, userId } = data;
+
+    const currentPlayerRoom: Game = this.liveGames.find(
+      (game) => game.roomId === roomId,
+    );
     // console.table(this.liveGames);
     // console.table(this.liveGames);
     // console.table(currentPlayerRoom);
     // room doesnt exist
     if (!currentPlayerRoom)
       return this.server.to(player.id).emit('roomNotFound');
+    if (userId != currentPlayerRoom.player1)
+      return ""
 
     // player.to(roomId).emit('paddleMoves', { players:[{'velocity':velocity, ''}]});
-    player.to(roomId).emit('paddleMoves', { paddle });
-    console.log(`player emitting: ${paddle}`);
+    player.to(roomId).emit('ballMoves', { ball });
+    // console.log(`player emitting: ${paddle}`);
 
     // this.server.to(spectactoRoom).emit()
   }
