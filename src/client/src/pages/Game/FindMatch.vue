@@ -41,9 +41,13 @@ export default class FindMatch extends Vue {
     this.socket.on("connect_failed", function (err: any) {
       console.log("Connection Failed");
     });
-    this.socket.emit("joinQueue", { userId: 2 }, (data: any) => {
+    this.socket.emit("joinQueue", { userId: this.currentUser.id }, (data: any) => {
       // console.log({ data });
     });
+  }
+
+  get currentUser() {
+    return this.$store.getters["User/getCurrentUser"];
   }
 
   // beforeUnmount() {
@@ -52,7 +56,7 @@ export default class FindMatch extends Vue {
   // }
 
   leaveQueue() {
-    this.socket.emit("leaveQueue", { userId: 2 });
+    this.socket.emit("leaveQueue", { userId: this.currentUser.id });
   }
 
   pad(num: number, len: number) {
