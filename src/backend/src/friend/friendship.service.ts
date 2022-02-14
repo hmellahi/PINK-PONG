@@ -1,7 +1,10 @@
 import { array } from "@hapi/joi";
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
+import { async } from "rxjs";
+import BlockListEntity from "src/user/entities/blockedUserList.entity";
 import UserEntity from "src/user/entities/user.entity"
+import { UserService } from "src/user/user.service";
 import {Repository } from "typeorm";
 import FriendshipEntity from "./entities/friendship.entity";
 import { Friendship_Status , FriendshipStatus} from "./Interfaces/friendship.interface";
@@ -11,7 +14,8 @@ export class FriendshipService
 {
     constructor(
         @InjectRepository(FriendshipEntity)
-        private friendshipRepository: Repository<FriendshipEntity>
+        private friendshipRepository: Repository<FriendshipEntity>,
+        private userService: UserService
     ){}
 
     public async createFriendship(sender: UserEntity, receiver: UserEntity)
@@ -69,8 +73,10 @@ export class FriendshipService
         return friendshipRequests;
     }
 
+
     public async getFriendships(user: UserEntity)
     {
+        let friendships = [];
         const asReceiver = (await this.friendshipRepository
                                         .createQueryBuilder("f")
                                         .innerJoin("f.sender", "s", "f.receiverId = :recevierId AND f.status = :status",
@@ -78,7 +84,13 @@ export class FriendshipService
                                         .addSelect(["s.id","s.login", "s.avatar_url"])
                                         .orderBy("f.create_date", "DESC")
                                         .getMany())
-                                        .map(({sender,...res}) => { return ({...res, user: sender})});
+                                        .forEach(async ({sender, ...res})=>
+                                        {
+                                            if (!await this.userService.isBlockedUser(user, sender))
+                                                friendships.push({...res, user: sender});
+                                        });
+
+
         const asSender = (await this.friendshipRepository
                                         .createQueryBuilder("f")
                                         .innerJoin("f.receiver", "r", "f.senderId = :senderId AND f.status = :status",
@@ -86,9 +98,14 @@ export class FriendshipService
                                         .addSelect(["r.id","r.login", "r.avatar_url"])
                                         .orderBy("f.create_date", "DESC")
                                         .getMany())
-                                        .map(({receiver,...res}) => { return ({...res, user: receiver})})
+                                        .forEach(async ({receiver, ...res})=>
+                                        {
+                                            if (!await this.userService.isBlockedUser(user, receiver))
+                                                friendships.push({...res, user: receiver});
+                                        });
 
-        return [...asSender, ...asReceiver];
+
+        return friendships;
     }
 
     public async removeFriendship(friendshipId: number, user: UserEntity)
@@ -97,7 +114,7 @@ export class FriendshipService
         const friendship = await this.getFriendshipByIdAndUser(
             friendshipId, user
         );
-        console.log(friendship);
+
         if (!friendship)
             return false;
         await this.friendshipRepository

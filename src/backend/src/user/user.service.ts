@@ -110,15 +110,25 @@ export class UserService {
         return true;
     }
 
+    getBlockListQuery(userId: number)
+    {
+
+    }
+
     async getBlockedList(userId: number)
     {
         return (await this.blockListRepository
                             .createQueryBuilder("l")
-                            .innerJoin("l.blocker", "b", "l.blockerId = :blockerId",
+                            .innerJoin("l.blocked", "b", "l.blockerId = :blockerId",
                                         { blockerId: userId})
                             .addSelect(["b.id","b.login", "b.avatar_url"])
                             .orderBy("l.create_date", "DESC")
                             .getMany())
-                            .map(({blocker,...res}) => { return ({...res, user: blocker})});
+                            .map(({blocked,...res}) => { return ({...res, user: blocked})});
+    }
+
+    async isBlockedUser(blocker: UserEntity, blocked: UserEntity)
+    {
+        return await this.blockListRepository.findOne({blocker, blocked});
     }
 }
