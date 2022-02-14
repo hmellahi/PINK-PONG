@@ -69,7 +69,7 @@ export default class Game extends Vue {
     this.paddleWidth,
     this.paddleHeight
   );
-  map: string = "map1";
+  map: string = "map2";
   net: Net = new Net(
     GameConstants.canvas.width,
     GameConstants.canvas.height,

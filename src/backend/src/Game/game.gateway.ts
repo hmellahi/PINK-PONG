@@ -84,6 +84,12 @@ export class GameGateway {
     // return 'Hello world!';
   }
 
+  checkBorders(window: any, ball: any): number {
+    if (ball.x - ball.radius / 2 <= 0) return 2;
+    if (ball.x + ball.radius / 2 >= window.width) return 1;
+    return 0;
+  }
+
   @SubscribeMessage('paddleMoves')
   handleMessages(@MessageBody() data: any, @ConnectedSocket() player: Socket) {
     let { paddle, roomId, userId } = data;
@@ -91,35 +97,48 @@ export class GameGateway {
     const currentPlayerRoom: Game = this.liveGames.find(
       (game) => game.roomId === roomId,
     );
-    // room doesnt exist
-    if (!currentPlayerRoom)
-      return this.server.to(player.id).emit('roomNotFound');
 
+    // room doesnt exist
+    if (!currentPlayerRoom) return 'roomNotFound';
+    if (
+      userId != currentPlayerRoom.player1 ||
+      userId != currentPlayerRoom.player2
+    )
+      return 'u cant move the paddle hehe ;)';
     player.to(roomId).emit('paddleMoves', { paddle });
     console.log(`player emitting: ${paddle}`);
   }
 
   @SubscribeMessage('ballMoves')
   ballMoves(@MessageBody() data: any, @ConnectedSocket() player: Socket) {
-    let { ball, roomId, userId } = data;
+    let { ball, window, roomId, userId } = data;
 
     const currentPlayerRoom: Game = this.liveGames.find(
       (game) => game.roomId === roomId,
     );
-    // console.table(this.liveGames);
-    // console.table(this.liveGames);
-    // console.table(currentPlayerRoom);
+
     // room doesnt exist
     if (!currentPlayerRoom)
       return this.server.to(player.id).emit('roomNotFound');
-    if (userId != currentPlayerRoom.player1)
-      return ""
+    if (userId != currentPlayerRoom.player1) return '';
 
-    // player.to(roomId).emit('paddleMoves', { players:[{'velocity':velocity, ''}]});
-    player.to(roomId).emit('ballMoves', { ball });
-    // console.log(`player emitting: ${paddle}`);
-
-    // this.server.to(spectactoRoom).emit()
+    player.to(roomId).emit('ballMoves', { ball, window });
+    console.log(`player emitting: ${ball}, ${window}`);
+    let ballHitsBorder = this.checkBorders(window, ball);
+    if (ballHitsBorder) {
+      this.server.to(roomId).emit('incrementScore', ballHitsBorder == 1);
+      const roomIndex = this.liveGames.indexOf(currentPlayerRoom);
+      if (ballHitsBorder == 1) {
+        this.liveGames[roomIndex].score1++;
+      } else {
+        this.liveGames[roomIndex].score2++;
+      }
+      if (
+        this.liveGames[roomIndex].score1 >= MAX_SCORE ||
+        this.liveGames[roomIndex].score2 >= MAX_SCORE
+      )
+        this.server.to(roomId).emit('gameOver');
+    }
   }
 
   @SubscribeMessage('joinGame')
@@ -133,18 +152,20 @@ export class GameGateway {
     //console.table(currentPlayerRoom);
     // room doesnt exist
     if (!currentPlayerGame)
-      return this.server.to(player.id).emit('roomNotFound');
+      return "roomNotFound"
+      // return this.server.to(player.id).emit('roomNotFound');
 
     // update user status [inGame] TODO
-    // check if player/spectator
+
     player.join(roomId);
-    // this.server.to(player.id).emit('gameloads', {
-    //   players: [
-    //     { username: '', avatar: '' },
-    //     { username: '', avatar: '' },
-    //   ],
-    // });
     console.log(`player joined: ${player.id}`);
+    return {
+      player1: currentPlayerGame.player1,
+      player2: currentPlayerGame.player2,
+      isSpectator:
+        userId != currentPlayerGame.player1 &&
+        userId != currentPlayerGame.player2,
+    };
   }
 
   @SubscribeMessage('leaveGame')
@@ -161,18 +182,15 @@ export class GameGateway {
       // return this.server.to(player.id).emit('roomNotFound');
       return 'roomNotFound';
 
-    // if (
-    //   currentPlayerRoom.player1 != userId &&
-    //   currentPlayerRoom.player2 != userId
-    // )
-    //   return 'wtf';
     const roomIndex = this.liveGames.indexOf(currentPlayerRoom);
     console.log(roomIndex);
     if (currentPlayerRoom.player1 == userId) {
       this.liveGames[roomIndex].ff = 1;
-    } else this.liveGames[roomIndex].ff = 2;
-
+    } else if (currentPlayerRoom.player1 == userId)
+      this.liveGames[roomIndex].ff = 2;
+    else return 'wtf';
     // TODO SAVE IN DATABASE
+
     // Inform everyone that game ends
     this.server.to(roomId).emit('gameOver');
     this.removeGame(roomId);
