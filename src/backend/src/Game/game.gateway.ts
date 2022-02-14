@@ -6,9 +6,10 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Socket, Server } from 'socket.io';
-import { Logger } from '@nestjs/common';
+import {Logger, UseGuards} from '@nestjs/common';
 import { Game } from './Interfaces/Game.interface';
 import { HttpStatus, HttpException } from '@nestjs/common';
+import {JwtAuthGuard} from "../authentication/Guards/jwtAccess.guard";
 
 let MAX_SCORE = 5;
 
@@ -18,6 +19,7 @@ let MAX_SCORE = 5;
     origin: '*',
   },
 })
+@UseGuards(JwtAuthGuard)
 export class GameGateway {
   @WebSocketServer() server: Server;
 
@@ -33,6 +35,7 @@ export class GameGateway {
     @ConnectedSocket() player: Socket,
   ) {
     // this.logger.log(`client leaved queue: ${client.id}`);
+    console.log(player);
     this.players = this.players.filter(
       (playerinQueue) => playerinQueue.id != player.id,
     );
@@ -45,11 +48,11 @@ export class GameGateway {
     @ConnectedSocket() player: Socket,
   ): void {
     // TODO CHECK FOR USERID
-    // if (this.players.indexOf(this.username) != -1)
     console.log(
       `%c client joined queue: ${player.id}`,
       'background: #222; color: #bada55',
     );
+    // if (this.players.indexOf(this.username) != -1)
     this.players.push(player);
 
     if (this.players.length >= 2) {
@@ -152,20 +155,21 @@ export class GameGateway {
     //console.table(currentPlayerRoom);
     // room doesnt exist
     if (!currentPlayerGame)
-      return "roomNotFound"
-      // return this.server.to(player.id).emit('roomNotFound');
+      return this.server.to(player.id).emit('roomNotFound');
+    // return this.server.to(player.id).emit('roomNotFound');
 
     // update user status [inGame] TODO
 
     player.join(roomId);
     console.log(`player joined: ${player.id}`);
-    return {
+    this.server.to(player.id).emit("joinGame", {
       player1: currentPlayerGame.player1,
       player2: currentPlayerGame.player2,
+      isPlayer1: userId == currentPlayerGame.player1,
       isSpectator:
         userId != currentPlayerGame.player1 &&
         userId != currentPlayerGame.player2,
-    };
+    });
   }
 
   @SubscribeMessage('leaveGame')
@@ -244,6 +248,5 @@ export class GameGateway {
   handleConnection(client: Socket, ...args: any[]) {
     // console.log(`client joined: ${client.id}`);
     // this.logger.log(`Client connected: ${client.id}`);
-    
   }
 }
