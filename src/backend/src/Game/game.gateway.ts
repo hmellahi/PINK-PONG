@@ -33,7 +33,9 @@ export class GameGateway {
     @ConnectedSocket() player: Socket,
   ) {
     // this.logger.log(`client leaved queue: ${client.id}`);
-    this.players = this.players.filter((player) => player.id === player.id);
+    this.players = this.players.filter(
+      (playerinQueue) => playerinQueue.id != player.id,
+    );
     console.log(`client leaved queue: ${player.id}`);
   }
 
@@ -44,32 +46,38 @@ export class GameGateway {
   ): void {
     // TODO CHECK FOR USERID
     // if (this.players.indexOf(this.username) != -1)
+    console.log(
+      `%c client joined queue: ${player.id}`,
+      'background: #222; color: #bada55',
+    );
     this.players.push(player);
 
     if (this.players.length >= 2) {
       // console.log(this.players);
       const roomId = this.players[0].id + '' + this.players[1].id;
       // join room
-      this.players[0].join(roomId);
-      this.players[1].join(roomId);
+      // this.players[0].join(roomId);
+      // this.players[1].join(roomId);
 
       // register the game
       this.liveGames.push({
         roomId,
-        player1: userId,
-        player2: userId,
+        player1: userId, // TODO CHANGE
+        player2: userId, // TODO CHANGE
         score1: 0,
         score2: 0,
         created_at: new Date(),
         map: 0, // TODO CHANGE
-        ff:0
+        ff: 0,
       });
 
-      //
-      this.server.to(roomId).emit('matchFound', roomId);
+      // alert players
+      this.server
+        .to(this.players[0].id)
+        .to(this.players[1].id)
+        .emit('matchFound', roomId);
 
-
-      // // remove playes from queue
+      // remove playes from queue
       this.players.splice(0, 2);
     }
     // console.log(this.players);
@@ -78,7 +86,7 @@ export class GameGateway {
 
   @SubscribeMessage('paddleMoves')
   handleMessages(@MessageBody() data: any, @ConnectedSocket() player: Socket) {
-    let { velocity, roomId, userId } = data;
+    let { paddle, roomId, userId } = data;
 
     const currentPlayerRoom: Game = this.liveGames.find(
       (game) => game.roomId === roomId,
@@ -89,10 +97,10 @@ export class GameGateway {
     // room doesnt exist
     if (!currentPlayerRoom)
       return this.server.to(player.id).emit('roomNotFound');
-    
+
     // player.to(roomId).emit('paddleMoves', { players:[{'velocity':velocity, ''}]});
-    player.to(roomId).emit('paddleMoves', velocity);
-    console.log(`player emitting: ${velocity}`);
+    player.to(roomId).emit('paddleMoves', { paddle });
+    console.log(`player emitting: ${paddle}`);
 
     // this.server.to(spectactoRoom).emit()
   }
@@ -124,29 +132,36 @@ export class GameGateway {
 
   @SubscribeMessage('leaveGame')
   leaveGame(@MessageBody() data: any, @ConnectedSocket() player: Socket) {
+    this.logger.log(`aafk: ${player.id}`);
     const { roomId, userId } = data;
 
     const currentPlayerRoom: Game = this.liveGames.find(
       (game) => game.roomId === roomId,
     );
-
-    this.logger.log(`player joined: ${player.id}`);
-
+    // const currentPlayerRoom = this.liveGames.indexOf()
     // room doesnt exist
     if (!currentPlayerRoom)
-      return this.server.to(player.id).emit('roomNotFound');
+      // return this.server.to(player.id).emit('roomNotFound');
+      return 'roomNotFound';
 
-    if (
-      currentPlayerRoom.player1 == userId ||
-      currentPlayerRoom.player2 == userId
-    )
-      return 'wtf';
-
-    if (this.liveGames[roomId].player1 == userId) {
-      this.liveGames[roomId].ff = 1;
-    } else this.liveGames[roomId].ff = 2;
+    // if (
+    //   currentPlayerRoom.player1 != userId &&
+    //   currentPlayerRoom.player2 != userId
+    // )
+    //   return 'wtf';
+    const roomIndex = this.liveGames.indexOf(currentPlayerRoom);
+    console.log(roomIndex);
+    if (currentPlayerRoom.player1 == userId) {
+      this.liveGames[roomIndex].ff = 1;
+    } else this.liveGames[roomIndex].ff = 2;
 
     // TODO SAVE IN DATABASE
+    // Inform everyone that game ends
+    this.server.to(roomId).emit('gameOver');
+    this.removeGame(roomId);
+  }
+
+  removeGame(roomId: string) {
     this.liveGames = this.liveGames.filter((game) => game.roomId === roomId);
   }
 
@@ -186,7 +201,8 @@ export class GameGateway {
     // if player was in queue?
     // quit the game
     // if player was in game
-    // end game with lost to the player 
+    // end game with lost to the player
+    // this.leaveGame({roomId}, client )
     // else
     // do nting
   }

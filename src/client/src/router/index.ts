@@ -23,7 +23,7 @@ import EditChannel from "@/pages/Chat/editChannel.vue";
 import checkAuth from "@/middlewares/checkAuth";
 import conversations from "@/pages/Chat/dms.vue";
 import directMessage from "@/pages/Chat/directMessage.vue";
-import Game from "@/pages/Game/pingpong.vue";
+import Game from "@/common/components/Game/Game.vue";
 import Games from "@/pages/Game/Games.vue";
 import channelRoom from "@/pages/Chat/channelRoom.vue";
 Vue.use(VueRouter);

@@ -49,29 +49,50 @@ export default class Ball {
     this.y = nexPos;
     // console.log(`from  player ${this.x}, ${this.y}`);
   }
-
-  handleKeyPressed(sketch: P5Sketch): Boolean {
-    let { UP_ARROW, DOWN_ARROW, keyCode } = sketch;
+  handleKeyPressed(e: any): Boolean {
     // console.log(keyCode== LEFT_ARROW);
-    if (keyCode === UP_ARROW) {
+    if (e.code === "ArrowUp") {
       this.velocity = -1;
       return true;
-    } else if (keyCode === DOWN_ARROW) {
+    } else if (e.code === "ArrowDown") {
       this.velocity = 1;
       return true;
     }
     return false;
   }
 
-  handleKeyReleased(sketch: P5Sketch): Boolean {
-    let { UP_ARROW, DOWN_ARROW, keyCode } = sketch;
-    if (keyCode === UP_ARROW) {
+  handleKeyReleased(e: any): Boolean {
+    if (e.code === "ArrowUp") {
       this.velocity = 0;
       return true;
-    } else if (keyCode === DOWN_ARROW) {
+    } else if (e.code === "ArrowDown") {
       this.velocity = 0;
       return true;
     }
     return false;
   }
+  // handleKeyPressed(sketch: P5Sketch): Boolean {
+  //   let { UP_ARROW, DOWN_ARROW, keyCode } = sketch;
+  //   // console.log(keyCode== LEFT_ARROW);
+  //   if (keyCode === UP_ARROW) {
+  //     this.velocity = -1;
+  //     return true;
+  //   } else if (keyCode === DOWN_ARROW) {
+  //     this.velocity = 1;
+  //     return true;
+  //   }
+  //   return false;
+  // }
+
+  // handleKeyReleased(sketch: P5Sketch): Boolean {
+  //   let { UP_ARROW, DOWN_ARROW, keyCode } = sketch;
+  //   if (keyCode === UP_ARROW) {
+  //     this.velocity = 0;
+  //     return true;
+  //   } else if (keyCode === DOWN_ARROW) {
+  //     this.velocity = 0;
+  //     return true;
+  //   }
+  //   return false;
+  // }
 }

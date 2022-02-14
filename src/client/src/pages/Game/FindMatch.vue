@@ -15,8 +15,15 @@ import { Component, Vue } from "vue-property-decorator";
 import Button from "@/common/components/UI/Button.vue";
 import { io } from "socket.io-client";
 
-@Component({
+@Component<FindMatch>({
   components: { Button },
+  async beforeRouteLeave(to, from, next) {
+    console.log("sheesh", to.path, from.path);
+    // incase if you want to access `this`
+    await this.leaveQueue();
+    // const self = this as any;
+    next();
+  },
 })
 export default class FindMatch extends Vue {
   count = { seconds: 0, minutes: 0 };
@@ -39,10 +46,10 @@ export default class FindMatch extends Vue {
     });
   }
 
-  beforeUnmount() {
-    console.log("am leaving...");
-    this.socket.emit("leaveQueue", { userId: 2 });
-  }
+  // beforeUnmount() {
+  //   console.log("am leaving...");
+  //   this.socket.emit("leaveQueue", { userId: 2 });
+  // }
 
   leaveQueue() {
     this.socket.emit("leaveQueue", { userId: 2 });
@@ -68,22 +75,21 @@ export default class FindMatch extends Vue {
     }, 1000);
   }
 
-  beforeRouteEnter(to: any, from: any, next: any) {
-    console.log("beforeRouteEnter");
-    next();
-  }
+  // beforeRouteEnter(to: any, from: any, next: any) {
+  //   console.log("beforeRouteEnter");
+  //   next();
+  // }
 
-  beforeRouteUpdate(to: any, from: any, next: any) {
-    console.log("beforeRouteUpdate");
-    next();
-  }
+  // beforeRouteUpdate(to: any, from: any, next: any) {
+  //   console.log("beforeRouteUpdate");
+  //   next();
+  // }
 
-  beforeRouteLeave(to: any, from: any, next: any) {
-    console.log("beforeRouteLeave", to.path, from.path);
-    this.leaveQueue();
-    next();
-  }
-
+  // beforeRouteLeave(to: any, from: any, next: any) {
+  //   console.log("beforeRouteLeave", to.path, from.path);
+  //   this.leaveQueue();
+  //   next();
+  // }
 }
 </script>
 
