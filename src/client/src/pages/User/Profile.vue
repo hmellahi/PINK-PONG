@@ -12,7 +12,7 @@
             <p class="user-name p-0 text-center my-auto">{{
               user.login
             }}</p>
-             <Button class="w-100 m-0 mb-0 f1" v-if="!isMyProfile" :onClick="sendFriendReq">Send Friend Request</Button>
+             <Button class="w-100 m-0 mb-0 f1" v-if="!isMyProfile && !user.isFriend" :onClick="sendFriendReq">Send Friend Request</Button>
           <p v-if="message" class="success_msg">{{ message }}</p>
           </div>
           <!-- <Button class="w-100 m-0 mb-0 f1" :onClick="sendFriendReq"
