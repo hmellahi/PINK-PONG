@@ -15,4 +15,4 @@ export const imageFileFilter = (req, file, callback) => {
       .map(() => Math.round(Math.random() * 16).toString(16))
       .join('');
     callback(null, `${randomName}${fileExtName}`);
-  };
+  }

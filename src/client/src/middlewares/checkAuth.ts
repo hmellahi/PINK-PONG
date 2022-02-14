@@ -1,25 +1,22 @@
 import store from "@/store";
 import { NavigationGuardNext, Route } from "vue-router";
 import axios from "axios";
+import api from "@/api";
 
 const isAuthenticated = async () => {
   // store.state.User.isAuthenticated
-  let data:any;
+  let data: any;
   try {
-    data = await axios({
-      method: "get",
-      url: "http://127.0.0.1:3000/api/users/me",
-      withCredentials: true,
-      headers: {
-        "Access-Control-Allow-Origin": "http://127.0.0.1:5000/",
-        "Access-Control-Allow-Credentials": "true",
-      },
-    });
+    data = await api.get("users/me");
   } catch (err) {
-    // console.log("erro happens");
-    // return false;
+    try {
+      await api.get("auth/refresh");
+      data = await api.get("users/me");
+    } catch (err) {
+      return false;
+    }
   }
-  // store.commit("User/setUser", data.data);
+  store.commit("User/setUser", data.data);
   return true;
 };
 const checkAuth = async (to: Route, from: Route, next: NavigationGuardNext) => {
@@ -32,7 +29,7 @@ const checkAuth = async (to: Route, from: Route, next: NavigationGuardNext) => {
     return next();
   let authLog = await isAuthenticated();
   if (authLog) return next();
-    return next("/login");
+  return next("/login");
 };
 
 export default checkAuth;
