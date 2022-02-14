@@ -46,8 +46,8 @@ export default class Game extends Vue {
   // canvasWidth:
   backColor: number = GameConstants.backColor; //todo change
   // xBall: number = Math.floor(Math.random() * 300) + GameConstants.ball.x;
-  xBall: number = GameConstants.ball.x;
-  yBall: number = GameConstants.ball.y;
+  xBall: number = GameConstants.canvas.width / 2;
+  yBall: number = GameConstants.canvas.height / 2;
   radius: number = 10;
   sounds: Array<any> = [];
   ball: Ball = new Ball(this.xBall, this.yBall, this.radius, 0);
@@ -89,6 +89,7 @@ export default class Game extends Vue {
   );
   scores: Score[] = [this.score, this.score2];
   roomId: any = "";
+  countInter: any;
   init() {
     console.log("setup");
     var game = document.getElementById("game");
@@ -99,8 +100,8 @@ export default class Game extends Vue {
     }
     this.socket = null;
     this.backColor = GameConstants.backColor; //todo change
-    this.xBall = GameConstants.ball.x;
-    this.yBall = GameConstants.ball.y;
+    this.xBall = GameConstants.canvas.width / 2;
+    this.yBall = GameConstants.canvas.height / 2;
     this.radius = 10;
     this.sounds = [];
     this.ball = new Ball(this.xBall, this.yBall, this.radius, 0);
@@ -142,6 +143,51 @@ export default class Game extends Vue {
     this.scores = [this.score, this.score2];
     this.roomId = "";
   }
+  resizeObjects(){
+    console.log("setup");
+    var game = document.getElementById("game");
+
+    if (game) {
+      GameConstants.canvas.width = game.offsetWidth;
+      GameConstants.canvas.height = game.offsetHeight;
+    }
+    this.radius = 10;
+    this.ball = new Ball(this.ball.x, this.ball.y, this.radius, 0);
+    this.isGameOver = false;
+    this.paddleWidth = GameConstants.paddle.width;
+    this.paddleHeight = GameConstants.paddle.height;
+    this.paddle = new Paddle(
+      GameConstants.canvas.width - this.paddleWidth - 20,
+      this.paddle.y,
+      this.paddleWidth,
+      this.paddleHeight
+    );
+    this.paddle2 = new Paddle(
+      20,
+      this.paddle2.y,
+      this.paddleWidth,
+      this.paddleHeight
+    );
+
+    this.net = new Net(
+      GameConstants.canvas.width,
+      GameConstants.canvas.height,
+      this.map
+    );
+    this.background = new BackGround();
+
+    this.score = new Score(GameConstants.canvas.width / 4 - 60, 30,this.score.value);
+    this.score2 = new Score(
+      GameConstants.canvas.width - GameConstants.canvas.width / 4,
+      30,
+      this.score2.value
+    );
+    this.countdown = new Score(
+      GameConstants.canvas.width / 2 - 15,
+      GameConstants.canvas.height / 2 - 25,
+      this.countdown.value
+    );
+  }
   mounted() {
     window.addEventListener("keydown", this.keydown);
     window.addEventListener("keyup", this.keyup);
@@ -173,7 +219,9 @@ export default class Game extends Vue {
       this.isGameOver = true;
       this.showGameOver(this.sketch);
       // TODO show to the player the he won because the other player quits
+      this.playerLost(this.sketch);
       // TODO clear all running intervals...
+      clearInterval(this.countInter);
     });
     this.socket.emit("joinGame", { userId: 2, roomId: this.roomId });
   }
@@ -183,13 +231,7 @@ export default class Game extends Vue {
   }
 
   resize() {
-    var game = document.getElementById("game");
-
-    if (game) {
-      GameConstants.canvas.width = game.offsetWidth;
-      GameConstants.canvas.height = game.offsetHeight;
-    }
-    this.init();
+    this.resizeObjects();
     this.sketch.resizeCanvas(
       GameConstants.canvas.width,
       GameConstants.canvas.height
@@ -215,10 +257,21 @@ export default class Game extends Vue {
   showGameOver(sketch: P5Sketch) {
     this.drawOerlay(sketch);
     sketch.textSize(GameConstants.canvas.width / 8);
-    sketch.textAlign(sketch.CENTER, sketch.CENTER);
+    sketch.textAlign(sketch.CENTER);
     sketch.fill(255, 0, 0);
     sketch.text(
       "Game Over",
+      GameConstants.canvas.width / 2,
+      GameConstants.canvas.height / 2
+    );
+    // this.$router.push('/')
+  }
+   playerLost(sketch: P5Sketch) {
+    sketch.textSize(GameConstants.canvas.width / 12);
+    sketch.textAlign(sketch.BOTTOM);
+    sketch.fill(255, 0, 0);
+    sketch.text(
+      "you Have Lost",
       GameConstants.canvas.width / 2,
       GameConstants.canvas.height / 2
     );
@@ -237,6 +290,7 @@ export default class Game extends Vue {
       this.drawGameObjects(sketch);
       this.countdown.value--;
     }, 1000);
+    this.countInter = countDownInterval;
   }
 
   setup(sketch: P5Sketch) {
@@ -272,7 +326,7 @@ export default class Game extends Vue {
       this.ball.reset();
 
       this.scores[ballHitsBorder - 1].value++;
-      if (this.scores[ballHitsBorder - 1].value > 9) {
+      if (this.scores[ballHitsBorder - 1].value > 2) {
         this.isGameOver = true;
         this.scores.map((score) => score.draw(sketch));
         this.showGameOver(sketch);

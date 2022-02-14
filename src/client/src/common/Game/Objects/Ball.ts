@@ -24,8 +24,8 @@ export default class {
     tempRadius: number,
     tempColor: number
   ) {
-    this.x = GameConstants.canvas.width/2;
-    this.y = GameConstants.canvas.height/2;
+    this.x = tempX;
+    this.y = tempY;
     // this.y =  Math.floor(Math.random() * GameConstants.canvas.height - 200) + 200;
    // this.y = Math.floor(Math.random() * ((GameConstants.canvas.height / 10)*8 - (GameConstants.canvas.height / 10)*2 + (GameConstants.canvas.height / 10)*2));
 

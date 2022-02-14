@@ -13,10 +13,10 @@ const isAuthenticated = async () => {
       await api.get("auth/refresh");
       data = await api.get("users/me");
     } catch (err) {
-      return false;
+      // return false;
     }
   }
-  store.commit("User/setUser", data.data);
+  // store.commit("User/setUser", data.data);
   return true;
 };
 const checkAuth = async (to: Route, from: Route, next: NavigationGuardNext) => {
