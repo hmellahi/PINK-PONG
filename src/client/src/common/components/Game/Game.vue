@@ -223,7 +223,13 @@ export default class Game extends Vue {
       // TODO clear all running intervals...
       clearInterval(this.countInter);
     });
-    this.socket.emit("joinGame", { userId: 2, roomId: this.roomId });
+    this.socket.on("incrementScore", (ballHitsBorder: any) => {
+      this.scores[ballHitsBorder - 1].value++;
+
+    });
+    this.socket.emit("joinGame", { userId: 2, roomId: this.roomId }, (msg) => {
+        console.log(msg)
+    });
   }
 
   async leaveGame() {
@@ -327,7 +333,7 @@ export default class Game extends Vue {
       this.ball.reset();
       // send
 
-      this.scores[ballHitsBorder - 1].value++;
+      // this.scores[ballHitsBorder - 1].value++;
       if (this.scores[ballHitsBorder - 1].value > 2) {
         this.isGameOver = true;
         this.scores.map((score) => score.draw(sketch));
