@@ -1,6 +1,7 @@
 import { array } from "@hapi/joi";
 import { forwardRef, Inject, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
+import { response } from "express";
 import { async } from "rxjs";
 import BlockListEntity from "src/user/entities/blockedUserList.entity";
 import UserEntity from "src/user/entities/user.entity"
@@ -89,34 +90,33 @@ export class FriendshipService
     public async getFriendships(user: UserEntity)
     {
         let friendships = [];
-        const asReceiver = (await this.friendshipRepository
+        const asReceiver = await Promise.all((await this.friendshipRepository
                                         .createQueryBuilder("f")
                                         .innerJoin("f.sender", "s", "f.receiverId = :recevierId AND f.status = :status",
                                                     { recevierId: user.id , status: "accepted"})
                                         .addSelect(["s.id","s.login", "s.avatar_url"])
                                         .orderBy("f.create_date", "DESC")
                                         .getMany())
-                                        .forEach(async ({sender, ...res})=>
+                                        .map(async ({sender, ...res}) =>
                                         {
                                             if (!await this.userService.isBlockedUser(user, sender))
-                                                friendships.push({...res, user: sender});
-                                        });
+                                                friendships.push({...res, user: sender})
+                                        }))
 
 
-        const asSender = (await this.friendshipRepository
+        const asSender = await Promise.all((await this.friendshipRepository
                                         .createQueryBuilder("f")
                                         .innerJoin("f.receiver", "r", "f.senderId = :senderId AND f.status = :status",
                                                     { senderId: user.id , status: "accepted"})
                                         .addSelect(["r.id","r.login", "r.avatar_url"])
                                         .orderBy("f.create_date", "DESC")
                                         .getMany())
-                                        .forEach(async ({receiver, ...res})=>
+                                        .map(async ({receiver, ...res}) =>
                                         {
                                             if (!await this.userService.isBlockedUser(user, receiver))
-                                                friendships.push({...res, user: receiver});
-                                        });
-
-
+                                                friendships.push({...res, user: receiver})
+                                        }))
+        
         return friendships;
     }
 

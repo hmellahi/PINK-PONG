@@ -3,7 +3,7 @@ import {
   WebSocketGateway,
   MessageBody,
   ConnectedSocket,
-  WebSocketServer,
+  WebSocketServer, WsException,
 } from '@nestjs/websockets';
 import { Socket, Server } from 'socket.io';
 import {Logger, UseGuards} from '@nestjs/common';
@@ -70,7 +70,7 @@ export class GameGateway {
         score1: 0,
         score2: 0,
         created_at: new Date(),
-        map: 0, // TODO CHANGE
+        map: 1, // TODO CHANGE
         ff: 0,
       });
 
@@ -87,9 +87,9 @@ export class GameGateway {
     // return 'Hello world!';
   }
 
-  checkBorders(window: any, ball: any): number {
+  checkBorders(canvas: any, ball: any): number {
     if (ball.x - ball.radius / 2 <= 0) return 2;
-    if (ball.x + ball.radius / 2 >= window.width) return 1;
+    if (ball.x + ball.radius / 2 >= canvas.width) return 1;
     return 0;
   }
 
@@ -114,7 +114,7 @@ export class GameGateway {
 
   @SubscribeMessage('ballMoves')
   ballMoves(@MessageBody() data: any, @ConnectedSocket() player: Socket) {
-    let { ball, window, roomId, userId } = data;
+    let { ball, canvas, roomId, userId } = data;
 
     const currentPlayerRoom: Game = this.liveGames.find(
       (game) => game.roomId === roomId,
@@ -125,11 +125,11 @@ export class GameGateway {
       return this.server.to(player.id).emit('roomNotFound');
     if (userId != currentPlayerRoom.player1) return '';
 
-    player.to(roomId).emit('ballMoves', { ball, window });
-    console.log(`player emitting: ${ball}, ${window}`);
-    let ballHitsBorder = this.checkBorders(window, ball);
+    player.to(roomId).emit('ballMoves', { ball, canvas });
+    console.log(`player emitting: ${ball}, ${canvas}`);
+    const ballHitsBorder = this.checkBorders(canvas, ball);
     if (ballHitsBorder) {
-      this.server.to(roomId).emit('incrementScore', ballHitsBorder == 1);
+      this.server.to(roomId).emit('incrementScore', ballHitsBorder);
       const roomIndex = this.liveGames.indexOf(currentPlayerRoom);
       if (ballHitsBorder == 1) {
         this.liveGames[roomIndex].score1++;
@@ -139,11 +139,17 @@ export class GameGateway {
       if (
         this.liveGames[roomIndex].score1 >= MAX_SCORE ||
         this.liveGames[roomIndex].score2 >= MAX_SCORE
-      )
+      ) {
+        // Inform everyone that game ends
         this.server.to(roomId).emit('gameOver');
+        // TODO SAVE IN DATABASE
+        this.removeGame(roomId);
+      }
     }
   }
 
+  //eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlzVHdvRmFjdG9yQXV0aGVudGljYXRlZCI6dHJ1ZSwiaWF0IjoxNjQ0ODY4ODA0LCJleHAiOjE2NDQ4Njk0MDh9.P8wLet77uTbOby7rEL0LT3TYfXThL9naZ6mN1Itar2U
+//eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlzVHdvRmFjdG9yQXV0aGVudGljYXRlZCI6dHJ1ZSwiaWF0IjoxNjQ0ODY4ODA0LCJleHAiOjE2NDQ4NzQ4MDR9.AQWbyKkCD3KPBkjfFZduMe-hlXgs2VIkWawfIL2bB_c
   @SubscribeMessage('joinGame')
   joinGame(@MessageBody() data: any, @ConnectedSocket() player: Socket) {
     const { roomId, userId } = data;
@@ -155,21 +161,25 @@ export class GameGateway {
     //console.table(currentPlayerRoom);
     // room doesnt exist
     if (!currentPlayerGame)
-      return this.server.to(player.id).emit('roomNotFound');
+      return "roomNotFound"
+      // throw new WsException('Invalid credentials.');
+
+      // return this.server.to(player.id).emit('roomNotFound');
     // return this.server.to(player.id).emit('roomNotFound');
 
     // update user status [inGame] TODO
 
     player.join(roomId);
     console.log(`player joined: ${player.id}`);
-    this.server.to(player.id).emit("joinGame", {
+    return {
       player1: currentPlayerGame.player1,
       player2: currentPlayerGame.player2,
       isPlayer1: userId == currentPlayerGame.player1,
+      map:currentPlayerGame.map,
       isSpectator:
         userId != currentPlayerGame.player1 &&
         userId != currentPlayerGame.player2,
-    });
+    } ;
   }
 
   @SubscribeMessage('leaveGame')
@@ -246,7 +256,7 @@ export class GameGateway {
     // do nting
   }
   handleConnection(client: Socket, ...args: any[]) {
-    // console.log(`client joined: ${client.id}`);
+    console.log(`client joined: ${client.id}`);
     // this.logger.log(`Client connected: ${client.id}`);
   }
 }

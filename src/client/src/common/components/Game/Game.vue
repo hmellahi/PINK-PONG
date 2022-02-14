@@ -20,20 +20,10 @@ import P5, {
 import Paddle from "@/common/Game/Objects/Paddle";
 import Score from "@/common/Game/Objects/Score";
 
+let MAX_SCORE = 5;
+
 @Component<Game>({
   components: { P5 },
-  // props:{
-  //   roomId:{
-  //     type: String,
-  //     required: true
-  //   }
-  // }
-  // watch: {
-  //   $route(to, from) {
-  //     console.log("route switched");
-  //     this.leaveGame();
-  //   },
-  // },
   async beforeRouteLeave(to, from, next) {
     console.log("beforeRouteLeave", to.path, from.path);
     await this.leaveGame();
@@ -41,7 +31,7 @@ import Score from "@/common/Game/Objects/Score";
   },
 })
 export default class Game extends Vue {
-  gameData: any;
+  intervals: Array<any> = [];
   socket: any = null;
   // ({ canvas, backColor } = GameConstants)
   // canvasWidth:
@@ -70,7 +60,7 @@ export default class Game extends Vue {
     this.paddleWidth,
     this.paddleHeight
   );
-  map: string = "map2";
+  map: number = 0;
   net: Net = new Net(
     GameConstants.canvas.width,
     GameConstants.canvas.height,
@@ -90,7 +80,7 @@ export default class Game extends Vue {
   );
   scores: Score[] = [this.score, this.score2];
   roomId: any = "";
-  countInter: any;
+  gameData: any = {};
   init() {
     // console.log("setup");
     var game = document.getElementById("game");
@@ -98,6 +88,9 @@ export default class Game extends Vue {
     if (game) {
       GameConstants.canvas.width = game.offsetWidth;
       GameConstants.canvas.height = game.offsetHeight;
+      // console.log(game.offsetWidth, game.offsetHeight);
+      // GameConstants.canvas.width = 400;
+      // GameConstants.canvas.height = 400;
     }
     this.socket = null;
     this.backColor = GameConstants.backColor; //todo change
@@ -147,24 +140,27 @@ export default class Game extends Vue {
   resizeObjects(){
     // console.log("setup");
 
-    console.log(`before ball speed ${this.ball.speed}`);
-    console.log(`before ball VeloX ${this.ball.velocityX} and VeloY ${this.ball.velocityY}`);
-    console.log(`before ball X ${this.ball.x} and Y ${this.ball.y}`);
+    // console.log(`before ball speed ${this.ball.speed}`);
+    // console.log(`before ball VeloX ${this.ball.velocityX} and VeloY ${this.ball.velocityY}`);
+    // console.log(`before ball X ${this.ball.x} and Y ${this.ball.y}`);
 
-    var game = document.getElementById("game");
 
     var xF = this.ball.x / GameConstants.canvas.width;
     var yF = this.ball.y / GameConstants.canvas.height;
+    console.log(`ball factors X ${xF} and Y ${yF}`);
 
+    var game = document.getElementById("game");
     if (game) {
       GameConstants.canvas.width = game.offsetWidth;
       GameConstants.canvas.height = game.offsetHeight;
     }
     this.radius = 10;
     this.ball = new Ball(xF * GameConstants.canvas.width, yF * GameConstants.canvas.height, this.radius, 0);
-    console.log(`after ball speed ${this.ball.speed}`);
-    console.log(`after ball VeloX ${this.ball.velocityX} and VeloY ${this.ball.velocityY}`);
-    console.log(`after ball X ${this.ball.x} and Y ${this.ball.y}`);
+    // this.ball = new Ball(GameConstants.canvas.width/2, GameConstants.canvas.height/2, this.radius, 0);
+
+    // console.log(`after ball speed ${this.ball.speed}`);
+    // console.log(`after ball VeloX ${this.ball.velocityX} and VeloY ${this.ball.velocityY}`);
+    // console.log(`after ball X ${this.ball.x} and Y ${this.ball.y}`);
     this.isGameOver = false;
     this.paddleWidth = GameConstants.paddle.width;
     this.paddleHeight = GameConstants.paddle.height;
@@ -199,15 +195,16 @@ export default class Game extends Vue {
       GameConstants.canvas.height / 2 - 25,
       this.countdown.value
     );
+    this.scores = [this.score, this.score2];
+
   }
   mounted() {
     window.addEventListener("keydown", this.keydown);
     window.addEventListener("keyup", this.keyup);
     window.addEventListener("resize", this.resize);
-    console.log("mounted");
     this.init();
     this.roomId = this.$route.query.id;
-    console.log("here The id is: " + this.$route.query.id);
+    console.log("here The id is: ", this.currentUser.id);
 
     this.listenToGameEvents();
   }
@@ -223,17 +220,17 @@ export default class Game extends Vue {
     this.socket.on("connect_failed", function () {
       console.log("Connection Failed");
     });
-    // this.socket.on("roomNotFound", () => {
-    //   // console.log("Connection Failed");
-    //   this.$router.push({ path: "/" });
-    // });
     this.socket.on("gameOver", () => {
       this.isGameOver = true;
+      this.intervals.map((interval) => {
+        clearInterval(interval);
+      }
+      );
       this.showGameOver(this.sketch);
       // TODO show to the player the he won because the other player quits
       this.playerLost(this.sketch);
       // TODO clear all running intervals...
-      clearInterval(this.countInter);
+      // clearInterval(this.countInter);
     });
     this.socket.on("incrementScore", (ballHitsBorder: any) => {
       this.scores[ballHitsBorder - 1].value++;
@@ -244,19 +241,54 @@ export default class Game extends Vue {
           this.$router.push({ path: "/" });
         }
         this.gameData = msg;
+        this.net.map = msg.map;
     });
+    this.socket.on("ballMoves", (data: any) => {
+      if (this.gameData.isPlayer1) return;
+      let { ball, canvas } = data;
+      this.ball.x = (ball.x / canvas.width) * GameConstants.canvas.width;
+      this.ball.y = (ball.y / canvas.height) * GameConstants.canvas.height;;
+    });
+    this.socket.on("incrementScore", (ballHitsBorder: number) => {
+      this.scores[ballHitsBorder - 1].value++;
+      console.log(this.scores[ballHitsBorder - 1].value);
+    });
+    this.socket.emit(
+      "joinGame",
+      { userId: this.currentUser.id, roomId: this.roomId },
+      (data: any) => {
+        console.log({ data });
+        this.gameData = data;
+      }
+    );
   }
 
   async leaveGame() {
-    await this.socket.emit("leaveGame", { userId: 2, roomId: this.roomId });
+    await this.socket.emit("leaveGame", {
+      userId: this.currentUser.id,
+      roomId: this.roomId,
+    });
   }
 
   resize() {
+    // var game = document.getElementById("game");
+
+    // // if (game) {
+    // //   GameConstants.canvas.width = game.offsetWidth;
+    // //   GameConstants.canvas.height = game.offsetHeight;
+    // // }
+    // if (game) {
+    //   GameConstants.canvas.width = 400;
+    //   GameConstants.canvas.height = 400;
+    // }
+    // this.init();
     this.resizeObjects();
+
     this.sketch.resizeCanvas(
       GameConstants.canvas.width,
       GameConstants.canvas.height
     );
+
   }
   drawGameObjects(sketch: P5Sketch) {
     sketch.background(this.backColor);
@@ -289,19 +321,19 @@ export default class Game extends Vue {
   }
    playerLost(sketch: P5Sketch) {
     sketch.textSize(GameConstants.canvas.width / 12);
-    sketch.textAlign(sketch.BOTTOM);
+    sketch.textAlign(sketch.CENTER);
     sketch.fill(255, 0, 0);
     sketch.text(
       "you Have Lost",
       GameConstants.canvas.width / 2,
-      GameConstants.canvas.height / 2
+      GameConstants.canvas.height * 3 / 4
     );
     // this.$router.push('/')
   }
   countDown(sketch: P5Sketch) {
     this.drawGameObjects(sketch);
     this.countdown.value = 3;
-    const countDownInterval = setInterval(() => {
+    let countDownInterval = setInterval(() => {
       if (this.countdown.value <= 0) {
         this.countdown.value = 3;
         this.isGameOver = false;
@@ -311,7 +343,7 @@ export default class Game extends Vue {
       this.drawGameObjects(sketch);
       this.countdown.value--;
     }, 1000);
-    this.countInter = countDownInterval;
+    this.intervals.push(countDownInterval);
   }
 
   setup(sketch: P5Sketch) {
@@ -329,7 +361,7 @@ export default class Game extends Vue {
 
   draw(sketch: P5Sketch) {
     if (this.isGameOver) return;
-
+    this.sendNewBallPostion();
     sketch.background(this.backColor);
     this.background.draw(sketch);
     this.net.draw(sketch);
@@ -349,44 +381,65 @@ export default class Game extends Vue {
       // send
 
       // this.scores[ballHitsBorder - 1].value++;
-      if (this.scores[ballHitsBorder - 1].value > 2) {
+      if (this.scores[ballHitsBorder - 1].value > MAX_SCORE) {
         this.isGameOver = true;
         this.scores.map((score) => score.draw(sketch));
-        this.showGameOver(sketch);
+        // this.showGameOver(sketch);
         return;
       }
       this.isGameOver = true; // change to true
       this.countDown(sketch);
     } else {
-      if (!this.isGameOver) this.ball.update();
+      if (!this.isGameOver && this.gameData.isPlayer1) this.ball.update();
       this.ball.draw(sketch);
       this.scores.map((score) => score.draw(sketch));
     }
   }
 
   keydown(e: any) {
+    if (this.gameData.isSpectator) return;
     console.log(e);
     if (this.isGameOver) return;
     if (this.paddle.handleKeyPressed(e)) this.sendNewPaddleVelocity();
   }
   keyup(e: any) {
+    if (this.gameData.isSpectator) return;
     console.log(e);
     if (this.isGameOver) return;
     if (this.paddle.handleKeyReleased(e)) this.sendNewPaddleVelocity();
   }
 
   sendNewPaddleVelocity() {
-    console.log("sending", this.roomId);
+    // console.log("currentUser", this.user);
     this.socket.emit("paddleMoves", {
       roomId: this.roomId,
       paddle: {
         y: this.paddle.y,
         velocity: this.paddle.velocity,
       },
-      userId: 2, // TODO CHANGE
+      userId: this.currentUser.id, // TODO CHANGE
     });
   }
-
+  sendNewBallPostion() {
+    if (!this.gameData.isPlayer1) return;
+    console.log("sending", this.roomId);
+    this.socket.emit("ballMoves", {
+      roomId: this.roomId,
+      ball: {
+        y: this.ball.y,
+        x: this.ball.x,
+        radius: this.ball.radius,
+      },
+      canvas: {
+        width: GameConstants.canvas.width,
+        height: GameConstants.canvas.height,
+      },
+      userId: this.currentUser.id, // TODO CHANGE
+    });
+  }
+  get currentUser() {
+    return this.$store.getters["User/getCurrentUser"];
+  }
   // socket.emit("paddleMoves", { userId: 2, velocity: this.velocity, this.roomId});
 
   reset() {

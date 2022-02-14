@@ -1,21 +1,24 @@
 <template>
   <div class="friends_lists">
-    <div class="friend_list" v-for="friend of blockedFriends">
-      <div class="friend-info">
-        <img :src="friend.user.avatar_url" alt="" />
-        <div class="content">
-          <h6>{{ friend.user.login }}</h6>
-          <span> online</span>
+    <div v-if="blockedFriends.length">
+      <div class="friend_list" v-for="friend of blockedFriends">
+        <div class="friend-info">
+          <img :src="friend.user.avatar_url" alt="" />
+          <div class="content">
+            <h6>{{ friend.user.login }}</h6>
+            <span> online</span>
+          </div>
         </div>
-      </div>
-      <div class="friend_actions">
-        <!-- <Button :onClick=blockFriend"> -->
-        <div @click="unBlockUser(friend)" class="friend_action">
-          <CloseSVG />
-          <span> UnBlock</span>
+        <div class="friend_actions">
+          <!-- <Button :onClick=blockFriend"> -->
+          <div @click="unBlockUser(friend)" class="friend_action">
+            <CloseSVG />
+            <span> UnBlock</span>
+          </div>
         </div>
       </div>
     </div>
+    <h3 v-else> There is no Blocked User yet </h3>
   </div>
 </template>
 

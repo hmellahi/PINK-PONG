@@ -131,9 +131,11 @@ export default class {
     let { canvas, borderWidth } = GameConstants;
     let { height: windowsHeight, width: windowsWidth } = canvas;
     // let {borderWidth} = GameConstants
-    this.y = windowsHeight / 2; // TODO
-    // this.y =  Math.floor(Math.random() * (windowsHeight- borderWidth) + borderWidth);
-    this.x = windowsWidth / 2;
+    // this.y = windowsHeight / 2; // TODO
+    // // this.y =  Math.floor(Math.random() * (windowsHeight- borderWidth) + borderWidth);
+    // this.x = windowsWidth / 2;
+    this.y = canvas.height / 2; // TODO
+    this.x = canvas.width / 2;
     this.speed = 3;
     this.velocityX = 1;
     this.velocityY = 1;

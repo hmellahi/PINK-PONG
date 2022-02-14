@@ -8,12 +8,12 @@ export default class Net {
   //   y: number;
     width: number;
     height: number;
-    map: string;
+    map: number;
   //   color: number;
   //   speed: number;
 
   // Constructor method
-  constructor(width: number, height:number, map : string) {
+  constructor(width: number, height:number, map : number) {
     //   tempColor: number = 0 //   tempHeight: number, //   tempWidth: number, //   tempY: number, //   tempX: number,
     //   this.x = tempX;
     //   this.y = tempY;
@@ -56,7 +56,7 @@ export default class Net {
   }
 
   draw(sketch: P5Sketch) {
-    if (this.map === "map1"){
+    if (this.map === 0){
       this.map1(sketch);
     }else{
       this.map2(sketch);
