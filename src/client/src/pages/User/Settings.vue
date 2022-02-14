@@ -127,18 +127,7 @@ export default class Settings extends Vue {
     const formData = new FormData();
     formData.append("avatar", file, file.name);
     try {
-      let data = await axios.post(
-        `${process.env.VUE_APP_API_URL}/users/updateAvatar`,
-        formData,
-        {
-          withCredentials: true,
-          headers: {
-            "Access-Control-Allow-Origin": "http://localhost:5000",
-            "Access-Control-Allow-Credentials": "true",
-          },
-          // crossDomain: true,
-        }
-      );
+      await this.$http.post(`users/updateAvatar`, formData);
     } catch (e: any) {
       this.success = e.response.data.message;
       return;
@@ -166,6 +155,7 @@ export default class Settings extends Vue {
       return;
     }
   }
+
   async disableFactor() {
     try {
       let data = await this.$http({
@@ -185,6 +175,7 @@ export default class Settings extends Vue {
       return;
     }
   }
+
   get user() {
     // return this.$store.getters["User/getCurrentUser"];
     return Object.assign({}, this.$store.getters["User/getCurrentUser"]);
@@ -203,14 +194,16 @@ export default class Settings extends Vue {
       // },
     ];
   }
+
   toggle(i: any) {}
+
   async saveData() {
     if (this.user.login == this.login) {
       this.success = "wtf brooo aslan rah mbdltihach";
       return;
     }
     try {
-      let data = await this.$http({
+      await this.$http({
         method: "post",
         url: "users/updateLogin",
         data: {
