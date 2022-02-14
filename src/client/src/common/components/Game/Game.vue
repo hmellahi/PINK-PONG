@@ -165,8 +165,6 @@ export default class Game extends Vue {
         clearInterval(interval);
       });
       this.showGameOver(this.sketch);
-      // TODO show to the player the he won because the other player quits
-      // TODO clear all running intervals...
     });
     this.socket.on("ballMoves", (data: any) => {
       if (this.gameData.isPlayer1) return;
@@ -292,7 +290,7 @@ export default class Game extends Vue {
       // send
 
       // this.scores[ballHitsBorder - 1].value++;
-      if (this.scores[ballHitsBorder - 1].value > MAX_SCORE) {
+      if (this.scores[ballHitsBorder - 1].value >= MAX_SCORE) {
         this.isGameOver = true;
         this.scores.map((score) => score.draw(sketch));
         this.showGameOver(sketch);

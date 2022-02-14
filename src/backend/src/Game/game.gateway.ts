@@ -58,9 +58,6 @@ export class GameGateway {
     if (this.players.length >= 2) {
       // console.log(this.players);
       const roomId = this.players[0].id + '' + this.players[1].id;
-      // join room
-      // this.players[0].join(roomId);
-      // this.players[1].join(roomId);
 
       // register the game
       this.liveGames.push({
@@ -148,8 +145,6 @@ export class GameGateway {
     }
   }
 
-  //eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlzVHdvRmFjdG9yQXV0aGVudGljYXRlZCI6dHJ1ZSwiaWF0IjoxNjQ0ODY4ODA0LCJleHAiOjE2NDQ4Njk0MDh9.P8wLet77uTbOby7rEL0LT3TYfXThL9naZ6mN1Itar2U
-//eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlzVHdvRmFjdG9yQXV0aGVudGljYXRlZCI6dHJ1ZSwiaWF0IjoxNjQ0ODY4ODA0LCJleHAiOjE2NDQ4NzQ4MDR9.AQWbyKkCD3KPBkjfFZduMe-hlXgs2VIkWawfIL2bB_c
   @SubscribeMessage('joinGame')
   joinGame(@MessageBody() data: any, @ConnectedSocket() player: Socket) {
     const { roomId, userId } = data;
