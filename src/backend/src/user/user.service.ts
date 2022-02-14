@@ -53,7 +53,6 @@ export class UserService {
             return fetchedUser;
         const isFriend = await this.friendshipService.isFriend(user, fetchedUser);
 
-        console.log(isFriend);
         return  {...fetchedUser, isFriend}; //need opt
     }
 
@@ -136,6 +135,6 @@ export class UserService {
 
     async isBlockedUser(blocker: UserEntity, blocked: UserEntity)
     {
-        return await this.blockListRepository.findOne({blocker, blocked});
+        return await this.blockListRepository.findOne({blocker: blocker, blocked});
     }
 }
