@@ -42,7 +42,7 @@ export class FriendshipController
         if (recieverLogin === user.login)
         throw new HttpException("wtf you can't invite yourself", HttpStatus.BAD_REQUEST);
 
-        const receiverUser = await this.userService.getByLogin(recieverLogin);
+        const receiverUser = await this.userService.getByLogin(user,recieverLogin);
         if (!receiverUser)
             throw new HttpException("user not exist", HttpStatus.BAD_REQUEST);
         const requestExist = await this.friendshipService.getFriendship({sender: user, receiver: receiverUser});
