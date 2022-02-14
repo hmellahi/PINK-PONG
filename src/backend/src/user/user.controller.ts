@@ -56,7 +56,7 @@ export class  UserController
 
         if (!login)
             throw new HttpException("login not provided", HttpStatus.BAD_REQUEST);
-        if (await this.userService.getByLogin(login))
+        if (await this.userService.getByLogin(user,login))
             throw new HttpException("login already exist", HttpStatus.BAD_REQUEST);
 
         await this.userService.findByIdAndUpdate(user.id, {login: login});
@@ -71,14 +71,15 @@ export class  UserController
     }
 
     @Get("profile/:login")
-    async getUserByLogin(@Param("login") login: string)
+    async getUserByLogin(@Req() request: RequestWithUser,@Param("login") login: string)
     {
+        const {user} = request;
         if (!login)
             throw new BadRequestException;
-        const user = await this.userService.getByLogin(login);
-        if (!user)
+        const fetchedUser = await this.userService.getByLogin(user,login);
+        if (!fetchedUser)
             throw new HttpException("user not exist", HttpStatus.NOT_FOUND);
-        return user;
+        return fetchedUser;
     }
 
     @Post("blockUser")

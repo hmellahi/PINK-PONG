@@ -1,5 +1,5 @@
 import { array } from "@hapi/joi";
-import { Injectable } from "@nestjs/common";
+import { forwardRef, Inject, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { async } from "rxjs";
 import BlockListEntity from "src/user/entities/blockedUserList.entity";
@@ -15,6 +15,7 @@ export class FriendshipService
     constructor(
         @InjectRepository(FriendshipEntity)
         private friendshipRepository: Repository<FriendshipEntity>,
+        @Inject(forwardRef(()=> UserService))
         private userService: UserService
     ){}
 
@@ -40,11 +41,18 @@ export class FriendshipService
                             ]
                         })
     }
-
-    public async getFriendship(opts:any)
+    
+    public async getFriendship(ops: any)
     {
-        return await this.friendshipRepository
-                                    .findOne(opts)
+        return await this.friendshipRepository.findOne(ops);
+    }
+    public async isFriend(user1: UserEntity, user2: UserEntity)
+    {
+        return (await this.friendshipRepository
+                                    .findOne({where: [
+                                        {status: "accepted", sender: user1, receiver: user2},
+                                        {status: "accepted", sender: user2, receiver: user1}
+                                    ]})) != undefined;
     }
 
     public async changeFriendshipStatus(user: UserEntity,
@@ -52,8 +60,12 @@ export class FriendshipService
                                         requiredStatus: Friendship_Status)
     {
 
-        const friendshipRequest = await this.getFriendship({id: friendshipRequestId,
-                                                            receiver: user});
+        const friendshipRequest = await this.friendshipRepository
+                                            .findOne(
+                                                {
+                                                    id: friendshipRequestId,
+                                                    receiver: user}
+                                                );
         if (!friendshipRequest || friendshipRequest.status == requiredStatus)
             return false;
             friendshipRequest.status = requiredStatus;
