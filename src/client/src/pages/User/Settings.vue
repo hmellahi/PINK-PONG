@@ -52,8 +52,9 @@
         <!-- :onClick="toggle(i)" -->
       </div>
       <div class="col-12 px-0 fa_factor" v-if="showVerify">
+        <!-- TODO CHANGE -->
         <img
-          src="http://127.0.0.1:3000/api/auth/2fa/generate"
+          :src="API_URL + '/auth/2fa/generate'"
           v-if="!user.two_factor_auth_enabled"
         />
         <div class="verify_factor">
@@ -107,6 +108,7 @@ export default class Settings extends Vue {
   avatar = {};
   isActive = false;
   success = "";
+  API_URL = process.env.VUE_APP_API_URL;
   showVerify = false;
   login = this.user.login;
   onFileChange(e: any) {
