@@ -13,6 +13,10 @@ import { HttpService } from "@nestjs/axios";
 import * as speakeasy from "speakeasy"
 import * as QRCode from "qrcode"
 import internal from "stream";
+import { Socket} from 'socket.io';
+import { WsException } from "@nestjs/websockets";
+import { parse } from "cookie";
+
 
 @Injectable()
 
@@ -71,7 +75,7 @@ export class AuthService
             secret: this.configService.get('JWT_ACCESS_SECRET'),
             expiresIn: `${this.configService.get('JWT_ACCESS_EXPIRATION_TIME')}s`
         });
-        return `Authentication=${token}; HttpOnly; Path=/;`+
+        return `Authentication=${token};  Path=/;`+
                 `max-Age=${this.configService.get('JWT_ACCESS_EXPIRATION_TIME')}`;
     }
 
@@ -82,14 +86,14 @@ export class AuthService
             secret: this.configService.get('JWT_REFRESH_SECRET'),
             expiresIn: `${this.configService.get('JWT_REFRESH_EXPIRATION_TIME')}`
         });
-        const cookie = `Refresh=${token}; HttpOnly; Path=/;`+
+        const cookie = `Refresh=${token};  Path=/;`+
                         `max-Age=${this.configService.get('JWT_REFRESH_EXPIRATION_TIME')}`;
         return {token, cookie}
     }
 
     public getCookieForLogOut() {
-        return [`Authentication=; HttpOnly; Path=/; Max-Age=0`,
-                `Refresh=; HttpOnly; Path=/; Max-Age=0`];
+        return [`Authentication=;  Path=/; Max-Age=0`,
+                `Refresh=;  Path=/; Max-Age=0`];
       }
 
     public async getUserFromIntranet(accessToken: string): Promise<CreateUserDto>
@@ -102,7 +106,7 @@ export class AuthService
         .pipe(
             map((response: AxiosResponse<CreateUserDto>)=> response.data
         ),
-        catchError(()=> {console.log("erro Test");throw new UnauthorizedException;}));
+        catchError((e)=> {console.log("Intra Error");throw new UnauthorizedException;}));
 
         const user: CreateUserDto = await lastValueFrom(observable);
         return user;
@@ -153,5 +157,32 @@ export class AuthService
                 {two_factor_auth_enabled: action})
         }
         return true;
+    }
+    private async getUserFromToken(token: string)
+    {
+        let tokenPayload: TokenPayload;
+        try
+        {
+           tokenPayload = await this.jwtService.verify(token,{
+    
+                secret:this.configService.get('JWT_ACCESS_SECRET')
+            });
+        }
+        catch(err){tokenPayload = undefined;}
+            
+
+        if (tokenPayload && tokenPayload.userId)
+            return await this.userService.getById(tokenPayload.userId);
+        else
+            return undefined;
+    }
+
+    public async getUserFromSocket(socket: Socket)
+    {
+        const Authentication :any = socket.handshake.headers.authentication;
+        console.log(Authentication)
+        if (!Authentication)
+            return undefined;
+        return await this.getUserFromToken(Authentication);
     }
 }
