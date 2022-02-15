@@ -92,7 +92,7 @@ export default class SideBar extends Vue {
       })
       this.$router.push('/login')
     }catch(e){
-      console.log({e})
+      // console.log({e})
       return;
     }
   }

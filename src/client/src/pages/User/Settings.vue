@@ -52,8 +52,9 @@
         <!-- :onClick="toggle(i)" -->
       </div>
       <div class="col-12 px-0 fa_factor" v-if="showVerify">
+        <!-- TODO CHANGE -->
         <img
-          src="http://127.0.0.1:3000/api/auth/2fa/generate"
+          :src="API_URL + '/auth/2fa/generate'"
           v-if="!user.two_factor_auth_enabled"
         />
         <div class="verify_factor">
@@ -107,6 +108,7 @@ export default class Settings extends Vue {
   avatar = {};
   isActive = false;
   success = "";
+  API_URL = process.env.VUE_APP_API_URL;
   showVerify = false;
   login = this.user.login;
   onFileChange(e: any) {
@@ -125,18 +127,7 @@ export default class Settings extends Vue {
     const formData = new FormData();
     formData.append("avatar", file, file.name);
     try {
-      let data = await axios.post(
-        `${process.env.VUE_APP_API_URL}/users/updateAvatar`,
-        formData,
-        {
-          withCredentials: true,
-          headers: {
-            "Access-Control-Allow-Origin": "http://localhost:5000",
-            "Access-Control-Allow-Credentials": "true",
-          },
-          // crossDomain: true,
-        }
-      );
+      await this.$http.post(`users/updateAvatar`, formData);
     } catch (e: any) {
       this.success = e.response.data.message;
       return;
@@ -164,6 +155,7 @@ export default class Settings extends Vue {
       return;
     }
   }
+
   async disableFactor() {
     try {
       let data = await this.$http({
@@ -183,6 +175,7 @@ export default class Settings extends Vue {
       return;
     }
   }
+
   get user() {
     // return this.$store.getters["User/getCurrentUser"];
     return Object.assign({}, this.$store.getters["User/getCurrentUser"]);
@@ -201,14 +194,16 @@ export default class Settings extends Vue {
       // },
     ];
   }
+
   toggle(i: any) {}
+
   async saveData() {
     if (this.user.login == this.login) {
       this.success = "wtf brooo aslan rah mbdltihach";
       return;
     }
     try {
-      let data = await this.$http({
+      await this.$http({
         method: "post",
         url: "users/updateLogin",
         data: {

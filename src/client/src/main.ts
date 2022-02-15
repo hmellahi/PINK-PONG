@@ -10,6 +10,9 @@ import Overlay from "@/common/components/UI/Overlay.vue";
 import moment from 'moment-timezone'
 import VueSweetalert2 from 'vue-sweetalert2';
 import Notifications from 'vue-notification'
+import VueCookies from 'vue-cookies';
+
+
 
 // for games page timer
 moment.tz.setDefault('Africa/Casablanca')
@@ -56,6 +59,9 @@ declare module "vue/types/vue" {
 Vue.use(VueAxios, axios);
 Vue.use(VueSweetalert2);
 Vue.use(Notifications);
+Vue.use(VueCookies);
+
+
 new Vue({
   router,
   store,
