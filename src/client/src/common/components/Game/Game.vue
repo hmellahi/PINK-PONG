@@ -432,7 +432,10 @@ export default class Game extends Vue {
     );
     this.isGameOver = true;
     this.countdown.value = COUNTDOWN;
-    this.countDown(sketch);
+    // this.countDown(sketch);
+    //online problem
+      //uncomnet this to get coundown back each round
+
   }
 
   draw(sketch: P5Sketch) {
@@ -466,7 +469,8 @@ export default class Game extends Vue {
         return;
       }
       this.isGameOver = true; // change to true
-      this.countDown(sketch);
+      // this.countDown(sketch);
+      //uncomnet this to get coundown back each round
     } else {
       if (!this.isGameOver && this.gameData.isPlayer1) this.ball.update();
       this.ball.draw(sketch);
