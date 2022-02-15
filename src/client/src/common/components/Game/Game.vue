@@ -155,17 +155,16 @@ export default class Game extends Vue {
   }
 
   listenToGameEvents() {
-    this.socket = io("http://localhost:3000/game",
-    {
+    const options = {
         transportOptions: {
-        polling: {
-        extraHeaders: {
-          Authorization: "token"
+            polling: {
+                extraHeaders: {
+                    'Cookie': `Authentication=${this.$cookies.get("Authentication")}`
+                }
+            }
         }
-      }
-  }
     }
-    );
+    this.socket = io("http://localhost:3000/game",options);
     this.socket.on("paddleMoves", (data: any) => {
       // console.log("recieved: " + velocity);
       let { paddle: enemyPaddle } = data;
