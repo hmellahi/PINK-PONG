@@ -39,7 +39,7 @@ export default class Game extends Vue {
   backColor: number = GameConstants.backColor; //todo change
   // xBall: number = Math.floor(Math.random() * 300) + GameConstants.ball.x;
   xBall: number = GameConstants.canvas.width / 2;
-  yBall: number = GameConstants.canvas.height / 2;
+  yBall: number = GameConstants.canvas.height / 2;//TODO add randomness
   radius: number = 10;
   sounds: Array<any> = [];
   ball: Ball = new Ball(this.xBall, this.yBall, this.radius, 0);
@@ -400,6 +400,7 @@ export default class Game extends Vue {
 
   setup(sketch: P5Sketch) {
     // window.onresize = this.resize;
+    this.countdown.value = 3;
     this.sketch = sketch;
     var font = sketch.loadFont("assets/fonts/BeatWorddemo.ttf");
     sketch.textFont(font);
