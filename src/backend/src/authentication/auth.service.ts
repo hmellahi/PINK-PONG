@@ -13,6 +13,10 @@ import { HttpService } from "@nestjs/axios";
 import * as speakeasy from "speakeasy"
 import * as QRCode from "qrcode"
 import internal from "stream";
+import { Socket} from 'socket.io';
+import { WsException } from "@nestjs/websockets";
+import { parse } from "cookie";
+
 
 @Injectable()
 
@@ -153,5 +157,32 @@ export class AuthService
                 {two_factor_auth_enabled: action})
         }
         return true;
+    }
+    private async getUserFromToken(token: string)
+    {
+        let tokenPayload: TokenPayload;
+        try
+        {
+           tokenPayload = await this.jwtService.verify(token,{
+    
+                secret:this.configService.get('JWT_ACCESS_SECRET')
+            });
+        }
+        catch(err){tokenPayload = undefined;}
+            
+
+        if (tokenPayload && tokenPayload.userId)
+            return await this.userService.getById(tokenPayload.userId);
+        else
+            return undefined;
+    }
+
+    public async getUserFromSocket(socket: Socket)
+    {
+        const Authentication :any = socket.handshake.headers.authentication;
+        console.log(Authentication)
+        if (!Authentication)
+            return undefined;
+        return await this.getUserFromToken(Authentication);
     }
 }

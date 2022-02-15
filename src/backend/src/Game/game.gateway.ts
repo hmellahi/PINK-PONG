@@ -7,21 +7,30 @@ import {
   WsException,
 } from '@nestjs/websockets';
 import { Socket, Server } from 'socket.io';
-import { Logger, UseGuards } from '@nestjs/common';
+import { Logger, UseFilters} from '@nestjs/common';
 import { Game } from './Interfaces/Game.interface';
 import { HttpStatus, HttpException } from '@nestjs/common';
 import { JwtAuthGuard } from '../authentication/Guards/jwtAccess.guard';
+import { AuthGuard } from '@nestjs/passport';
+import { AuthService } from 'src/authentication/auth.service';
 
 let MAX_SCORE = 5;
 
 @WebSocketGateway({
   namespace: 'game',
-  cors: true,
+  cors:
+  {
+    origin: "http://127.0.0.1:5000",
+    credentials: true
+  }
 })
-@UseGuards(JwtAuthGuard)
+
 export class GameGateway {
   @WebSocketServer() server: Server;
 
+  constructor(
+    private authService: AuthService
+  ){}
   // usersInQueue: number[] = [];
   players: any[] = [];
   pendingRequests: any = {};
@@ -198,6 +207,7 @@ export class GameGateway {
     const currentPlayerGame: Game = this.liveGames.find(
       (game) => game.roomId === roomId,
     );
+    console.log("join game");
     // console.table(this.liveGames);
     //console.table(currentPlayerRoom);
     // room doesnt exist
@@ -208,7 +218,7 @@ export class GameGateway {
     // return this.server.to(player.id).emit('roomNotFound');
 
     // update user status [inGame] TODO
-
+  
     player.join(roomId);
     console.log(`player joined: ${player.id}`);
     return {
@@ -295,7 +305,9 @@ export class GameGateway {
     // else
     // do nting
   }
-  handleConnection(client: Socket, ...args: any[]) {
-    console.log(client.handshake.headers);
+
+  async handleConnection(client: Socket, ...args: any[]) {
+      const user = await this.authService.getUserFromSocket(client);
+      !user && client.disconnect();
   }
 }
