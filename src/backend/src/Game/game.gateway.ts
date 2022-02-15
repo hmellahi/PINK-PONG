@@ -3,21 +3,20 @@ import {
   WebSocketGateway,
   MessageBody,
   ConnectedSocket,
-  WebSocketServer, WsException,
+  WebSocketServer,
+  WsException,
 } from '@nestjs/websockets';
 import { Socket, Server } from 'socket.io';
-import {Logger, UseGuards} from '@nestjs/common';
+import { Logger, UseGuards } from '@nestjs/common';
 import { Game } from './Interfaces/Game.interface';
 import { HttpStatus, HttpException } from '@nestjs/common';
-import {JwtAuthGuard} from "../authentication/Guards/jwtAccess.guard";
+import { JwtAuthGuard } from '../authentication/Guards/jwtAccess.guard';
 
 let MAX_SCORE = 1;
 
 @WebSocketGateway({
   namespace: 'game',
-  cors: {
-    origin: '*',
-  },
+  cors: true,
 })
 @UseGuards(JwtAuthGuard)
 export class GameGateway {
@@ -25,7 +24,7 @@ export class GameGateway {
 
   // usersInQueue: number[] = [];
   players: any[] = [];
-  pendingRequests:any = {};
+  pendingRequests: any = {};
   liveGames: Game[] = [];
   username: string = '';
   private logger: Logger = new Logger('AppGateway');
@@ -44,25 +43,29 @@ export class GameGateway {
   }
 
   @SubscribeMessage('joinQueue')
-  joinQueue(@MessageBody() data: any,
-    @ConnectedSocket() player: Socket
-  ): void {
-    let {map, userId} = data;
+  joinQueue(@MessageBody() data: any, @ConnectedSocket() player: Socket): void {
+    let { map, userId } = data;
 
     // TODO CHECK FOR USER STAUS
     // console.log(
     //   `%c client joined queue: ${player.id}`,
     //   'background: #222; color: #bada55',
     // );
-    const secondPlayer = this.players.find(player => player.map == map)
+    const secondPlayer = this.players.find((player) => player.map == map);
 
     if (!secondPlayer) {
-      this.players.push({socket: player, map, userId});
+      this.players.push({ socket: player, map, userId });
       return;
     }
     // console.log(map, map);
 
-    const roomId = this.createGame(userId, secondPlayer.userId,player.id, secondPlayer.socket.id, map);
+    const roomId = this.createGame(
+      userId,
+      secondPlayer.userId,
+      player.id,
+      secondPlayer.socket.id,
+      map,
+    );
 
     // alert players
     this.server
@@ -139,17 +142,26 @@ export class GameGateway {
 
   @SubscribeMessage('inviteToGame')
   inviteToGame(@MessageBody() data: any, @ConnectedSocket() sender: Socket) {
-    let {receiver} = data;
+    let { receiver } = data;
     this.pendingRequests[receiver] = sender.id;
-    sender.to(receiver).emit("inviteToGame")
+    sender.to(receiver).emit('inviteToGame');
   }
 
   @SubscribeMessage('declineInvitation')
-  declineInvitation(@MessageBody() data: any, @ConnectedSocket() receiver: Socket) {
+  declineInvitation(
+    @MessageBody() data: any,
+    @ConnectedSocket() receiver: Socket,
+  ) {
     this.pendingRequests.delete(receiver);
   }
 
-  createGame(player1ID:number, player2ID:number, player1SockerId:string, player2SockerId:string, map:number){
+  createGame(
+    player1ID: number,
+    player2ID: number,
+    player1SockerId: string,
+    player2SockerId: string,
+    map: number,
+  ) {
     const roomId = player1SockerId + player2SockerId;
     this.liveGames.push({
       roomId,
@@ -166,13 +178,16 @@ export class GameGateway {
 
   @SubscribeMessage('acceptInvitation')
   acceptInvitation(
-      @MessageBody() data: any,
-      @ConnectedSocket() receiver: Socket,
+    @MessageBody() data: any,
+    @ConnectedSocket() receiver: Socket,
   ) {
     const senderSocketId = this.pendingRequests[receiver.id];
     // register the game
     const roomId = this.createGame(1, 1, receiver.id, senderSocketId, 1); // TODO CHANGE
-    this.server.to(receiver.id).to(senderSocketId).emit("customGameStarted", roomId) // todo
+    this.server
+      .to(receiver.id)
+      .to(senderSocketId)
+      .emit('customGameStarted', roomId); // todo
     this.pendingRequests.delete(receiver.id);
   }
 
@@ -186,11 +201,10 @@ export class GameGateway {
     // console.table(this.liveGames);
     //console.table(currentPlayerRoom);
     // room doesnt exist
-    if (!currentPlayerGame)
-      return "roomNotFound"
-      // throw new WsException('Invalid credentials.');
+    if (!currentPlayerGame) return 'roomNotFound';
+    // throw new WsException('Invalid credentials.');
 
-      // return this.server.to(player.id).emit('roomNotFound');
+    // return this.server.to(player.id).emit('roomNotFound');
     // return this.server.to(player.id).emit('roomNotFound');
 
     // update user status [inGame] TODO
@@ -201,7 +215,7 @@ export class GameGateway {
       player1: currentPlayerGame.player1,
       player2: currentPlayerGame.player2,
       isPlayer1: userId == currentPlayerGame.player1,
-      map:currentPlayerGame.map,
+      map: currentPlayerGame.map,
       isSpectator:
         userId != currentPlayerGame.player1 &&
         userId != currentPlayerGame.player2,
@@ -282,7 +296,6 @@ export class GameGateway {
     // do nting
   }
   handleConnection(client: Socket, ...args: any[]) {
-    console.log(`client joined: ${client.id}`);
-    // this.logger.log(`Client connected: ${client.id}`);
+    console.log(client.handshake.headers);
   }
 }
