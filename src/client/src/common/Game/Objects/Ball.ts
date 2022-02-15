@@ -28,7 +28,7 @@ export default class {
     this.y = tempY;
     // this.y =  Math.floor(Math.random() * GameConstants.canvas.height - 200) + 200;
     // this.y = Math.floor(Math.random() * ((GameConstants.canvas.height / 10)*8 - (GameConstants.canvas.height / 10)*2 + (GameConstants.canvas.height / 10)*2));
-
+//USE this code above for randomnes
     this.radius = tempRadius;
     // this.velocityX = Math.floor(Math.random() * 10) + 1;;
     // this.velocityY = Math.floor(Math.random() * 10) + 1;;
