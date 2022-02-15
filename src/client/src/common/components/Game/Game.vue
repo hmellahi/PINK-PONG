@@ -236,6 +236,7 @@ export default class Game extends Vue {
     // const username = this.$cookies.get("username");
     console.log({cookie: this.$cookies.get("Authentication")})
     console.log({cookie: this.$cookies})
+
     this.socket = io("http://localhost:3000/game", {
       transportOptions: {
         polling: {
@@ -246,11 +247,22 @@ export default class Game extends Vue {
         },
       },
     });
+
     this.socket.on("paddleMoves", (data: any) => {
       // console.log("recieved: " + velocity);
+      // let { paddle: enemyPaddle,isPlayer1 } = data;
+
+      // if (this.gameData.isSpectator && isPlayer1) TODO
+      // {
+      //     this.paddle.y = enemyPaddle.y;
+      //     this.paddle.velocity = enemyPaddle.velocity;
+      // }
+      // else
+      // {
+      //   this.paddle2.y = enemyPaddle.y;
+      //   this.paddle2.velocity = enemyPaddle.velocity;
+      // }
       let { paddle: enemyPaddle ,canvas} = data;
-      // this.ball.x = (ball.x / canvas.width) * GameConstants.canvas.width;
-      // this.ball.y = (ball.y / canvas.height) * GameConstants.canvas.height;
       this.paddle2.y = (enemyPaddle.y / canvas.height) * GameConstants.canvas.height;
       this.paddle2.velocity = (enemyPaddle.velocity / canvas.width) * GameConstants.canvas.width;
     });
@@ -283,19 +295,38 @@ export default class Game extends Vue {
       "joinGame",
       { userId: this.currentUser.id, roomId: this.roomId },
       (msg: any) => {
-        console.log("msg", { msg });
+        // console.log("msg", { msg });
         if (msg === "roomNotFound") {
           // this.$router.push({ path: "/" });
           return;
         }
-        this.gameData = msg;
+        let {gameData, currentGameState }= msg;
+        this.gameData = gameData;
         this.net.map = msg.map;
         if (!this.gameData.isPlayer1) {
           let tmp: Paddle = this.paddle;
           this.paddle = this.paddle2;
           this.paddle2 = tmp;
-          console.log("swapped");
+          console.log("player1");
         }
+        if (!this.gameData.isSpectator)
+        {
+          this.isLoading = false;
+          return;
+        }
+        // score
+        this.scores[0].value = currentGameState.score1;
+        this.scores[1].value = currentGameState.score2;
+        // ball
+        let {ball, canvas, paddle1, paddle2}  = currentGameState;
+        this.ball.x = (ball.x / canvas.width) * GameConstants.canvas.width;
+        this.ball.y = (ball.y / canvas.height) * GameConstants.canvas.height;
+        // paddles
+        this.paddle2.y = paddle2.y;
+        this.paddle2.velocity = paddle2.velocity;
+        this.paddle.y = paddle1.y;
+        this.paddle.velocity = paddle1.velocity;
+
         this.isLoading = false;
       }
     );
@@ -311,16 +342,6 @@ export default class Game extends Vue {
       this.scores[ballHitsBorder - 1].value++;
       console.log(this.scores[ballHitsBorder - 1].value);
     });
-
-    this.socket.emit(
-      "joinGame",
-      { userId: this.currentUser.id, roomId: this.roomId },
-      (data: any) => {
-        console.log({ data });
-        this.gameData = data;
-        this.map = data.map;
-      }
-    );
   }
 
   async leaveGame() {
@@ -411,6 +432,7 @@ export default class Game extends Vue {
       GameConstants.canvas.height
     );
     this.isGameOver = true;
+    this.countdown.value = 3;
     this.countDown(sketch);
   }
 
@@ -447,7 +469,7 @@ export default class Game extends Vue {
       this.isGameOver = true; // change to true
       this.countDown(sketch);
     } else {
-      // if (!this.isGameOver && this.gameData.isPlayer1) this.ball.update();
+      if (!this.isGameOver && this.gameData.isPlayer1) this.ball.update();
       this.ball.draw(sketch);
       this.scores.map((score) => score.draw(sketch));
     }
@@ -466,6 +488,7 @@ export default class Game extends Vue {
   }
 
   sendNewPaddleVelocity() {
+    if (this.gameData.isSpectator) return;
     console.log("emitting");
     this.socket.emit("paddleMoves", {
       roomId: this.roomId,

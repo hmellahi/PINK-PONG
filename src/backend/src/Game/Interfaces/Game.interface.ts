@@ -7,5 +7,7 @@ export interface Game {
     score2:number;
     map:number;
     created_at:Date;
+    paddles:any[];
+    balls:any[];
     ff:number;
 }
