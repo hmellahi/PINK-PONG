@@ -432,7 +432,7 @@ export default class Game extends Vue {
     );
     this.isGameOver = true;
     this.countdown.value = COUNTDOWN;
-    // this.countDown(sketch);
+    this.countDown(sketch);
     //online problem
       //uncomnet this to get coundown back each round
 
