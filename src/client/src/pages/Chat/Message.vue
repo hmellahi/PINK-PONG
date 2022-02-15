@@ -188,9 +188,9 @@ export default class MessageBox extends Vue {
 //   border-bottom: 1px solid white;
 // }
 
-// #my-tooltip span{
-//   z-index:99999999;
-// }
+#my-tooltip > span{
+  z-index:99999999;
+}
 // #my-tooltip span[data-popper-placement="top"] #arrow {
 //   bottom: -0.3rem;
 //   // background: red;

@@ -3,24 +3,24 @@
     <h3 class="mb-4">CHOOSE A MAP</h3>
     <div class="row mb-4">
       <div class="col-sm-12 col-md-4">
-        <div :class="boxMapClass('map1')">
-          <a href="#" @click="updateMap('map1')">
+        <div :class="boxMapClass('1')">
+          <a href="#" @click="updateMap('1')">
             <img src="/assets/img/map1.jpg"
           /></a>
           <h3>Vanilla</h3>
         </div>
       </div>
       <div class="col-sm-12 col-md-4">
-        <div :class="boxMapClass('map2')">
-          <a href="#" @click="updateMap('map2')">
+        <div :class="boxMapClass('2')">
+          <a href="#" @click="updateMap('2')">
             <img src="/assets/img/map2.jpg"
           /></a>
           <h3>Speedy</h3>
         </div>
       </div>
       <div class="col-sm-12 col-md-4">
-        <div :class="boxMapClass('map3')">
-          <a href="#" @click="updateMap('map3')">
+        <div :class="boxMapClass('3')">
+          <a href="#" @click="updateMap('3')">
             <img src="/assets/img/map3.jpeg"
           /></a>
           <h3>Classic</h3>
@@ -39,7 +39,7 @@ import Button from "@/common/components/UI/Button.vue";
   components: { Button },
 })
 export default class Play extends Vue {
-  selected: String = "map1";
+  selected: String = "1";
   connection: any = null;
   updateMap(mapname: String) {
     this.selected = mapname;

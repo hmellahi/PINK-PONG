@@ -4,29 +4,27 @@ import {
   MessageBody,
   ConnectedSocket,
   WebSocketServer,
+  WsException,
 } from '@nestjs/websockets';
 import { Socket, Server } from 'socket.io';
 import { Logger, UseGuards } from '@nestjs/common';
 import { Game } from './Interfaces/Game.interface';
 import { HttpStatus, HttpException } from '@nestjs/common';
+import { JwtAuthGuard } from '../authentication/Guards/jwtAccess.guard';
 
 let MAX_SCORE = 5;
 
 @WebSocketGateway({
   namespace: 'game',
-  cors:
-  {
-    credentials: true,
-    origin: "http://127.0.0.1:5000"
-  }
+  cors: true,
 })
-
-@UseGuards()
+@UseGuards(JwtAuthGuard)
 export class GameGateway {
   @WebSocketServer() server: Server;
 
   // usersInQueue: number[] = [];
   players: any[] = [];
+  pendingRequests: any = {};
   liveGames: Game[] = [];
   username: string = '';
   private logger: Logger = new Logger('AppGateway');
@@ -37,6 +35,7 @@ export class GameGateway {
     @ConnectedSocket() player: Socket,
   ) {
     // this.logger.log(`client leaved queue: ${client.id}`);
+    // console.log(player);
     this.players = this.players.filter(
       (playerinQueue) => playerinQueue.id != player.id,
     );
@@ -44,48 +43,46 @@ export class GameGateway {
   }
 
   @SubscribeMessage('joinQueue')
-  joinQueue(
-    @MessageBody('userId') userId: number,
-    @ConnectedSocket() player: Socket,
-  ): void {
-    // TODO CHECK FOR USERID
-    // if (this.players.indexOf(this.username) != -1)
-    console.log(
-      `%c client joined queue: ${player.id}`,
-      'background: #222; color: #bada55',
-    );
-    this.players.push(player);
+  joinQueue(@MessageBody() data: any, @ConnectedSocket() player: Socket): void {
+    let { map, userId } = data;
 
-    if (this.players.length >= 2) {
-      // console.log(this.players);
-      const roomId = this.players[0].id + '' + this.players[1].id;
-      // join room
-      // this.players[0].join(roomId);
-      // this.players[1].join(roomId);
+    // TODO CHECK FOR USER STAUS
+    // console.log(
+    //   `%c client joined queue: ${player.id}`,
+    //   'background: #222; color: #bada55',
+    // );
+    const secondPlayer = this.players.find((player) => player.map == map);
 
-      // register the game
-      this.liveGames.push({
-        roomId,
-        player1: userId, // TODO CHANGE
-        player2: userId, // TODO CHANGE
-        score1: 0,
-        score2: 0,
-        created_at: new Date(),
-        map: 0, // TODO CHANGE
-        ff: 0,
-      });
-
-      // alert players
-      this.server
-        .to(this.players[0].id)
-        .to(this.players[1].id)
-        .emit('matchFound', roomId);
-
-      // remove playes from queue
-      this.players.splice(0, 2);
+    if (!secondPlayer) {
+      this.players.push({ socket: player, map, userId });
+      return;
     }
+    // console.log(map, map);
+
+    const roomId = this.createGame(
+      userId,
+      secondPlayer.userId,
+      player.id,
+      secondPlayer.socket.id,
+      map,
+    );
+
+    // alert players
+    this.server
+      .to(secondPlayer.socket.id)
+      .to(player.id)
+      .emit('matchFound', roomId);
+
+    // remove playes from queue
+    this.players.splice(this.players.indexOf(secondPlayer), 1);
     // console.log(this.players);
     // return 'Hello world!';
+  }
+
+  checkBorders(canvas: any, ball: any): number {
+    if (ball.x - ball.radius / 2 <= 0) return 2;
+    if (ball.x + ball.radius / 2 >= canvas.width) return 1;
+    return 0;
   }
 
   @SubscribeMessage('paddleMoves')
@@ -95,18 +92,103 @@ export class GameGateway {
     const currentPlayerRoom: Game = this.liveGames.find(
       (game) => game.roomId === roomId,
     );
-    // console.table(this.liveGames);
-    // console.table(this.liveGames);
-    // console.table(currentPlayerRoom);
+
+    // room doesnt exist
+    if (!currentPlayerRoom) return 'roomNotFound';
+    if (
+      userId != currentPlayerRoom.player1 &&
+      userId != currentPlayerRoom.player2
+    )
+      return 'u cant move the paddle hehe ;)';
+    player.to(roomId).emit('paddleMoves', { paddle });
+    // console.log(`player emitting: ${paddle}`);
+  }
+
+  @SubscribeMessage('ballMoves')
+  ballMoves(@MessageBody() data: any, @ConnectedSocket() player: Socket) {
+    let { ball, canvas, roomId, userId } = data;
+
+    const currentPlayerRoom: Game = this.liveGames.find(
+      (game) => game.roomId === roomId,
+    );
+
     // room doesnt exist
     if (!currentPlayerRoom)
       return this.server.to(player.id).emit('roomNotFound');
+    if (userId != currentPlayerRoom.player1) return '';
 
-    // player.to(roomId).emit('paddleMoves', { players:[{'velocity':velocity, ''}]});
-    player.to(roomId).emit('paddleMoves', { paddle });
-    console.log(`player emitting: ${paddle}`);
+    player.to(roomId).emit('ballMoves', { ball, canvas });
+    // console.log(`player emitting: ${ball}, ${canvas}`);
+    const ballHitsBorder = this.checkBorders(canvas, ball);
+    if (ballHitsBorder) {
+      this.server.to(roomId).emit('incrementScore', ballHitsBorder);
+      const roomIndex = this.liveGames.indexOf(currentPlayerRoom);
+      if (ballHitsBorder == 1) {
+        this.liveGames[roomIndex].score1++;
+      } else {
+        this.liveGames[roomIndex].score2++;
+      }
+      if (
+        this.liveGames[roomIndex].score1 >= MAX_SCORE ||
+        this.liveGames[roomIndex].score2 >= MAX_SCORE
+      ) {
+        // Inform everyone that game ends
+        this.server.to(roomId).emit('gameOver', ballHitsBorder);
+        // TODO SAVE IN DATABASE
+        this.removeGame(roomId);
+      }
+    }
+  }
 
-    // this.server.to(spectactoRoom).emit()
+  @SubscribeMessage('inviteToGame')
+  inviteToGame(@MessageBody() data: any, @ConnectedSocket() sender: Socket) {
+    let { receiver } = data;
+    this.pendingRequests[receiver] = sender.id;
+    sender.to(receiver).emit('inviteToGame');
+  }
+
+  @SubscribeMessage('declineInvitation')
+  declineInvitation(
+    @MessageBody() data: any,
+    @ConnectedSocket() receiver: Socket,
+  ) {
+    this.pendingRequests.delete(receiver);
+  }
+
+  createGame(
+    player1ID: number,
+    player2ID: number,
+    player1SockerId: string,
+    player2SockerId: string,
+    map: number,
+  ) {
+    const roomId = player1SockerId + player2SockerId;
+    this.liveGames.push({
+      roomId,
+      player1: player1ID, // TODO CHANGE USERID
+      player2: player2ID, // TODO CHANGE USERID
+      score1: 0,
+      score2: 0,
+      created_at: new Date(),
+      map,
+      ff: 0,
+    });
+    return roomId;
+  }
+
+  @SubscribeMessage('acceptInvitation')
+  acceptInvitation(
+    @MessageBody() data: any,
+    @ConnectedSocket() receiver: Socket,
+  ) {
+    const senderSocketId = this.pendingRequests[receiver.id];
+    // register the game
+    const roomId = this.createGame(1, 1, receiver.id, senderSocketId, 1); // TODO CHANGE
+    this.server
+      .to(receiver.id)
+      .to(senderSocketId)
+      .emit('customGameStarted', roomId); // todo
+    this.pendingRequests.delete(receiver.id);
   }
 
   @SubscribeMessage('joinGame')
@@ -119,19 +201,25 @@ export class GameGateway {
     // console.table(this.liveGames);
     //console.table(currentPlayerRoom);
     // room doesnt exist
-    if (!currentPlayerGame)
-      return this.server.to(player.id).emit('roomNotFound');
+    if (!currentPlayerGame) return 'roomNotFound';
+    // throw new WsException('Invalid credentials.');
+
+    // return this.server.to(player.id).emit('roomNotFound');
+    // return this.server.to(player.id).emit('roomNotFound');
 
     // update user status [inGame] TODO
-    // check if player/spectator
+
     player.join(roomId);
-    // this.server.to(player.id).emit('gameloads', {
-    //   players: [
-    //     { username: '', avatar: '' },
-    //     { username: '', avatar: '' },
-    //   ],
-    // });
     console.log(`player joined: ${player.id}`);
+    return {
+      player1: currentPlayerGame.player1,
+      player2: currentPlayerGame.player2,
+      isPlayer1: userId == currentPlayerGame.player1,
+      map: currentPlayerGame.map,
+      isSpectator:
+        userId != currentPlayerGame.player1 &&
+        userId != currentPlayerGame.player2,
+    };
   }
 
   @SubscribeMessage('leaveGame')
@@ -148,18 +236,15 @@ export class GameGateway {
       // return this.server.to(player.id).emit('roomNotFound');
       return 'roomNotFound';
 
-    // if (
-    //   currentPlayerRoom.player1 != userId &&
-    //   currentPlayerRoom.player2 != userId
-    // )
-    //   return 'wtf';
     const roomIndex = this.liveGames.indexOf(currentPlayerRoom);
     console.log(roomIndex);
     if (currentPlayerRoom.player1 == userId) {
       this.liveGames[roomIndex].ff = 1;
-    } else this.liveGames[roomIndex].ff = 2;
-
+    } else if (currentPlayerRoom.player1 == userId)
+      this.liveGames[roomIndex].ff = 2;
+    else return 'wtf';
     // TODO SAVE IN DATABASE
+
     // Inform everyone that game ends
     this.server.to(roomId).emit('gameOver');
     this.removeGame(roomId);
@@ -211,6 +296,6 @@ export class GameGateway {
     // do nting
   }
   handleConnection(client: Socket, ...args: any[]) {
-    console.log(client.request.headers);  
+    console.log(client.handshake.headers);
   }
 }
