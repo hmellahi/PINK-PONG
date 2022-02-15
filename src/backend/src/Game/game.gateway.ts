@@ -11,7 +11,7 @@ import { Game } from './Interfaces/Game.interface';
 import { HttpStatus, HttpException } from '@nestjs/common';
 import {JwtAuthGuard} from "../authentication/Guards/jwtAccess.guard";
 
-let MAX_SCORE = 5;
+let MAX_SCORE = 1;
 
 @WebSocketGateway({
   namespace: 'game',
@@ -25,6 +25,7 @@ export class GameGateway {
 
   // usersInQueue: number[] = [];
   players: any[] = [];
+  pendingRequests:any = {};
   liveGames: Game[] = [];
   username: string = '';
   private logger: Logger = new Logger('AppGateway');
@@ -61,18 +62,7 @@ export class GameGateway {
     }
     // console.log(map, map);
 
-    const roomId = player.id + '' + secondPlayer.socket.id;
-    // register the game
-    this.liveGames.push({
-      roomId,
-      player1: userId, // TODO CHANGE USERID
-      player2: secondPlayer.userId, // TODO CHANGE USERID
-      score1: 0,
-      score2: 0,
-      created_at: new Date(),
-      map, // TODO CHANGE
-      ff: 0,
-    });
+    const roomId = this.createGame(userId, secondPlayer.userId,player.id, secondPlayer.socket.id, map);
 
     // alert players
     this.server
@@ -103,7 +93,7 @@ export class GameGateway {
     // room doesnt exist
     if (!currentPlayerRoom) return 'roomNotFound';
     if (
-      userId != currentPlayerRoom.player1 ||
+      userId != currentPlayerRoom.player1 &&
       userId != currentPlayerRoom.player2
     )
       return 'u cant move the paddle hehe ;)';
@@ -140,7 +130,7 @@ export class GameGateway {
         this.liveGames[roomIndex].score2 >= MAX_SCORE
       ) {
         // Inform everyone that game ends
-        this.server.to(roomId).emit('gameOver');
+        this.server.to(roomId).emit('gameOver', ballHitsBorder);
         // TODO SAVE IN DATABASE
         this.removeGame(roomId);
       }
@@ -148,8 +138,42 @@ export class GameGateway {
   }
 
   @SubscribeMessage('inviteToGame')
-  inviteToGame(@MessageBody() data: any, @ConnectedSocket() player: Socket) {
+  inviteToGame(@MessageBody() data: any, @ConnectedSocket() sender: Socket) {
+    let {receiver} = data;
+    this.pendingRequests[receiver] = sender.id;
+    sender.to(receiver).emit("inviteToGame")
+  }
 
+  @SubscribeMessage('declineInvitation')
+  declineInvitation(@MessageBody() data: any, @ConnectedSocket() receiver: Socket) {
+    this.pendingRequests.delete(receiver);
+  }
+
+  createGame(player1ID:number, player2ID:number, player1SockerId:string, player2SockerId:string, map:number){
+    const roomId = player1SockerId + player2SockerId;
+    this.liveGames.push({
+      roomId,
+      player1: player1ID, // TODO CHANGE USERID
+      player2: player2ID, // TODO CHANGE USERID
+      score1: 0,
+      score2: 0,
+      created_at: new Date(),
+      map,
+      ff: 0,
+    });
+    return roomId;
+  }
+
+  @SubscribeMessage('acceptInvitation')
+  acceptInvitation(
+      @MessageBody() data: any,
+      @ConnectedSocket() receiver: Socket,
+  ) {
+    const senderSocketId = this.pendingRequests[receiver.id];
+    // register the game
+    const roomId = this.createGame(1, 1, receiver.id, senderSocketId, 1); // TODO CHANGE
+    this.server.to(receiver.id).to(senderSocketId).emit("customGameStarted", roomId) // todo
+    this.pendingRequests.delete(receiver.id);
   }
 
   @SubscribeMessage('joinGame')
@@ -181,7 +205,7 @@ export class GameGateway {
       isSpectator:
         userId != currentPlayerGame.player1 &&
         userId != currentPlayerGame.player2,
-    } ;
+    };
   }
 
   @SubscribeMessage('leaveGame')

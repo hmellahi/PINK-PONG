@@ -75,7 +75,7 @@ export default class MatchHistory extends Vue {
     this.socket.emit("getLiveGames", (data: any) => {
       const newData = data.map(async (object: any) => {
         const user1 = await this.fetchUser(object.player1) as any | undefined
-        const user2 = await this.fetchUser(object.player1) as any | undefined
+        const user2 = await this.fetchUser(object.player2) as any | undefined
         this.matches.push({...object, user1: user1.data, user2: user2.data})
       });
     });

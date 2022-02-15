@@ -45,7 +45,6 @@ export default class App extends Vue {
 
     this.socket.on("inviteToGame", (data: any) => {
       let { senderId } = data;
-      
     });
   }
 
