@@ -100,9 +100,9 @@ export class GameGateway {
       userId != currentPlayerRoom.player2
     )
       return 'u cant move the paddle hehe ;)';
-    let isPlayer1 = userId == currentPlayerRoom.player1;
+    let isPlayer1:number = userId == currentPlayerRoom.player1 ? 1 : 0;
     this.liveGames[this.liveGames.indexOf(currentPlayerRoom)].paddles[
-      !isPlayer1
+      isPlayer1 ? 0 : 1
     ] = paddle;
     player.to(roomId).emit('paddleMoves', { paddle, isPlayer1});
     // console.log(`player emitting: ${paddle}`);
@@ -122,7 +122,7 @@ export class GameGateway {
     const isPlayer1 = userId == currentPlayerRoom.player1;
     if (!isPlayer1) return '';
     this.liveGames[this.liveGames.indexOf(currentPlayerRoom)].balls[
-        !isPlayer1
+      isPlayer1 ? 0 : 1
         ] = ball;
     player.to(roomId).emit('ballMoves', { ball, canvas });
     // console.log(`player emitting: ${ball}, ${canvas}`);

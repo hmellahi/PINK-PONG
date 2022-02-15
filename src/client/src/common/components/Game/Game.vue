@@ -423,7 +423,6 @@ export default class Game extends Vue {
 
   setup(sketch: P5Sketch) {
     // window.onresize = this.resize;
-    this.countdown.value = COUNTDOWN;
     this.sketch = sketch;
     var font = sketch.loadFont("assets/fonts/BeatWorddemo.ttf");
     sketch.textFont(font);
@@ -432,7 +431,7 @@ export default class Game extends Vue {
       GameConstants.canvas.height
     );
     this.isGameOver = true;
-    this.countdown.value = 3;
+    this.countdown.value = COUNTDOWN;
     this.countDown(sketch);
   }
 
