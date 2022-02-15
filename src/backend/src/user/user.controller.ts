@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Get, HttpCode, HttpException, HttpStatus, Param, Post, Req, Res, UploadedFile, UseGuards, UseInterceptors } from "@nestjs/common";
+import { BadRequestException, Body, Controller, Get, HttpCode, HttpException, HttpStatus, Param, Post, Query, Req, Res, UploadedFile, UseGuards, UseInterceptors } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { request } from "express";
@@ -82,8 +82,8 @@ export class  UserController
         return fetchedUser;
     }
 
-    @Get(":id")
-    async getUserById(@Param("id") id: number)
+    @Get("")
+    async getUserById(@Query("id") id: number)
     {
         if (!id || isNaN(Number(id)))
             throw new BadRequestException;
