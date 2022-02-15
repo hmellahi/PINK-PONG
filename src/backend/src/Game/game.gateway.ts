@@ -12,7 +12,7 @@ import { Game } from './Interfaces/Game.interface';
 import { HttpStatus, HttpException } from '@nestjs/common';
 import { JwtAuthGuard } from '../authentication/Guards/jwtAccess.guard';
 
-let MAX_SCORE = 1;
+let MAX_SCORE = 5;
 
 @WebSocketGateway({
   namespace: 'game',

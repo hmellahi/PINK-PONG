@@ -21,7 +21,7 @@ import P5, {
 import Paddle from "@/common/Game/Objects/Paddle";
 import Score from "@/common/Game/Objects/Score";
 
-let MAX_SCORE = 1;
+let MAX_SCORE = 5;
 
 @Component<Game>({
   components: { P5 },
@@ -222,11 +222,15 @@ export default class Game extends Vue {
   }
 
   listenToGameEvents() {
+    // const username = this.$cookies.get("username");
+    console.log({cookie: this.$cookies.get("Authentication")})
+    console.log({cookie: this.$cookies})
     this.socket = io("http://localhost:3000/game", {
       transportOptions: {
         polling: {
           extraHeaders: {
-            Authorization: "token",
+            Authorization: this.$cookies.get("Authentication"),
+            Refresh: this.$cookies.get("Refresh"),
           },
         },
       },
@@ -242,7 +246,7 @@ export default class Game extends Vue {
       console.log("Connection Failed");
     });
 
-    this.socket.on("gameOver", (ballHitsBorder) => {
+    this.socket.on("gameOver", (ballHitsBorder:any) => {
       // this.scores[ballHitsBorder - 1].value++;
       this.isGameOver = true;
       this.intervals.map((interval) => {
@@ -261,7 +265,8 @@ export default class Game extends Vue {
       (msg: any) => {
         console.log("msg", { msg });
         if (msg === "roomNotFound") {
-          this.$router.push({ path: "/" });
+          // this.$router.push({ path: "/" });
+          return;
         }
         this.gameData = msg;
         this.net.map = msg.map;
