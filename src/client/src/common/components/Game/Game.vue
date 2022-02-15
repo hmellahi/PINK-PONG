@@ -233,16 +233,19 @@ export default class Game extends Vue {
   }
 
   listenToGameEvents() {
+<<<<<<< HEAD
     // const username = this.$cookies.get("username");
     console.log({cookie: this.$cookies.get("Authentication")})
     console.log({cookie: this.$cookies})
 
+=======
+    const Authentication = this.$cookies.get("Authentication")
+>>>>>>> 42a96b82986c99a4b6337abe5ae7e2b992a19c38
     this.socket = io("http://localhost:3000/game", {
       transportOptions: {
         polling: {
           extraHeaders: {
-            Authorization: this.$cookies.get("Authentication"),
-            Refresh: this.$cookies.get("Refresh"),
+            Authentication
           },
         },
       },
@@ -267,7 +270,7 @@ export default class Game extends Vue {
       this.paddle2.velocity = (enemyPaddle.velocity / canvas.width) * GameConstants.canvas.width;
     });
 
-    this.socket.on("connect_failed", function () {
+    this.socket.on("disconnect", function () {
       console.log("Connection Failed");
     });
 

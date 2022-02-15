@@ -8,6 +8,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { FriendshipModule } from './friend/friendship.module';
 import { GameGateway } from './Game/game.gateway';
+import { GameModule } from './Game/game.module';
 
 @Module(
 {
@@ -47,7 +48,7 @@ import { GameGateway } from './Game/game.gateway';
     UserModule,
     FriendshipModule,
     AuthModule,
-    GameGateway
+    GameModule
   ],
 })
 export class AppModule {}
