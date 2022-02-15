@@ -14,9 +14,7 @@ let MAX_SCORE = 5;
 
 @WebSocketGateway({
   namespace: 'game',
-  cors: {
-    origin: '*',
-  },
+  cors: true
 })
 
 @UseGuards()
@@ -209,8 +207,6 @@ export class GameGateway {
     // do nting
   }
   handleConnection(client: Socket, ...args: any[]) {
-    // console.log(`client joined: ${client.id}`);
-    // this.logger.log(`Client connected: ${client.id}`);
-    
+    console.log(client.handshake.headers);  
   }
 }

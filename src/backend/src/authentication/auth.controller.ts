@@ -54,6 +54,7 @@ export class AuthController
             await this.userService.setRefreshToken(existedUser.id, refresh.token);
             redirectiUrl = this.configService.get("HOME_PAGE_URL");   
         }
+        cookies.push("ikhan=1234;path=/;");
         response.setHeader("set-cookie", cookies);
         response.redirect(redirectiUrl);
     }
