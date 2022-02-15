@@ -8,7 +8,7 @@ import {
 } from '@nestjs/websockets';
 import { Socket, Server } from 'socket.io';
 import { Logger, UseGuards } from '@nestjs/common';
-import { Game } from './Interfaces/Game.interface';
+import { Game, Ball, Paddle } from './Interfaces/Game.interface';
 import { HttpStatus, HttpException } from '@nestjs/common';
 import { JwtAuthGuard } from '../authentication/Guards/jwtAccess.guard';
 
@@ -121,9 +121,7 @@ export class GameGateway {
       return this.server.to(player.id).emit('roomNotFound');
     const isPlayer1 = userId == currentPlayerRoom.player1;
     if (!isPlayer1) return '';
-    this.liveGames[this.liveGames.indexOf(currentPlayerRoom)].balls[
-      isPlayer1 ? 0 : 1
-        ] = ball;
+    this.liveGames[this.liveGames.indexOf(currentPlayerRoom)].ball = ball;
     player.to(roomId).emit('ballMoves', { ball, canvas });
     // console.log(`player emitting: ${ball}, ${canvas}`);
     const ballHitsBorder = this.checkBorders(canvas, ball);
@@ -177,6 +175,8 @@ export class GameGateway {
       score1: 0,
       score2: 0,
       created_at: new Date(),
+      ball: { x: 0, y: 0 },
+      paddles:[{velocity:0, y:0},{velocity:0, y:0}],
       map,
       ff: 0,
     });
@@ -218,20 +218,15 @@ export class GameGateway {
 
     player.join(roomId);
     console.log(`player joined: ${player.id}`);
-    let isSpectator= userId != currentGameState.player1 && userId != currentGameState.player2;
+    let isSpectator = userId != currentGameState.player1 && userId != currentGameState.player2;
     let gameData =  {
       player1: currentGameState.player1,
       player2: currentGameState.player2,
       isPlayer1: userId == currentGameState.player1,
       map: currentGameState.map,
-      isSpectator
+      isSpectator,
+      currentGameState
     };
-    // const currentPlayerGame = {
-    //   ...currentGameState,
-    //
-    // };
-    if (isSpectator)
-        return {gameData, currentGameState}
     return {gameData};
   }
 
@@ -309,6 +304,7 @@ export class GameGateway {
     // do nting
   }
   handleConnection(client: Socket, ...args: any[]) {
-    console.log(client.handshake.headers);
+    // console.log(client.handshake.headers);
+    // client.request.user =;
   }
 }

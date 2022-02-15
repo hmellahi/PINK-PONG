@@ -281,7 +281,7 @@ export default class Game extends Vue {
       // TODO show to the player the he won because the other player quits
       if (this.gameData.isSpectator)
         return;
-      if(this.score.value < MAX_SCORE)
+      if(this.scores[0].value < MAX_SCORE)
         this.playerLost(this.sketch, "you Have Lost");
       else{
         this.playerLost(this.sketch, "you Have Won");
@@ -322,9 +322,9 @@ export default class Game extends Vue {
         this.ball.x = (ball.x / canvas.width) * GameConstants.canvas.width;
         this.ball.y = (ball.y / canvas.height) * GameConstants.canvas.height;
         // paddles
-        this.paddle2.y = paddle2.y;
+        this.paddle2.y = (paddle2.y / canvas.height) * GameConstants.canvas.height;
         this.paddle2.velocity = paddle2.velocity;
-        this.paddle.y = paddle1.y;
+        this.paddle.y = (paddle1.y / canvas.height) * GameConstants.canvas.height;
         this.paddle.velocity = paddle1.velocity;
 
         this.isLoading = false;
@@ -430,9 +430,9 @@ export default class Game extends Vue {
       GameConstants.canvas.width,
       GameConstants.canvas.height
     );
-    this.isGameOver = true;
-    this.countdown.value = COUNTDOWN;
-    this.countDown(sketch);
+    // this.isGameOver = true;
+    // this.countdown.value = COUNTDOWN;
+    // this.countDown(sketch);
     //online problem
       //uncomnet this to get coundown back each round
 
@@ -468,7 +468,7 @@ export default class Game extends Vue {
         // this.showGameOver(sketch);
         return;
       }
-      this.isGameOver = true; // change to true
+      // this.isGameOver = true; // change to true
       // this.countDown(sketch);
       //uncomnet this to get coundown back each round
     } else {

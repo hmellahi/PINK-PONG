@@ -16,6 +16,7 @@ export default class {
   bottom: number = 0;
   left: number = 0;
   right: number = 0;
+  initialSpeed:number ;
 
   // Constructor method
   constructor(
@@ -34,7 +35,9 @@ export default class {
     // this.velocityY = Math.floor(Math.random() * 10) + 1;;
     this.velocityX = 1;
     this.velocityY = 1;
-    this.speed = GameConstants.canvas.width / 120;
+    this.initialSpeed = GameConstants.canvas.width / 200;
+    this.speed = this.initialSpeed;
+    // this.speed = 1;
     this.color = tempColor;
   }
 
@@ -136,7 +139,7 @@ export default class {
     // this.x = windowsWidth / 2;
     this.y = canvas.height / 2; // TODO
     this.x = canvas.width / 2;
-    this.speed = 3;
+    this.speed = this.initialSpeed;
     this.velocityX = 1;
     this.velocityY = 1;
   }

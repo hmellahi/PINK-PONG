@@ -1,3 +1,12 @@
+export interface Paddle{
+    velocity:number,
+    y:number
+}
+export interface Ball{
+    x:number,
+    y:number
+}
+
 export interface Game {
     // id?: number;
     roomId:string;
@@ -7,7 +16,7 @@ export interface Game {
     score2:number;
     map:number;
     created_at:Date;
-    paddles?:any[];
-    balls?:any[];
+    paddles:Paddle;
+    ball:Ball;
     ff:number;
 }
