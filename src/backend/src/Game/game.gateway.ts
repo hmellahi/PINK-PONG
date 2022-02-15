@@ -35,7 +35,7 @@ export class GameGateway {
     @ConnectedSocket() player: Socket,
   ) {
     // this.logger.log(`client leaved queue: ${client.id}`);
-    console.log(player);
+    // console.log(player);
     this.players = this.players.filter(
       (playerinQueue) => playerinQueue.id != player.id,
     );
@@ -43,43 +43,45 @@ export class GameGateway {
   }
 
   @SubscribeMessage('joinQueue')
-  joinQueue(
-    @MessageBody('userId') userId: number,
-    @ConnectedSocket() player: Socket,
+  joinQueue(@MessageBody() data: any,
+    @ConnectedSocket() player: Socket
   ): void {
-    // TODO CHECK FOR USERID
-    console.log(
-      `%c client joined queue: ${player.id}`,
-      'background: #222; color: #bada55',
-    );
-    // if (this.players.indexOf(this.username) != -1)
-    this.players.push(player);
+    let {map, userId} = data;
 
-    if (this.players.length >= 2) {
-      // console.log(this.players);
-      const roomId = this.players[0].id + '' + this.players[1].id;
+    // TODO CHECK FOR USER STAUS
+    // console.log(
+    //   `%c client joined queue: ${player.id}`,
+    //   'background: #222; color: #bada55',
+    // );
+    const secondPlayer = this.players.find(player => player.map == map)
 
-      // register the game
-      this.liveGames.push({
-        roomId,
-        player1: userId, // TODO CHANGE
-        player2: userId, // TODO CHANGE
-        score1: 0,
-        score2: 0,
-        created_at: new Date(),
-        map: 0, // TODO CHANGE
-        ff: 0,
-      });
-
-      // alert players
-      this.server
-        .to(this.players[0].id)
-        .to(this.players[1].id)
-        .emit('matchFound', roomId);
-
-      // remove playes from queue
-      this.players.splice(0, 2);
+    if (!secondPlayer) {
+      this.players.push({socket: player, map, userId});
+      return;
     }
+    // console.log(map, map);
+
+    const roomId = player.id + '' + secondPlayer.socket.id;
+    // register the game
+    this.liveGames.push({
+      roomId,
+      player1: userId, // TODO CHANGE USERID
+      player2: secondPlayer.userId, // TODO CHANGE USERID
+      score1: 0,
+      score2: 0,
+      created_at: new Date(),
+      map, // TODO CHANGE
+      ff: 0,
+    });
+
+    // alert players
+    this.server
+      .to(secondPlayer.socket.id)
+      .to(player.id)
+      .emit('matchFound', roomId);
+
+    // remove playes from queue
+    this.players.splice(this.players.indexOf(secondPlayer), 1);
     // console.log(this.players);
     // return 'Hello world!';
   }
@@ -106,7 +108,7 @@ export class GameGateway {
     )
       return 'u cant move the paddle hehe ;)';
     player.to(roomId).emit('paddleMoves', { paddle });
-    console.log(`player emitting: ${paddle}`);
+    // console.log(`player emitting: ${paddle}`);
   }
 
   @SubscribeMessage('ballMoves')
@@ -123,7 +125,7 @@ export class GameGateway {
     if (userId != currentPlayerRoom.player1) return '';
 
     player.to(roomId).emit('ballMoves', { ball, canvas });
-    console.log(`player emitting: ${ball}, ${canvas}`);
+    // console.log(`player emitting: ${ball}, ${canvas}`);
     const ballHitsBorder = this.checkBorders(canvas, ball);
     if (ballHitsBorder) {
       this.server.to(roomId).emit('incrementScore', ballHitsBorder);
@@ -143,6 +145,11 @@ export class GameGateway {
         this.removeGame(roomId);
       }
     }
+  }
+
+  @SubscribeMessage('inviteToGame')
+  inviteToGame(@MessageBody() data: any, @ConnectedSocket() player: Socket) {
+
   }
 
   @SubscribeMessage('joinGame')
@@ -170,6 +177,7 @@ export class GameGateway {
       player1: currentPlayerGame.player1,
       player2: currentPlayerGame.player2,
       isPlayer1: userId == currentPlayerGame.player1,
+      map:currentPlayerGame.map,
       isSpectator:
         userId != currentPlayerGame.player1 &&
         userId != currentPlayerGame.player2,

@@ -24,8 +24,8 @@ export default class {
     tempRadius: number,
     tempColor: number
   ) {
-    this.x = GameConstants.canvas.width / 2;
-    this.y = GameConstants.canvas.height / 2;
+    this.x = tempX;
+    this.y = tempY;
     // this.y =  Math.floor(Math.random() * GameConstants.canvas.height - 200) + 200;
     // this.y = Math.floor(Math.random() * ((GameConstants.canvas.height / 10)*8 - (GameConstants.canvas.height / 10)*2 + (GameConstants.canvas.height / 10)*2));
 
@@ -93,12 +93,12 @@ export default class {
     // var tmp = loadsound('../firework.mp3');
     // tmp();
     // default angle is 0deg in Radian
-    console.log(`ball speed ${this.speed}`);
-    console.log(`ball VeloX ${this.velocityX} and VeloY ${this.velocityY}`);
+    // console.log(`ball speed ${this.speed}`);
+    // console.log(`ball VeloX ${this.velocityX} and VeloY ${this.velocityY}`);
 
-    console.log("I am hitted");
-    console.log(`player ${player.x}, ${player.y}`);
-    console.log(`bll ${this.x}, ${this.y}`);
+    // console.log("I am hitted");
+    // console.log(`player ${player.x}, ${player.y}`);
+    // console.log(`bll ${this.x}, ${this.y}`);
 
     let collidePoint = this.y - (player.y + player.height / 2);
     collidePoint = collidePoint / (player.height / 2);
@@ -123,17 +123,19 @@ export default class {
     this.velocityY = this.speed * Math.sin(angleRad);
     // increase speed
     // this.speed += 0.05; TODO CHange
-    console.log(`ball speed ${this.speed}`);
-    console.log(`ball VeloX ${this.velocityX} and VeloY ${this.velocityY}`);
+    // console.log(`ball speed ${this.speed}`);
+    // console.log(`ball VeloX ${this.velocityX} and VeloY ${this.velocityY}`);
   }
 
   reset() {
     let { canvas, borderWidth } = GameConstants;
     let { height: windowsHeight, width: windowsWidth } = canvas;
     // let {borderWidth} = GameConstants
-    this.y = windowsHeight / 2; // TODO
-    // this.y =  Math.floor(Math.random() * (windowsHeight- borderWidth) + borderWidth);
-    this.x = windowsWidth / 2;
+    // this.y = windowsHeight / 2; // TODO
+    // // this.y =  Math.floor(Math.random() * (windowsHeight- borderWidth) + borderWidth);
+    // this.x = windowsWidth / 2;
+    this.y = canvas.height / 2; // TODO
+    this.x = canvas.width / 2;
     this.speed = 3;
     this.velocityX = 1;
     this.velocityY = 1;

@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <notifications/>
+    <notifications />
     <router-view v-if="isLoginPage"></router-view>
     <span v-else>
       <div class="container">
@@ -25,8 +25,8 @@ import { Component, Vue, Watch } from "vue-property-decorator";
 import SideBar from "./common/components/Layout/SideBar.vue";
 import { Route, RawLocation } from "vue-router";
 import Title from "./common/components/Layout/Title.vue";
-import {mapActions, mapGetters} from 'vuex';
-
+import { io } from "socket.io-client";
+import { mapActions, mapGetters } from "vuex";
 
 @Component<App>({
   components: { Title, SideBar },
@@ -38,7 +38,17 @@ import {mapActions, mapGetters} from 'vuex';
 })
 export default class App extends Vue {
   isLoginPage: boolean = false;
-  
+  socket: any = null;
+
+  listenToEvents() {
+    this.socket = io("http://localhost:3000/game");
+
+    this.socket.on("inviteToGame", (data: any) => {
+      let { senderId } = data;
+      
+    });
+  }
+
   mounted() {
     this.updateIsLoginPage();
   }

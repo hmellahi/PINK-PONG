@@ -37,8 +37,8 @@ export default class Game extends Vue {
   // canvasWidth:
   backColor: number = GameConstants.backColor; //todo change
   // xBall: number = Math.floor(Math.random() * 300) + GameConstants.ball.x;
-  xBall: number = GameConstants.ball.x;
-  yBall: number = GameConstants.ball.y;
+  xBall: number = GameConstants.canvas.width / 2;
+  yBall: number = GameConstants.canvas.height / 2;
   radius: number = 10;
   sounds: Array<any> = [];
   ball: Ball = new Ball(this.xBall, this.yBall, this.radius, 0);
@@ -60,7 +60,7 @@ export default class Game extends Vue {
     this.paddleWidth,
     this.paddleHeight
   );
-  map: string = "map2";
+  map: number = 0;
   net: Net = new Net(
     GameConstants.canvas.width,
     GameConstants.canvas.height,
@@ -82,20 +82,20 @@ export default class Game extends Vue {
   roomId: any = "";
   gameData: any = {};
   init() {
-    console.log("setup");
+    // console.log("setup");
     var game = document.getElementById("game");
 
     if (game) {
       // GameConstants.canvas.width = game.offsetWidth;
       // GameConstants.canvas.height = game.offsetHeight;
-      console.log(game.offsetWidth, game.offsetHeight);
+      // console.log(game.offsetWidth, game.offsetHeight);
       GameConstants.canvas.width = 400;
       GameConstants.canvas.height = 400;
     }
     this.socket = null;
-    this.backColor = GameConstants.backColor; //todo change
-    this.xBall = GameConstants.ball.x;
-    this.yBall = GameConstants.ball.y;
+    this.backColor = GameConstants.backColor; 
+    this.xBall = GameConstants.canvas.width / 2;
+    this.yBall = GameConstants.canvas.height / 2;
     this.radius = 10;
     this.sounds = [];
     this.ball = new Ball(this.xBall, this.yBall, this.radius, 0);
@@ -137,6 +137,70 @@ export default class Game extends Vue {
     this.scores = [this.score, this.score2];
     this.roomId = "";
   }
+  resizeObjects(){
+    // console.log("setup");
+
+    // console.log(`before ball speed ${this.ball.speed}`);
+    // console.log(`before ball VeloX ${this.ball.velocityX} and VeloY ${this.ball.velocityY}`);
+    // console.log(`before ball X ${this.ball.x} and Y ${this.ball.y}`);
+
+
+    var xF = this.ball.x / GameConstants.canvas.width;
+    var yF = this.ball.y / GameConstants.canvas.height;
+    console.log(`ball factors X ${xF} and Y ${yF}`);
+
+    var game = document.getElementById("game");
+    if (game) {
+      // GameConstants.canvas.width = game.offsetWidth;
+      // GameConstants.canvas.height = game.offsetHeight;
+       GameConstants.canvas.width = 400;
+      GameConstants.canvas.height = 400;
+    }
+    
+    this.radius = 10;
+    this.ball = new Ball(xF * GameConstants.canvas.width, yF * GameConstants.canvas.height, this.radius, 0);
+    // this.ball = new Ball(GameConstants.canvas.width/2, GameConstants.canvas.height/2, this.radius, 0);
+
+    // console.log(`after ball speed ${this.ball.speed}`);
+    // console.log(`after ball VeloX ${this.ball.velocityX} and VeloY ${this.ball.velocityY}`);
+    // console.log(`after ball X ${this.ball.x} and Y ${this.ball.y}`);
+    this.isGameOver = false;
+    this.paddleWidth = GameConstants.paddle.width;
+    this.paddleHeight = GameConstants.paddle.height;
+    this.paddle = new Paddle(
+      GameConstants.canvas.width - this.paddleWidth - 20,
+      this.paddle.y,
+      this.paddleWidth,
+      this.paddleHeight
+    );
+    this.paddle2 = new Paddle(
+      20,
+      this.paddle2.y,
+      this.paddleWidth,
+      this.paddleHeight
+    );
+
+    this.net = new Net(
+      GameConstants.canvas.width,
+      GameConstants.canvas.height,
+      this.map
+    );
+    this.background = new BackGround();
+
+    this.score = new Score(GameConstants.canvas.width / 4 - 60, 30,this.score.value);
+    this.score2 = new Score(
+      GameConstants.canvas.width - GameConstants.canvas.width / 4,
+      30,
+      this.score2.value
+    );
+    this.countdown = new Score(
+      GameConstants.canvas.width / 2 - 15,
+      GameConstants.canvas.height / 2 - 25,
+      this.countdown.value
+    );
+    this.scores = [this.score, this.score2];
+
+  }
   mounted() {
     window.addEventListener("keydown", this.keydown);
     window.addEventListener("keyup", this.keyup);
@@ -150,38 +214,59 @@ export default class Game extends Vue {
 
   listenToGameEvents() {
     this.socket = io("http://localhost:3000/game");
+
     this.socket.on("paddleMoves", (data: any) => {
       // console.log("recieved: " + velocity);
       let { paddle: enemyPaddle } = data;
       this.paddle2.y = enemyPaddle.y;
       this.paddle2.velocity = enemyPaddle.velocity;
     });
+
     this.socket.on("connect_failed", function () {
       console.log("Connection Failed");
     });
+
     this.socket.on("gameOver", () => {
       this.isGameOver = true;
       this.intervals.map((interval) => {
         clearInterval(interval);
-      });
+      }
+      );
       this.showGameOver(this.sketch);
+      // TODO show to the player the he won because the other player quits
+      this.playerLost(this.sketch);
+      // TODO clear all running intervals...
+      // clearInterval(this.countInter);
     });
+
+    this.socket.emit("joinGame", { userId: 2, roomId: this.roomId }, (msg: any) => {
+        console.log(msg);
+        if (msg === "roomNotFound") {
+          this.$router.push({ path: "/" });
+        }
+        this.gameData = msg;
+        this.net.map = msg.map;
+    });
+
     this.socket.on("ballMoves", (data: any) => {
       if (this.gameData.isPlayer1) return;
       let { ball, canvas } = data;
-      this.ball.x = ball.x;
-      this.ball.y = ball.y;
+      this.ball.x = (ball.x / canvas.width) * GameConstants.canvas.width;
+      this.ball.y = (ball.y / canvas.height) * GameConstants.canvas.height;;
     });
+
     this.socket.on("incrementScore", (ballHitsBorder: number) => {
       this.scores[ballHitsBorder - 1].value++;
       console.log(this.scores[ballHitsBorder - 1].value);
     });
+    
     this.socket.emit(
       "joinGame",
       { userId: this.currentUser.id, roomId: this.roomId },
       (data: any) => {
         console.log({ data });
         this.gameData = data;
+        this.map = data.map;
       }
     );
   }
@@ -194,21 +279,24 @@ export default class Game extends Vue {
   }
 
   resize() {
-    var game = document.getElementById("game");
+    // var game = document.getElementById("game");
 
+    // // if (game) {
+    // //   GameConstants.canvas.width = game.offsetWidth;
+    // //   GameConstants.canvas.height = game.offsetHeight;
+    // // }
     // if (game) {
-    //   GameConstants.canvas.width = game.offsetWidth;
-    //   GameConstants.canvas.height = game.offsetHeight;
+    //   GameConstants.canvas.width = 400;
+    //   GameConstants.canvas.height = 400;
     // }
-    if (game) {
-      GameConstants.canvas.width = 400;
-      GameConstants.canvas.height = 400;
-    }
-    this.init();
+    // this.init();
+    this.resizeObjects();
+
     this.sketch.resizeCanvas(
       GameConstants.canvas.width,
       GameConstants.canvas.height
     );
+
   }
   drawGameObjects(sketch: P5Sketch) {
     sketch.background(this.backColor);
@@ -230,12 +318,23 @@ export default class Game extends Vue {
   showGameOver(sketch: P5Sketch) {
     this.drawOerlay(sketch);
     sketch.textSize(GameConstants.canvas.width / 8);
-    sketch.textAlign(sketch.CENTER, sketch.CENTER);
+    sketch.textAlign(sketch.CENTER);
     sketch.fill(255, 0, 0);
     sketch.text(
       "Game Over",
       GameConstants.canvas.width / 2,
       GameConstants.canvas.height / 2
+    );
+    // this.$router.push('/')
+  }
+   playerLost(sketch: P5Sketch) {
+    sketch.textSize(GameConstants.canvas.width / 12);
+    sketch.textAlign(sketch.CENTER);
+    sketch.fill(255, 0, 0);
+    sketch.text(
+      "you Have Lost",
+      GameConstants.canvas.width / 2,
+      GameConstants.canvas.height * 3 / 4
     );
     // this.$router.push('/')
   }
@@ -270,7 +369,6 @@ export default class Game extends Vue {
 
   draw(sketch: P5Sketch) {
     if (this.isGameOver) return;
-    this.sendNewBallPostion();
     sketch.background(this.backColor);
     this.background.draw(sketch);
     this.net.draw(sketch);
@@ -293,7 +391,7 @@ export default class Game extends Vue {
       if (this.scores[ballHitsBorder - 1].value >= MAX_SCORE) {
         this.isGameOver = true;
         this.scores.map((score) => score.draw(sketch));
-        this.showGameOver(sketch);
+        // this.showGameOver(sketch);
         return;
       }
       this.isGameOver = true; // change to true
@@ -303,6 +401,8 @@ export default class Game extends Vue {
       this.ball.draw(sketch);
       this.scores.map((score) => score.draw(sketch));
     }
+    this.sendNewBallPostion();
+
   }
 
   keydown(e: any) {
