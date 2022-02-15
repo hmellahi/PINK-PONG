@@ -100,7 +100,11 @@ export class GameGateway {
       userId != currentPlayerRoom.player2
     )
       return 'u cant move the paddle hehe ;)';
-    player.to(roomId).emit('paddleMoves', { paddle });
+    let isPlayer1 = userId == currentPlayerRoom.player1;
+    this.liveGames[this.liveGames.indexOf(currentPlayerRoom)].paddles[
+      !isPlayer1
+    ] = paddle;
+    player.to(roomId).emit('paddleMoves', { paddle, isPlayer1});
     // console.log(`player emitting: ${paddle}`);
   }
 
@@ -115,8 +119,11 @@ export class GameGateway {
     // room doesnt exist
     if (!currentPlayerRoom)
       return this.server.to(player.id).emit('roomNotFound');
-    if (userId != currentPlayerRoom.player1) return '';
-
+    const isPlayer1 = userId == currentPlayerRoom.player1;
+    if (!isPlayer1) return '';
+    this.liveGames[this.liveGames.indexOf(currentPlayerRoom)].balls[
+        !isPlayer1
+        ] = ball;
     player.to(roomId).emit('ballMoves', { ball, canvas });
     // console.log(`player emitting: ${ball}, ${canvas}`);
     const ballHitsBorder = this.checkBorders(canvas, ball);
@@ -195,13 +202,13 @@ export class GameGateway {
   joinGame(@MessageBody() data: any, @ConnectedSocket() player: Socket) {
     const { roomId, userId } = data;
 
-    const currentPlayerGame: Game = this.liveGames.find(
+    const currentGameState: Game = this.liveGames.find(
       (game) => game.roomId === roomId,
     );
     // console.table(this.liveGames);
     //console.table(currentPlayerRoom);
     // room doesnt exist
-    if (!currentPlayerGame) return 'roomNotFound';
+    if (!currentGameState) return 'roomNotFound';
     // throw new WsException('Invalid credentials.');
 
     // return this.server.to(player.id).emit('roomNotFound');
@@ -211,15 +218,21 @@ export class GameGateway {
 
     player.join(roomId);
     console.log(`player joined: ${player.id}`);
-    return {
-      player1: currentPlayerGame.player1,
-      player2: currentPlayerGame.player2,
-      isPlayer1: userId == currentPlayerGame.player1,
-      map: currentPlayerGame.map,
-      isSpectator:
-        userId != currentPlayerGame.player1 &&
-        userId != currentPlayerGame.player2,
+    let isSpectator= userId != currentGameState.player1 && userId != currentGameState.player2;
+    let gameData =  {
+      player1: currentGameState.player1,
+      player2: currentGameState.player2,
+      isPlayer1: userId == currentGameState.player1,
+      map: currentGameState.map,
+      isSpectator
     };
+    // const currentPlayerGame = {
+    //   ...currentGameState,
+    //
+    // };
+    if (isSpectator)
+        return {gameData, currentGameState}
+    return {gameData};
   }
 
   @SubscribeMessage('leaveGame')
