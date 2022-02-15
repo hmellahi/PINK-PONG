@@ -22,6 +22,8 @@ import Paddle from "@/common/Game/Objects/Paddle";
 import Score from "@/common/Game/Objects/Score";
 
 let MAX_SCORE = 5;
+let COUNTDOWN = 3;
+
 
 @Component<Game>({
   components: { P5 },
@@ -384,10 +386,10 @@ export default class Game extends Vue {
   }
   countDown(sketch: P5Sketch) {
     this.drawGameObjects(sketch);
-    this.countdown.value = 3;
+    this.countdown.value = COUNTDOWN;
     let countDownInterval = setInterval(() => {
       if (this.countdown.value <= 0) {
-        this.countdown.value = 3;
+        this.countdown.value = COUNTDOWN;
         this.isGameOver = false;
         clearInterval(countDownInterval);
         return;
@@ -400,7 +402,7 @@ export default class Game extends Vue {
 
   setup(sketch: P5Sketch) {
     // window.onresize = this.resize;
-    this.countdown.value = 3;
+    this.countdown.value = COUNTDOWN;
     this.sketch = sketch;
     var font = sketch.loadFont("assets/fonts/BeatWorddemo.ttf");
     sketch.textFont(font);
