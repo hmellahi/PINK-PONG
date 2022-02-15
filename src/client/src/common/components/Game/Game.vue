@@ -430,7 +430,10 @@ export default class Game extends Vue {
     if (ballHitsBorder) {
       this.ball.reset();
       // send
+      //TODO emit them
 
+      this.paddle.reset();
+      this.sendNewPaddleVelocity();
       // this.scores[ballHitsBorder - 1].value++;
       if (this.scores[ballHitsBorder - 1].value >= MAX_SCORE) {
         this.isGameOver = true;

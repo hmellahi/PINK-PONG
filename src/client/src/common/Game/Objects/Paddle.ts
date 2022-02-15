@@ -71,6 +71,17 @@ export default class Ball {
     }
     return false;
   }
+  reset() {
+    let { canvas, borderWidth } = GameConstants;
+    let { height: windowsHeight, width: windowsWidth } = canvas;
+    // let {borderWidth} = GameConstants
+    // this.y = windowsHeight / 2; // TODO
+    // // this.y =  Math.floor(Math.random() * (windowsHeight- borderWidth) + borderWidth);
+    // this.x = windowsWidth / 2;
+    this.y = GameConstants.paddle.y;; // TODO
+    this.speed = GameConstants.canvas.height / 50;
+    this.velocity = 0;
+  }
   // handleKeyPressed(sketch: P5Sketch): Boolean {
   //   let { UP_ARROW, DOWN_ARROW, keyCode } = sketch;
   //   // console.log(keyCode== LEFT_ARROW);
