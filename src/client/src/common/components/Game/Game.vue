@@ -1,5 +1,5 @@
 <template>
-  <div id="game" class="h-100">
+  <div id="game" ref="game" class="h-100">
     <P5 v-if="!isLoading" v-on="{ setup, draw }" />
     <div v-else>Loading....</div>
   </div>
@@ -85,14 +85,16 @@ export default class Game extends Vue {
   isLoading: boolean = true;
   init() {
     // console.log("setup");
-    var game = document.getElementById("game");
+    // var game = document.getElementById("game");
+    var game:any = this.$refs.game;
+
 
     if (game) {
-      // GameConstants.canvas.width = game.offsetWidth;
-      // GameConstants.canvas.height = game.offsetHeight;
+      GameConstants.canvas.width = game.offsetWidth;
+      GameConstants.canvas.height = game.offsetHeight;
       // console.log(game.offsetWidth, game.offsetHeight);
-      GameConstants.canvas.width = 400;
-      GameConstants.canvas.height = 400;
+      // GameConstants.canvas.width = 400;
+      // GameConstants.canvas.height = 400;
     }
     this.socket = null;
     this.backColor = GameConstants.backColor;
@@ -150,14 +152,21 @@ export default class Game extends Vue {
     var yF = this.ball.y / GameConstants.canvas.height;
     console.log(`ball factors X ${xF} and Y ${yF}`);
 
-    var game = document.getElementById("game");
-    if (game) {
-      // GameConstants.canvas.width = game.offsetWidth;
-      // GameConstants.canvas.height = game.offsetHeight;
-      GameConstants.canvas.width = 400;
-      GameConstants.canvas.height = 400;
-    }
+    var game:any = this.$refs.game;
+    var rx = GameConstants.canvas.width / 10;
+    var ry = GameConstants.canvas.height / 10;
 
+    
+  var ratiox:boolean = Math.abs(game.offsetWidth - GameConstants.canvas.width) > rx;
+  var ratioy:boolean = Math.abs(game.offsetHeight - GameConstants.canvas.height) > ry;
+
+  
+    if (game) {
+      GameConstants.canvas.width = game.offsetWidth;
+      GameConstants.canvas.height = game.offsetHeight;
+    console.log(`the id height>> ${game.offsetHeight}`);
+    console.log(`the id width>> ${game.offsetWidth}`);
+    }
     this.radius = 10;
     this.ball = new Ball(
       xF * GameConstants.canvas.width,
@@ -237,9 +246,11 @@ export default class Game extends Vue {
     });
     this.socket.on("paddleMoves", (data: any) => {
       // console.log("recieved: " + velocity);
-      let { paddle: enemyPaddle } = data;
-      this.paddle2.y = enemyPaddle.y;
-      this.paddle2.velocity = enemyPaddle.velocity;
+      let { paddle: enemyPaddle ,canvas} = data;
+      // this.ball.x = (ball.x / canvas.width) * GameConstants.canvas.width;
+      // this.ball.y = (ball.y / canvas.height) * GameConstants.canvas.height;
+      this.paddle2.y = (enemyPaddle.y / canvas.height) * GameConstants.canvas.height;
+      this.paddle2.velocity = (enemyPaddle.velocity / canvas.width) * GameConstants.canvas.width;
     });
 
     this.socket.on("connect_failed", function () {
@@ -254,7 +265,14 @@ export default class Game extends Vue {
       });
       this.showGameOver(this.sketch);
       // TODO show to the player the he won because the other player quits
-      this.playerLost(this.sketch);
+      if (this.gameData.isSpectator)
+        return;
+      if(this.score.value < MAX_SCORE)
+        this.playerLost(this.sketch, "you Have Lost");
+      else{
+        this.playerLost(this.sketch, "you Have Won");
+
+      }
       // TODO clear all running intervals...
       // clearInterval(this.countInter);
     });
@@ -311,12 +329,7 @@ export default class Game extends Vue {
   }
 
   resize() {
-    // var game = document.getElementById("game");
 
-    // // if (game) {
-    // //   GameConstants.canvas.width = game.offsetWidth;
-    // //   GameConstants.canvas.height = game.offsetHeight;
-    // // }
     // if (game) {
     //   GameConstants.canvas.width = 400;
     //   GameConstants.canvas.height = 400;
@@ -358,12 +371,12 @@ export default class Game extends Vue {
     );
     // this.$router.push('/')
   }
-  playerLost(sketch: P5Sketch) {
+  playerLost(sketch: P5Sketch, won:string) {
     sketch.textSize(GameConstants.canvas.width / 12);
     sketch.textAlign(sketch.CENTER);
     sketch.fill(255, 0, 0);
     sketch.text(
-      "you Have Lost",
+      won,
       GameConstants.canvas.width / 2,
       (GameConstants.canvas.height * 3) / 4
     );
