@@ -69,6 +69,7 @@ export default class Game extends Vue {
     GameConstants.canvas.height,
     this.map
   );
+  worker:any;
   background: BackGround = new BackGround();
 
   score: Score = new Score(GameConstants.canvas.width / 4 - 60, 30);
@@ -217,6 +218,7 @@ export default class Game extends Vue {
       this.countdown.value
     );
     this.scores = [this.score, this.score2];
+  
   }
   mounted() {
     window.addEventListener("keydown", this.keydown);
@@ -226,6 +228,13 @@ export default class Game extends Vue {
     this.roomId = this.$route.query.id;
 
     this.listenToGameEvents();
+    //  if(typeof(Worker) !== "undefined") {
+    this.worker = new Worker("demo_workers.js");
+    worker.onmessage = function(event) {
+      // document.getElementById("result").innerHTML = event.data;
+      console.log(event.data)
+    };
+  // }
   }
 
   async listenToGameEvents() {
