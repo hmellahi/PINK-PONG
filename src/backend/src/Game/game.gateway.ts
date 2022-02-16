@@ -15,7 +15,7 @@ import { JwtAuthGuard } from '../authentication/Guards/jwtAccess.guard';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from 'src/authentication/auth.service';
 
-let MAX_SCORE = 1;
+let MAX_SCORE = 5;
 
 @WebSocketGateway({
   namespace: 'game',
