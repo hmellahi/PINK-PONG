@@ -448,8 +448,9 @@ export default class Game extends Vue {
 
   draw(sketch: P5Sketch) {
     if (this.isGameOver) return;
+    this.sendNewBallPostion();
     sketch.background(this.backColor);
-    this.drawOerlay(sketch);
+    if (this.gameData.map != 1) this.drawOerlay(sketch);
     this.net.draw(sketch);
 
     this.background.draw(sketch);
@@ -484,7 +485,6 @@ export default class Game extends Vue {
       this.ball.draw(sketch);
       this.scores.map((score) => score.draw(sketch));
     }
-    this.sendNewBallPostion();
     if (this.gameData.isPlayer1) this.sendNewPaddleVelocity(this.paddle);
     else this.sendNewPaddleVelocity(this.paddle2);
   }

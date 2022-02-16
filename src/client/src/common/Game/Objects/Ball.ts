@@ -142,7 +142,7 @@ export default class {
     this.x = canvas.width / 2;
     this.speed = this.initialSpeed;
     this.velocityX = 1;
-    this.velocityY = 1;
+    this.velocityY = 1; 
   }
 
   checkBorders(): number {
