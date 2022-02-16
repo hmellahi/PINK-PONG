@@ -7,6 +7,7 @@ import { ActionContext } from "vuex";
 
 const { VUE_APP_API_URL: API_URL, VUE_APP_SERVER_URL: SERVER_URL } =
   process.env;
+
 const generateRandomString = () => {
   var chars = "abcdefghijklmnopqrstuvwxyz1234567890";
   var string = "";
@@ -15,19 +16,21 @@ const generateRandomString = () => {
   }
   return string;
 };
+
 const actions = {
   async login({ commit }: ActionContext<UserState, any>) {
-    // window.location.href = `${API_URL}/auth/login`
-    try {
-      let data = await api.post("auth/testLogin", {
-        first_name: generateRandomString(),
-        last_name: generateRandomString(),
-        email: generateRandomString() + "@zin.com",
-        login: generateRandomString(),
-      });
-      console.log(data);
-    } catch (error) {}
-    router.push("/");
+    window.location.href = `${API_URL}/auth/login`;
+    // FOR TESTING ONLY UNCOMENT THIS
+    // try {
+    //   let data = await api.post("auth/testLogin", {
+    //     first_name: generateRandomString(),
+    //     last_name: generateRandomString(),
+    //     email: generateRandomString() + "@zin.com",
+    //     login: generateRandomString(),
+    //   });
+    //   console.log(data);
+    // } catch (error) {}
+    // router.push("/");
   },
   logout({ commit }: ActionContext<UserState, any>) {
     console.log("logged out");
@@ -74,7 +77,7 @@ const actions = {
 
   connectToGameSocket({ commit }: ActionContext<UserState, any>, cookies: any) {
     const Authentication = cookies.get("Authentication");
-    let connection = io("http://localhost:3000/game", {
+    let connection = io(`${SERVER_URL}/game`, {
       transportOptions: {
         polling: {
           extraHeaders: {
@@ -86,14 +89,14 @@ const actions = {
     commit("SET_GAMESOCKET", connection);
   },
 
-  async fetchUser(id: Number): Promise<any> {
-    try {
-      const player1 = await api.get(`users?id=${id}`);
-      return player1;
-    } catch (error) {
-      return;
-    }
-  },
+  // async fetchUser(id: Number, callback: Function) {
+  //   try {
+  //     const player1 = await api.get(`users?id=${id}`);
+  //     callback(player1);
+  //   } catch (error) {
+  //     return;
+  //   }
+  // },
 };
 
 export default actions;
