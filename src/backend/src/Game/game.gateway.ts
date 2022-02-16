@@ -15,7 +15,7 @@ import { JwtAuthGuard } from '../authentication/Guards/jwtAccess.guard';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from 'src/authentication/auth.service';
 
-let MAX_SCORE = 5;
+let MAX_SCORE = 9;
 let ROOM_NOT_FOUND = 'room Not Found';
 let ALREADY_IN_QUEUE = 'u cant join queue, because you are already in queue';
 
@@ -89,7 +89,7 @@ export class GameGateway {
   checkBorders(canvas: any, ball: any): number {
     let borderWidth = Math.floor(canvas.width / 80);
     if (ball.x - ball.radius / 2 - borderWidth <= 0) return 2;
-    if (ball.x + ball.radius / 2 + borderWidth>= canvas.width) return 1;
+    if (ball.x + ball.radius / 2 + borderWidth >= canvas.width) return 1;
     return 0;
   }
   // checkBorders(): number {
@@ -284,7 +284,7 @@ export class GameGateway {
       isSpectator,
     };
     //console.log("initial score", currentGameState.score1, currentGameState.score2)
-    return { gameData, currentGameState };
+    return { msg: { gameData, currentGameState } };
   }
 
   @SubscribeMessage('leaveGame')

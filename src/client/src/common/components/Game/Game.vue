@@ -1,6 +1,6 @@
 <template>
   <div id="game" ref="game" class="h-100">
-    <P5 v-if="!isLoading" v-on="{ setup, draw }" />
+    <P5 v-if="!isLoading" v-on="{ setup }" />
     <div v-else>Loading....</div>
   </div>
 </template>
@@ -21,7 +21,7 @@ import P5, {
 import Paddle from "@/common/Game/Objects/Paddle";
 import Score from "@/common/Game/Objects/Score";
 
-const MAX_SCORE = 2;
+const MAX_SCORE = 9;
 const COUNTDOWN = 3;
 
 @Component<Game>({
@@ -69,7 +69,7 @@ export default class Game extends Vue {
     GameConstants.canvas.height,
     this.map
   );
-  worker:any;
+  worker: any;
   background: BackGround = new BackGround();
 
   score: Score = new Score(GameConstants.canvas.width / 4 - 60, 30);
@@ -218,7 +218,6 @@ export default class Game extends Vue {
       this.countdown.value
     );
     this.scores = [this.score, this.score2];
-  
   }
   mounted() {
     window.addEventListener("keydown", this.keydown);
@@ -229,12 +228,6 @@ export default class Game extends Vue {
 
     this.listenToGameEvents();
     //  if(typeof(Worker) !== "undefined") {
-    this.worker = new Worker("demo_workers.js");
-    worker.onmessage = function(event) {
-      // document.getElementById("result").innerHTML = event.data;
-      console.log(event.data)
-    };
-  // }
   }
 
   async listenToGameEvents() {
@@ -280,49 +273,52 @@ export default class Game extends Vue {
       // if (ff != 0){
 
       // }
-     this.over(ff);
-
+      this.over(ff);
     });
     this.socket.on("hehe", () => {
-      this.socket.emit("joinGame", { roomId: this.roomId }, (msg: any) => {
-        // console.log("msg", { msg });
+      this.socket.emit(
+        "joinGame",
+        { roomId: this.roomId },
+        ({ msg, err }: any) => {
+          // console.log("msg", { msg });
 
-        if (msg === "roomNotFound") {
-          // this.$router.push({ path: "/" });
-          return;
-        }
-        let { gameData, currentGameState } = msg;
-        this.gameData = gameData;
-        this.net.map = this.gameData.map;
-        console.log({ isplayer1: this.gameData.isPlayer1 });
+          if (err) {
+            this.$router.push({ path: "/" });
+            return;
+          }
+          let { gameData, currentGameState } = msg;
+          this.gameData = gameData;
+          this.net.map = this.gameData.map;
+          console.log({ isplayer1: this.gameData.isPlayer1 });
 
-        // if (!this.gameData.isPlayer1) {
-        //   let tmp: Paddle = this.paddle;
-        //   this.paddle = this.paddle2;
-        //   this.paddle2 = tmp;
-        //   console.log("player1");
-        // }
-        if (!this.gameData.isSpectator) {
+          // if (!this.gameData.isPlayer1) {
+          //   let tmp: Paddle = this.paddle;
+          //   this.paddle = this.paddle2;
+          //   this.paddle2 = tmp;
+          //   console.log("player1");
+          // }
+          if (!this.gameData.isSpectator) {
+            this.isLoading = false;
+            return;
+          }
+          // score
+          this.scores[0].value = currentGameState.score1;
+          this.scores[1].value = currentGameState.score2;
+          // ball
+          let { ball, canvas, paddles } = currentGameState;
+          this.ball.x = (ball.x / canvas.width) * GameConstants.canvas.width;
+          this.ball.y = (ball.y / canvas.height) * GameConstants.canvas.height;
+          // paddles
+          this.paddle2.y =
+            (paddles[1].y / canvas.height) * GameConstants.canvas.height;
+          this.paddle2.velocity = paddles[1].velocity;
+          this.paddle.y =
+            (paddles[0].y / canvas.height) * GameConstants.canvas.height;
+          this.paddle.velocity = paddles[0].velocity;
+
           this.isLoading = false;
-          return;
         }
-        // score
-        this.scores[0].value = currentGameState.score1;
-        this.scores[1].value = currentGameState.score2;
-        // ball
-        let { ball, canvas, paddles } = currentGameState;
-        this.ball.x = (ball.x / canvas.width) * GameConstants.canvas.width;
-        this.ball.y = (ball.y / canvas.height) * GameConstants.canvas.height;
-        // paddles
-        this.paddle2.y =
-          (paddles[1].y / canvas.height) * GameConstants.canvas.height;
-        this.paddle2.velocity = paddles[1].velocity;
-        this.paddle.y =
-          (paddles[0].y / canvas.height) * GameConstants.canvas.height;
-        this.paddle.velocity = paddles[0].velocity;
-
-        this.isLoading = false;
-      });
+      );
     });
 
     this.socket.on("ballMoves", (data: any) => {
@@ -337,24 +333,23 @@ export default class Game extends Vue {
       // console.log(this.scores[ballHitsBorder - 1].value);
     });
   }
-over(ff:number){
-   this.showGameOver(this.sketch);
-      // TODO show to the player the he won because the other player quits
-      if (this.gameData.isSpectator) return;
-      console.log({ score1: this.scores[0].value });
-      console.log({ score2: this.scores[1].value });
-      if (
-        ff || 
-        (this.scores[1].value > this.scores[0].value &&
-          this.gameData.isPlayer1) ||
-        (this.scores[1].value < this.scores[0].value &&
-          !this.gameData.isPlayer1)
-      )
-        this.playerLost(this.sketch, "you Have Won");
-      else {
-        this.playerLost(this.sketch, "you Have lost");
-      }
-}
+  over(ff: number) {
+    this.showGameOver(this.sketch);
+    // TODO show to the player the he won because the other player quits
+    if (this.gameData.isSpectator) return;
+    console.log({ score1: this.scores[0].value });
+    console.log({ score2: this.scores[1].value });
+    if (
+      ff ||
+      (this.scores[1].value > this.scores[0].value &&
+        this.gameData.isPlayer1) ||
+      (this.scores[1].value < this.scores[0].value && !this.gameData.isPlayer1)
+    )
+      this.playerLost(this.sketch, "you Have Won");
+    else {
+      this.playerLost(this.sketch, "you Have lost");
+    }
+  }
   async leaveGame() {
     await this.socket.emit("leaveGame", {
       roomId: this.roomId,
@@ -368,7 +363,7 @@ over(ff:number){
     // }
     // this.init();
     this.resizeObjects();
-    if(!this.sketch)return;
+    if (!this.sketch) return;
     this.sketch.resizeCanvas(
       GameConstants.canvas.width,
       GameConstants.canvas.height
@@ -444,6 +439,11 @@ over(ff:number){
     // this.countDown(sketch);
     //online problem
     //uncomnet this to get coundown back each round
+    this.worker = new Worker("game_worker.js");
+    this.worker.onmessage = () => {
+      this.draw(this.sketch);
+    };
+    this.draw(this.sketch);
   }
 
   draw(sketch: P5Sketch) {
@@ -473,7 +473,7 @@ over(ff:number){
         this.isGameOver = true;
         this.scores.map((score) => score.draw(sketch));
         // this.showGameOver(sketch);
-        this.over();
+        this.over(0);
         return;
       }
       // this.isGameOver = true; // change to true
