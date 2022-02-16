@@ -16,7 +16,7 @@ export default class {
   bottom: number = 0;
   left: number = 0;
   right: number = 0;
-  initialSpeed:number ;
+  initialSpeed: number;
 
   // Constructor method
   constructor(
@@ -29,13 +29,13 @@ export default class {
     this.y = tempY;
     // this.y =  Math.floor(Math.random() * GameConstants.canvas.height - 200) + 200;
     // this.y = Math.floor(Math.random() * ((GameConstants.canvas.height / 10)*8 - (GameConstants.canvas.height / 10)*2 + (GameConstants.canvas.height / 10)*2));
-//USE this code above for randomnes
+    //USE this code above for randomnes
     this.radius = tempRadius;
     // this.velocityX = Math.floor(Math.random() * 10) + 1;;
     // this.velocityY = Math.floor(Math.random() * 10) + 1;;
     this.velocityX = 1;
     this.velocityY = 1;
-    this.initialSpeed = GameConstants.canvas.width / 200;
+    this.initialSpeed = GameConstants.canvas.width / 100;
     this.speed = this.initialSpeed;
     // this.speed = 1;
     this.color = tempColor;
@@ -122,8 +122,9 @@ export default class {
     /* change velocity of according to on which paddle the hitted */
     // this.velocityX = (isFirstPlayer ? 1 : -1) * this.speed * Math.cos(angle);
     // this.velocityY = this.speed * Math.sin(angle);
-    this.velocityX = direction * this.speed * Math.cos(angleRad);
-    this.velocityY = this.speed * Math.sin(angleRad);
+    this.velocityX = direction * Math.cos(angleRad);
+    this.velocityY = Math.sin(angleRad);
+    this.speed += 1
     // increase speed
     // this.speed += 0.05; TODO CHange
     // console.log(`ball speed ${this.speed}`);
@@ -141,12 +142,14 @@ export default class {
     this.x = canvas.width / 2;
     this.speed = this.initialSpeed;
     this.velocityX = 1;
-    this.velocityY = 1;
+    this.velocityY = 1; 
   }
 
   checkBorders(): number {
-    if (this.x - this.radius / 2 <= 0) return 2;
-    if (this.x + this.radius / 2 >= GameConstants.canvas.width) return 1;
+    let borderWidth = Math.floor(GameConstants.canvas.width / 80);
+    if (this.x - this.radius / 2 - borderWidth <= 0) return 2;
+    if (this.x + this.radius / 2 + borderWidth >= GameConstants.canvas.width)
+      return 1;
     return 0;
   }
 }

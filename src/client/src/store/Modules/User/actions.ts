@@ -19,18 +19,18 @@ const generateRandomString = () => {
 
 const actions = {
   async login({ commit }: ActionContext<UserState, any>) {
-    window.location.href = `${API_URL}/auth/login`;
+    // window.location.href = `${API_URL}/auth/login`;
     // FOR TESTING ONLY UNCOMENT THIS
-    // try {
-    //   let data = await api.post("auth/testLogin", {
-    //     first_name: generateRandomString(),
-    //     last_name: generateRandomString(),
-    //     email: generateRandomString() + "@zin.com",
-    //     login: generateRandomString(),
-    //   });
-    //   console.log(data);
-    // } catch (error) {}
-    // router.push("/");
+    try {
+      let data = await api.post("auth/testLogin", {
+        first_name: generateRandomString(),
+        last_name: generateRandomString(),
+        email: generateRandomString() + "@zin.com",
+        login: generateRandomString(),
+      });
+      console.log(data);
+    } catch (error) {}
+    router.push("/");
   },
   logout({ commit }: ActionContext<UserState, any>) {
     console.log("logged out");

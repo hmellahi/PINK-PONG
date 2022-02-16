@@ -15,7 +15,9 @@ import { JwtAuthGuard } from '../authentication/Guards/jwtAccess.guard';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from 'src/authentication/auth.service';
 
-let MAX_SCORE = 5;
+let MAX_SCORE = 9;
+let ROOM_NOT_FOUND = 'room Not Found';
+let ALREADY_IN_QUEUE = 'u cant join queue, because you are already in queue';
 
 @WebSocketGateway({
   namespace: 'game',
@@ -50,16 +52,13 @@ export class GameGateway {
   }
 
   @SubscribeMessage('joinQueue')
-  joinQueue(
-    @MessageBody() data: any,
-    @ConnectedSocket() player: Socket | any,
-  ): string {
+  joinQueue(@MessageBody() data: any, @ConnectedSocket() player: Socket | any) {
     let { map } = data;
 
     // TODO CHECK FOR USER STAUS
     // TODO UPDATE USER STATUS
     if (this.players.find((p) => p.userId === player.userId))
-      return 'u cant join queue asshole';
+      return { err: ALREADY_IN_QUEUE };
     const secondPlayer = this.players.find((player) => player.map == map);
 
     if (!secondPlayer) {
@@ -88,11 +87,17 @@ export class GameGateway {
   }
 
   checkBorders(canvas: any, ball: any): number {
-    if (ball.x - ball.radius / 2 <= 0) return 2;
-    if (ball.x + ball.radius / 2 >= canvas.width) return 1;
+    let borderWidth = Math.floor(canvas.width / 80);
+    if (ball.x - ball.radius / 2 - borderWidth <= 0) return 2;
+    if (ball.x + ball.radius / 2 + borderWidth >= canvas.width) return 1;
     return 0;
   }
-
+  // checkBorders(): number {
+  //   let borderWidth = Math.floor(canvas.width / 80);
+  //   if (ball.x - ball.radius / 2 - borderWidth <= 0) return 2;
+  //   if (ball.x + ball.radius / 2 + borderWidth>= canvas.width) return 1;
+  //   return 0;
+  // }
   @SubscribeMessage('paddleMoves')
   handleMessages(
     @MessageBody() data: any,
@@ -105,7 +110,7 @@ export class GameGateway {
     );
 
     // room doesnt exist
-    if (!currentPlayerRoom) return 'roomNotFound';
+    if (!currentPlayerRoom) return { err: ROOM_NOT_FOUND };
     if (
       player.userId != currentPlayerRoom.player1 &&
       player.userId != currentPlayerRoom.player2
@@ -133,8 +138,9 @@ export class GameGateway {
     );
 
     // room doesnt exist
-    if (!currentPlayerRoom)
-      return this.server.to(player.id).emit('roomNotFound');
+    if (!currentPlayerRoom) {
+      return { err: ROOM_NOT_FOUND };
+    }
     const isPlayer1 = player.userId == currentPlayerRoom.player1;
     if (!isPlayer1) return '';
     this.liveGames[this.liveGames.indexOf(currentPlayerRoom)].canvas = canvas;
@@ -155,7 +161,7 @@ export class GameGateway {
         this.liveGames[roomIndex].score2 >= MAX_SCORE
       ) {
         // Inform everyone that game ends
-        this.server.to(roomId).emit('gameOver', ballHitsBorder);
+        // this.server.to(roomId).emit('gameOver', ballHitsBorder);
         // TODO SAVE IN DATABASE
         this.removeGame(roomId);
       }
@@ -260,7 +266,7 @@ export class GameGateway {
       (game) => game.roomId === roomId,
     );
     // room doesnt exist
-    if (!currentGameState) return 'roomNotFound';
+    if (!currentGameState) return { err: ROOM_NOT_FOUND };
     // update user status [inGame] TODO
 
     player.join(roomId);
@@ -278,7 +284,7 @@ export class GameGateway {
       isSpectator,
     };
     //console.log("initial score", currentGameState.score1, currentGameState.score2)
-    return { gameData, currentGameState };
+    return { msg: { gameData, currentGameState } };
   }
 
   @SubscribeMessage('leaveGame')
@@ -288,18 +294,16 @@ export class GameGateway {
     const currentPlayerRoom: Game = this.liveGames.find(
       (game) => game.roomId === roomId,
     );
-    // const currentPlayerRoom = this.liveGames.indexOf()
+
     // room doesnt exist
-    if (!currentPlayerRoom)
-      // return this.server.to(player.id).emit('roomNotFound');
-      return 'roomNotFound';
+    if (!currentPlayerRoom) return { err: ROOM_NOT_FOUND };
 
     const roomIndex = this.liveGames.indexOf(currentPlayerRoom);
     //console.log(roomIndex);
-    let ff;
+    let ff = 0;
     if (currentPlayerRoom.player1 == player.userId) {
       ff = 1;
-    } else if (currentPlayerRoom.player1 == player.userId) ff = 2;
+    } else if (currentPlayerRoom.player2 == player.userId) ff = 2;
     else return 'wtf';
     // TODO SAVE IN DATABASE
 
