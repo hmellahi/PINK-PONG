@@ -6,6 +6,7 @@ import {
   WebSocketServer,
   WsException,
 } from '@nestjs/websockets';
+import { NestMiddleware } from '@nestjs/common';
 import { Socket, Server } from 'socket.io';
 import { Logger, UseGuards } from '@nestjs/common';
 import { Game, Ball, Paddle } from './Interfaces/Game.interface';
@@ -14,23 +15,19 @@ import { JwtAuthGuard } from '../authentication/Guards/jwtAccess.guard';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from 'src/authentication/auth.service';
 
-let MAX_SCORE = 5;
+let MAX_SCORE = 1;
 
 @WebSocketGateway({
   namespace: 'game',
-  cors:
-  {
-    origin: "http://127.0.0.1:5000",
-    credentials: true
-  }
+  cors: {
+    origin: 'http://127.0.0.1:5000',
+    credentials: true,
+  },
 })
-
 export class GameGateway {
   @WebSocketServer() server: Server;
 
-  constructor(
-    private authService: AuthService
-  ){}
+  constructor(private authService: AuthService) {}
   // usersInQueue: number[] = [];
   players: any[] = [];
   pendingRequests: any = {};
@@ -48,28 +45,31 @@ export class GameGateway {
     this.players = this.players.filter(
       (playerinQueue) => playerinQueue.id != player.id,
     );
+    // TODO UPDATE USER STATUS
     console.log(`client leaved queue: ${player.id}`);
   }
 
   @SubscribeMessage('joinQueue')
-  joinQueue(@MessageBody() data: any, @ConnectedSocket() player: Socket): void {
-    let { map, userId } = data;
+  joinQueue(
+    @MessageBody() data: any,
+    @ConnectedSocket() player: Socket | any,
+  ): string {
+    let { map } = data;
 
     // TODO CHECK FOR USER STAUS
-    // console.log(
-    //   `%c client joined queue: ${player.id}`,
-    //   'background: #222; color: #bada55',
-    // );
+    // TODO UPDATE USER STATUS
+    if (this.players.find((p) => p.userId === player.userId))
+      return 'u cant join queue asshole';
     const secondPlayer = this.players.find((player) => player.map == map);
 
     if (!secondPlayer) {
-      this.players.push({ socket: player, map, userId });
+      this.players.push({ socket: player, map, userId: player.userId});
       return;
     }
     // console.log(map, map);
 
     const roomId = this.createGame(
-      userId,
+      player.userId,
       secondPlayer.userId,
       player.id,
       secondPlayer.socket.id,
@@ -82,11 +82,12 @@ export class GameGateway {
       .to(player.id)
       .emit('matchFound', roomId);
 
-    // remove playes from queue
+    // TODO UPDATE USER STATUS
+    // remove player from queue
     this.players.splice(this.players.indexOf(secondPlayer), 1);
-    // console.log(this.players);
-    // return 'Hello world!';
   }
+
+
 
   checkBorders(canvas: any, ball: any): number {
     if (ball.x - ball.radius / 2 <= 0) return 2;
@@ -95,8 +96,8 @@ export class GameGateway {
   }
 
   @SubscribeMessage('paddleMoves')
-  handleMessages(@MessageBody() data: any, @ConnectedSocket() player: Socket) {
-    let { paddle, roomId, userId } = data;
+  handleMessages(@MessageBody() data: any, @ConnectedSocket() player: Socket|any) {
+    let { paddle, roomId } = data;
 
     const currentPlayerRoom: Game = this.liveGames.find(
       (game) => game.roomId === roomId,
@@ -105,21 +106,21 @@ export class GameGateway {
     // room doesnt exist
     if (!currentPlayerRoom) return 'roomNotFound';
     if (
-      userId != currentPlayerRoom.player1 &&
-      userId != currentPlayerRoom.player2
+      player.userId != currentPlayerRoom.player1 && player.userId != currentPlayerRoom.player2
     )
       return 'u cant move the paddle hehe ;)';
-    let isPlayer1:number = userId == currentPlayerRoom.player1 ? 1 : 0;
+
+    let isPlayer1: number = player.userId == currentPlayerRoom.player1 ? 1 : 0;
     this.liveGames[this.liveGames.indexOf(currentPlayerRoom)].paddles[
       isPlayer1 ? 0 : 1
     ] = paddle;
-    player.to(roomId).emit('paddleMoves', { paddle, isPlayer1});
-    // console.log(`player emitting: ${paddle}`);
+    player.to(roomId).emit('paddleMoves', { paddle, isPlayer1, canvas:currentPlayerRoom.canvas});
+    // console.log("emitting paddle Pos");
   }
 
   @SubscribeMessage('ballMoves')
-  ballMoves(@MessageBody() data: any, @ConnectedSocket() player: Socket) {
-    let { ball, canvas, roomId, userId } = data;
+  ballMoves(@MessageBody() data: any, @ConnectedSocket() player: Socket|any) {
+    let { ball, canvas, roomId } = data;
 
     const currentPlayerRoom: Game = this.liveGames.find(
       (game) => game.roomId === roomId,
@@ -128,8 +129,9 @@ export class GameGateway {
     // room doesnt exist
     if (!currentPlayerRoom)
       return this.server.to(player.id).emit('roomNotFound');
-    const isPlayer1 = userId == currentPlayerRoom.player1;
+    const isPlayer1 = player.userId == currentPlayerRoom.player1;
     if (!isPlayer1) return '';
+    this.liveGames[this.liveGames.indexOf(currentPlayerRoom)].canvas = canvas;
     this.liveGames[this.liveGames.indexOf(currentPlayerRoom)].ball = ball;
     player.to(roomId).emit('ballMoves', { ball, canvas });
     // console.log(`player emitting: ${ball}, ${canvas}`);
@@ -179,15 +181,19 @@ export class GameGateway {
     const roomId = player1SockerId + player2SockerId;
     this.liveGames.push({
       roomId,
-      player1: player1ID, // TODO CHANGE USERID
-      player2: player2ID, // TODO CHANGE USERID
+      player1: player1ID,
+      player2: player2ID,
       score1: 0,
       score2: 0,
       created_at: new Date(),
       ball: { x: 0, y: 0 },
-      paddles:[{velocity:0, y:0},{velocity:0, y:0}],
+      paddles: [
+        { velocity: 0, y: 0 },
+        { velocity: 0, y: 0 },
+      ],
       map,
       ff: 0,
+      canvas:{width:0,height:0}
     });
     return roomId;
   }
@@ -203,47 +209,41 @@ export class GameGateway {
     this.server
       .to(receiver.id)
       .to(senderSocketId)
-      .emit('customGameStarted', roomId); // todo
+      .emit('customGameStarted', roomId);
     this.pendingRequests.delete(receiver.id);
   }
 
   @SubscribeMessage('joinGame')
-  joinGame(@MessageBody() data: any, @ConnectedSocket() player: Socket) {
-    const { roomId, userId } = data;
+  joinGame(@MessageBody() data: any, @ConnectedSocket() player: Socket|any) {
+    const { roomId } = data;
 
+    // TODO CHECK USER STATUS
     const currentGameState: Game = this.liveGames.find(
       (game) => game.roomId === roomId,
     );
-    console.log("join game");
-    // console.table(this.liveGames);
-    //console.table(currentPlayerRoom);
     // room doesnt exist
     if (!currentGameState) return 'roomNotFound';
-    // throw new WsException('Invalid credentials.');
-
-    // return this.server.to(player.id).emit('roomNotFound');
-    // return this.server.to(player.id).emit('roomNotFound');
-
     // update user status [inGame] TODO
-  
+
     player.join(roomId);
-    console.log(`player joined: ${player.id}`);
-    let isSpectator = userId != currentGameState.player1 && userId != currentGameState.player2;
-    let gameData =  {
+    let isSpectator = (player.userId != currentGameState.player1) && (player.userId != currentGameState.player2);
+    // console.log()
+    //console.log(player.userId, currentGameState.player1, currentGameState.player2, isSpectator);
+
+    let gameData = {
       player1: currentGameState.player1,
       player2: currentGameState.player2,
-      isPlayer1: userId == currentGameState.player1,
+      isPlayer1: player.userId == currentGameState.player1,
       map: currentGameState.map,
       isSpectator,
-      currentGameState
     };
-    return {gameData};
+    //console.log("initial score", currentGameState.score1, currentGameState.score2)
+    return { gameData,currentGameState };
   }
 
   @SubscribeMessage('leaveGame')
-  leaveGame(@MessageBody() data: any, @ConnectedSocket() player: Socket) {
-    this.logger.log(`aafk: ${player.id}`);
-    const { roomId, userId } = data;
+  leaveGame(@MessageBody() data: any, @ConnectedSocket() player: Socket|any) {
+    const { roomId } = data;
 
     const currentPlayerRoom: Game = this.liveGames.find(
       (game) => game.roomId === roomId,
@@ -255,67 +255,70 @@ export class GameGateway {
       return 'roomNotFound';
 
     const roomIndex = this.liveGames.indexOf(currentPlayerRoom);
-    console.log(roomIndex);
-    if (currentPlayerRoom.player1 == userId) {
-      this.liveGames[roomIndex].ff = 1;
-    } else if (currentPlayerRoom.player1 == userId)
-      this.liveGames[roomIndex].ff = 2;
+    //console.log(roomIndex);
+    let ff;
+    if (currentPlayerRoom.player1 == player.userId) {
+      ff = 1;
+    } else if (currentPlayerRoom.player1 == player.userId)
+      ff = 2;
     else return 'wtf';
     // TODO SAVE IN DATABASE
 
     // Inform everyone that game ends
-    this.server.to(roomId).emit('gameOver');
+    this.server.to(roomId).emit('gameOver', ff);
     this.removeGame(roomId);
   }
 
   removeGame(roomId: string) {
-    this.liveGames = this.liveGames.filter((game) => game.roomId === roomId);
+    //console.log("before", this.liveGames, roomId)
+    this.liveGames = this.liveGames.filter((game:Game) => game.roomId != roomId);
+   //console.log("after", this.liveGames, roomId)
+
   }
 
   @SubscribeMessage('getLiveGames')
-  getLiveGames(@MessageBody() data: any, @ConnectedSocket() player: Socket) {
+  getLiveGames(@MessageBody() data: any, @ConnectedSocket() player: Socket|any) {
+    console.table(this.liveGames);
     return this.liveGames;
   }
 
-  @SubscribeMessage('incrementScore')
-  incrementScore(@MessageBody() data: any, @ConnectedSocket() player: Socket) {
-    let { roomId } = data;
-    let userId = 1;
-    // return this.liveGames;
-    // this.liveGames[roomId][userId].score;
-    const currentPlayerRoom: Game = this.liveGames.find(
-      (game) => game.roomId === roomId,
-    );
-
-    if (currentPlayerRoom.player1 == userId) this.liveGames[roomId].score1++;
-    else if (currentPlayerRoom.player2 == userId)
-      this.liveGames[roomId].score2++;
-
-    // CHECK IF GAME IS OVER
-    if (
-      this.liveGames[roomId].score2 >= MAX_SCORE ||
-      this.liveGames[roomId].score1 >= MAX_SCORE
-    ) {
-      this.liveGames = this.liveGames.filter((game) => game.roomId === roomId);
-      // SAVE IN DATABASE
-    }
-  }
-
-  handleDisconnect(client: Socket, ...args: any[]) {
+  handleDisconnect(player: Socket|any, ...args: any[]) {
+    if (false)return;
     // this.logger.log(`client leaved queue: ${client.id}`);
     // this.players = this.players.filter((player) => player.id === client.id);
-    console.log(`client leaved queue: ${client.id}`);
+    console.log(`client disconnected: ${player.id}`);
+    // TODOS
     // if player was in queue?
-    // quit the game
+    // leavequeue
+    this.players =  this.players.find(
+        (playerinQueue) => playerinQueue.id != player.id,
+    );
     // if player was in game
     // end game with lost to the player
+    const currentPlayerRoom: Game = this.liveGames.find(
+        (game) => (game.player1 === player.id || game.player2 === player.id )
+    );
+    let ff;
+    if (currentPlayerRoom.player1 == player.userId) {
+      ff = 1;
+    } else if (currentPlayerRoom.player1 == player.userId)
+      ff = 2;
+    this.server.to(currentPlayerRoom.roomId).emit('gameOver', ff);
+    this.removeGame(currentPlayerRoom.roomId);
     // this.leaveGame({roomId}, client )
     // else
     // do nting
   }
 
-  async handleConnection(client: Socket, ...args: any[]) {
-      const user = await this.authService.getUserFromSocket(client);
-      !user && client.disconnect();
+  async handleConnection(client: any, ...args: any[]) {
+    const user = await this.authService.getUserFromSocket(client);
+    if (!user) {
+      //console.log("imposter")
+      client.disconnect();
+      return;
+    }
+    //console.log("new user", user.id)
+    client.userId = user.id;
+    this.server.to(client.id).emit("hehe")
   }
 }

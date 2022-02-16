@@ -21,14 +21,14 @@ import P5, {
 import Paddle from "@/common/Game/Objects/Paddle";
 import Score from "@/common/Game/Objects/Score";
 
-let MAX_SCORE = 5;
-let COUNTDOWN = 3;
+const MAX_SCORE = 1;
+const COUNTDOWN = 3;
 
 
 @Component<Game>({
   components: { P5 },
   async beforeRouteLeave(to, from, next) {
-    console.log("beforeRouteLeave", to.path, from.path);
+    // console.log("beforeRouteLeave", to.path, from.path);
     await this.leaveGame();
     next();
   },
@@ -36,9 +36,10 @@ let COUNTDOWN = 3;
 export default class Game extends Vue {
   intervals: Array<any> = [];
   socket: any = null;
+  frames = 0;
   // ({ canvas, backColor } = GameConstants)
   // canvasWidth:
-  backColor: number = GameConstants.backColor; //todo change
+  backColor: number = GameConstants.backColor;
   // xBall: number = Math.floor(Math.random() * 300) + GameConstants.ball.x;
   xBall: number = GameConstants.canvas.width / 2;
   yBall: number = GameConstants.canvas.height / 2;//TODO add randomness
@@ -159,15 +160,15 @@ export default class Game extends Vue {
     var ry = GameConstants.canvas.height / 10;
 
     
-  var ratiox:boolean = Math.abs(game.offsetWidth - GameConstants.canvas.width) > rx;
-  var ratioy:boolean = Math.abs(game.offsetHeight - GameConstants.canvas.height) > ry;
+  // var ratiox:boolean = Math.abs(game.offsetWidth - GameConstants.canvas.width) > rx;
+  // var ratioy:boolean = Math.abs(game.offsetHeight - GameConstants.canvas.height) > ry;
 
   
     if (game) {
       GameConstants.canvas.width = game.offsetWidth;
       GameConstants.canvas.height = game.offsetHeight;
-    console.log(`the id height>> ${game.offsetHeight}`);
-    console.log(`the id width>> ${game.offsetWidth}`);
+    // console.log(`the id height>> ${game.offsetHeight}`);
+    // console.log(`the id width>> ${game.offsetWidth}`);
     }
     this.radius = 10;
     this.ball = new Ball(
@@ -227,21 +228,13 @@ export default class Game extends Vue {
     window.addEventListener("resize", this.resize);
     this.init();
     this.roomId = this.$route.query.id;
-    console.log("here The id is: ", this.currentUser.id);
 
     this.listenToGameEvents();
   }
 
-  listenToGameEvents() {
-<<<<<<< HEAD
-    // const username = this.$cookies.get("username");
-    console.log({cookie: this.$cookies.get("Authentication")})
-    console.log({cookie: this.$cookies})
-
-=======
+  async listenToGameEvents() {
     const Authentication = this.$cookies.get("Authentication")
->>>>>>> 42a96b82986c99a4b6337abe5ae7e2b992a19c38
-    this.socket = io("http://localhost:3000/game", {
+    this.socket = await io("http://localhost:3000/game", {
       transportOptions: {
         polling: {
           extraHeaders: {
@@ -251,23 +244,24 @@ export default class Game extends Vue {
       },
     });
 
-    this.socket.on("paddleMoves", (data: any) => {
-      // console.log("recieved: " + velocity);
-      // let { paddle: enemyPaddle,isPlayer1 } = data;
+    this.socket.on('connect', function () {
+      // console.log("yes sir")
+    });
 
-      // if (this.gameData.isSpectator && isPlayer1) TODO
-      // {
-      //     this.paddle.y = enemyPaddle.y;
-      //     this.paddle.velocity = enemyPaddle.velocity;
-      // }
-      // else
-      // {
-      //   this.paddle2.y = enemyPaddle.y;
-      //   this.paddle2.velocity = enemyPaddle.velocity;
-      // }
-      let { paddle: enemyPaddle ,canvas} = data;
-      this.paddle2.y = (enemyPaddle.y / canvas.height) * GameConstants.canvas.height;
-      this.paddle2.velocity = (enemyPaddle.velocity / canvas.width) * GameConstants.canvas.width;
+    this.socket.on("paddleMoves", (data: any) => {
+      // console.table({"recieved": data});
+      let { paddle: enemyPaddle,isPlayer1, canvas } = data;
+      enemyPaddle.y = (enemyPaddle.y / canvas.height) * GameConstants.canvas.height
+      if (isPlayer1)
+      {
+          this.paddle.y = enemyPaddle.y;
+          this.paddle.velocity = enemyPaddle.velocity;
+      }
+      else
+      {
+        this.paddle2.y = enemyPaddle.y;
+        this.paddle2.velocity = enemyPaddle.velocity;
+      }
     });
 
     this.socket.on("disconnect", function () {
@@ -290,49 +284,51 @@ export default class Game extends Vue {
         this.playerLost(this.sketch, "you Have Won");
 
       }
-      // TODO clear all running intervals...
-      // clearInterval(this.countInter);
     });
 
-    this.socket.emit(
-      "joinGame",
-      { userId: this.currentUser.id, roomId: this.roomId },
-      (msg: any) => {
-        // console.log("msg", { msg });
-        if (msg === "roomNotFound") {
-          // this.$router.push({ path: "/" });
-          return;
-        }
-        let {gameData, currentGameState }= msg;
-        this.gameData = gameData;
-        this.net.map = msg.map;
-        if (!this.gameData.isPlayer1) {
-          let tmp: Paddle = this.paddle;
-          this.paddle = this.paddle2;
-          this.paddle2 = tmp;
-          console.log("player1");
-        }
-        if (!this.gameData.isSpectator)
-        {
-          this.isLoading = false;
-          return;
-        }
-        // score
-        this.scores[0].value = currentGameState.score1;
-        this.scores[1].value = currentGameState.score2;
-        // ball
-        let {ball, canvas, paddle1, paddle2}  = currentGameState;
-        this.ball.x = (ball.x / canvas.width) * GameConstants.canvas.width;
-        this.ball.y = (ball.y / canvas.height) * GameConstants.canvas.height;
-        // paddles
-        this.paddle2.y = (paddle2.y / canvas.height) * GameConstants.canvas.height;
-        this.paddle2.velocity = paddle2.velocity;
-        this.paddle.y = (paddle1.y / canvas.height) * GameConstants.canvas.height;
-        this.paddle.velocity = paddle1.velocity;
+    this.socket.on("hehe",  () =>{
+      this.socket.emit(
+          "joinGame",
+          {roomId: this.roomId},
+          (msg: any) => {
+            // console.log("msg", { msg });
 
-        this.isLoading = false;
-      }
-    );
+            if (msg === "roomNotFound") {
+              // this.$router.push({ path: "/" });
+              return;
+            }
+            let {gameData, currentGameState} = msg;
+            this.gameData = gameData;
+            this.net.map = this.gameData.map;
+            console.log({isplayer1: this.gameData.isPlayer1})
+
+            // if (!this.gameData.isPlayer1) {
+            //   let tmp: Paddle = this.paddle;
+            //   this.paddle = this.paddle2;
+            //   this.paddle2 = tmp;
+            //   console.log("player1");
+            // }
+            if (!this.gameData.isSpectator) {
+              this.isLoading = false;
+              return;
+            }
+            // score
+            this.scores[0].value = currentGameState.score1;
+            this.scores[1].value = currentGameState.score2;
+            // ball
+            let {ball, canvas, paddles}  = currentGameState;
+            this.ball.x = (ball.x / canvas.width) * GameConstants.canvas.width;
+            this.ball.y = (ball.y / canvas.height) * GameConstants.canvas.height;
+            // paddles
+            this.paddle2.y = (paddles[1].y / canvas.height) * GameConstants.canvas.height;
+            this.paddle2.velocity = paddles[1].velocity;
+            this.paddle.y = (paddles[0].y / canvas.height) * GameConstants.canvas.height;
+            this.paddle.velocity = paddles[0].velocity;
+
+            this.isLoading = false;
+          }
+      );
+    })
 
     this.socket.on("ballMoves", (data: any) => {
       if (this.gameData.isPlayer1) return;
@@ -343,13 +339,12 @@ export default class Game extends Vue {
 
     this.socket.on("incrementScore", (ballHitsBorder: number) => {
       this.scores[ballHitsBorder - 1].value++;
-      console.log(this.scores[ballHitsBorder - 1].value);
+      // console.log(this.scores[ballHitsBorder - 1].value);
     });
   }
 
   async leaveGame() {
     await this.socket.emit("leaveGame", {
-      userId: this.currentUser.id,
       roomId: this.roomId,
     });
   }
@@ -376,11 +371,11 @@ export default class Game extends Vue {
     this.paddle.draw(sketch);
     this.scores.map((score) => score.draw(sketch));
     this.paddle2.draw(sketch);
-    // TODO draw overlay
     this.drawOerlay(sketch);
     this.countdown.draw(sketch);
   }
   drawOerlay(sketch: P5Sketch) {
+    if (!sketch) return;
     sketch.fill(83, 19, 126, 127);
     sketch.noStroke();
     sketch.rect(0, 0, GameConstants.canvas.width, GameConstants.canvas.height);
@@ -425,7 +420,7 @@ export default class Game extends Vue {
   }
 
   setup(sketch: P5Sketch) {
-    // window.onresize = this.resize;
+    this.frames = 0;
     this.sketch = sketch;
     var font = sketch.loadFont("assets/fonts/BeatWorddemo.ttf");
     sketch.textFont(font);
@@ -451,7 +446,7 @@ export default class Game extends Vue {
     this.paddle2.draw(sketch);
     this.paddle2.update();
     let player: Paddle =
-      this.ball.x < GameConstants.canvas.width / 2 ? this.paddle2 : this.paddle;
+        this.ball.x < GameConstants.canvas.width / 2 ? this.paddle2 : this.paddle;
     if (this.ball.hits(player)) {
       this.ball.reverse(player, player == this.paddle);
       // send
@@ -459,12 +454,11 @@ export default class Game extends Vue {
     let ballHitsBorder = this.ball.checkBorders();
     if (ballHitsBorder) {
       this.ball.reset();
-      // send
-      //TODO emit them
-
       this.paddle.reset();
-      this.sendNewPaddleVelocity();
-      // this.scores[ballHitsBorder - 1].value++;
+      if (this.gameData.isPlayer1)
+        this.sendNewPaddleVelocity(this.paddle);
+      else
+        this.sendNewPaddleVelocity(this.paddle2);
       if (this.scores[ballHitsBorder - 1].value >= MAX_SCORE) {
         this.isGameOver = true;
         this.scores.map((score) => score.draw(sketch));
@@ -480,34 +474,50 @@ export default class Game extends Vue {
       this.scores.map((score) => score.draw(sketch));
     }
     this.sendNewBallPostion();
+    if (this.gameData.isPlayer1)
+      this.sendNewPaddleVelocity(this.paddle);
+    else
+      this.sendNewPaddleVelocity(this.paddle2);
   }
-
   keydown(e: any) {
     if (this.gameData.isSpectator) return;
     if (this.isGameOver) return;
-    if (this.paddle.handleKeyPressed(e)) this.sendNewPaddleVelocity();
+    if (this.gameData.isPlayer1)
+    {
+      if (this.paddle.handleKeyPressed(e))
+        this.sendNewPaddleVelocity(this.paddle);
+    }else {
+      if (this.paddle2.handleKeyPressed(e))
+        this.sendNewPaddleVelocity(this.paddle2)
+    }
   }
   keyup(e: any) {
+
     if (this.gameData.isSpectator) return;
     if (this.isGameOver) return;
-    if (this.paddle.handleKeyReleased(e)) this.sendNewPaddleVelocity();
+    if (this.gameData.isPlayer1)
+    {
+      if (this.paddle.handleKeyReleased(e))
+        this.sendNewPaddleVelocity(this.paddle);
+    }else {
+      if (this.paddle2.handleKeyReleased(e))
+        this.sendNewPaddleVelocity(this.paddle2)
+    }
+
   }
 
-  sendNewPaddleVelocity() {
-    if (this.gameData.isSpectator) return;
-    console.log("emitting");
+  sendNewPaddleVelocity(paddle:Paddle) {
+    if (this.gameData.isSpectator || !this.socket) return;
     this.socket.emit("paddleMoves", {
       roomId: this.roomId,
       paddle: {
-        y: this.paddle.y,
-        velocity: this.paddle.velocity,
+        y: paddle.y,
+        velocity: paddle.velocity,
       },
-      userId: this.currentUser.id, // TODO CHANGE
     });
   }
   sendNewBallPostion() {
-    if (!this.gameData.isPlayer1) return;
-    console.log("sending", this.roomId);
+    if (!this.gameData.isPlayer1 || !this.socket) return;
     this.socket.emit("ballMoves", {
       roomId: this.roomId,
       ball: {
@@ -519,13 +529,11 @@ export default class Game extends Vue {
         width: GameConstants.canvas.width,
         height: GameConstants.canvas.height,
       },
-      userId: this.currentUser.id, // TODO CHANGE
     });
   }
   get currentUser() {
     return this.$store.getters["User/getCurrentUser"];
   }
-  // socket.emit("paddleMoves", { userId: 2, velocity: this.velocity, this.roomId});
 
   reset() {
     this.ball.reset();

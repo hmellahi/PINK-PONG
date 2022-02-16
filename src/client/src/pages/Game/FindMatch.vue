@@ -31,18 +31,32 @@ export default class FindMatch extends Vue {
 
   mounted() {
     this.countUpTimer();
-    let map =
-      this.$route.query.map == undefined ? "1" : this.$route.query.map;
-    this.socket = io("http://localhost:3000/game");
+    let map = this.$route.query.map == undefined ? "1" : this.$route.query.map;
+    const Authentication = this.$cookies.get("Authentication");
+    this.socket = io("http://localhost:3000/game", {
+      transportOptions: {
+        polling: {
+          extraHeaders: {
+            Authentication,
+          },
+        },
+      },
+    });
     this.socket.on("matchFound", (roomId: any) => {
       this.$router.push("/game?id=" + roomId).catch((err) => {});
     });
     this.socket.on("connect_failed", function (err: any) {
       console.log("Connection Failed");
     });
-    this.socket.emit("joinQueue", { userId: this.currentUser.id,  map}, (data: any) => {
-      // console.log({ data });
-    });
+    this.socket.on("hehe", ()=>{
+      this.socket.emit(
+          "joinQueue",
+          { userId: this.currentUser.id, map },
+          (data: any) => {
+            // console.log({ data });
+          }
+      );
+    })
   }
 
   get currentUser() {

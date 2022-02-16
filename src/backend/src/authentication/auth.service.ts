@@ -180,7 +180,6 @@ export class AuthService
     public async getUserFromSocket(socket: Socket)
     {
         const Authentication :any = socket.handshake.headers.authentication;
-        console.log(Authentication)
         if (!Authentication)
             return undefined;
         return await this.getUserFromToken(Authentication);

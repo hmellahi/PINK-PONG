@@ -64,7 +64,16 @@ export default class MatchHistory extends Vue {
     }
   }
   async created() {
-    this.socket = io("http://localhost:3000/game");
+    const Authentication = this.$cookies.get("Authentication");
+    this.socket = io("http://localhost:3000/game", {
+      transportOptions: {
+        polling: {
+          extraHeaders: {
+            Authentication,
+          },
+        },
+      },
+    });
     // this.socket.on("matchFound", (roomId: any) => {
     //   // console.log({ roomId });
     //   this.$router.push("/game?id=" + roomId).catch((err) => {});
