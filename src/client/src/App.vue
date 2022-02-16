@@ -1,6 +1,24 @@
 <template>
   <div id="app">
-    <notifications />
+    <notifications class="my-style">
+      <template slot="body" slot-scope="props">
+        <div>
+            <a class="title">
+              {{props.item.title}}
+            </a>
+            <a class="close" @click="props.close">
+              <i class="fa fa-fw fa-close"></i>
+            </a>
+            <div v-if="!props.item.text" @click="props.close">
+              <button class="btn btn-primary" @click="AcceptRequest">Accept</button> |
+              <button class="btn btn-danger" style="background: #f44336;">Decline</button>
+            </div>
+            <div v-else>
+              <span v-html="props.item.text"></span>
+            </div>
+        </div>
+      </template>
+    </notifications>
     <router-view v-if="isLoginPage"></router-view>
     <span v-else>
       <div class="container">
@@ -56,5 +74,43 @@ export default class App extends Vue {
     let paths = ["/login", "/verification_code", "/auth/callback"];
     this.isLoginPage = paths.includes(this.$route.path);
   }
+  AcceptRequest(){
+    console.log("im here")
+    this.$notify({
+      type: 'success',
+      title: 'Nice you accept the request',
+      text: 'Lets plaaaay !!'
+    });
+  }
 }
 </script>
+
+<style lang="scss">
+.my-style{
+  .vue-notification-wrapper {
+  padding: 10px;
+  margin: 0 5px 5px;
+ 
+  font-size: 12px;
+ 
+  color: #ffffff;
+  background: #44A4FC;
+  border-left: 5px solid #187FE7;
+ 
+  .warn {
+    background: #ffb648;
+    border-left-color: #f48a06;
+  }
+ 
+  .error {
+    background: #E54D42;
+    border-left-color: #B82E24;
+  }
+ 
+  .success {
+    background: #68CD86;
+    border-left-color: #42A85F;
+  }
+}
+}
+</style>

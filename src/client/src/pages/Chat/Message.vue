@@ -116,10 +116,13 @@ export default class MessageBox extends Vue {
       marginLeft: !message.isAdmin ? "5%" : "9%",
     };
   }
+
   InviteToPlay(){
     this.$notify({
-      title: 'You have a request',
-      text: 'Someone want to play with you'
+      duration: -1,
+      closeOnClick: true,
+      type: 'info',
+      title: 'Someone want to play with you !',
     });
   }
 }

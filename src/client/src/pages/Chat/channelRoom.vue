@@ -21,6 +21,19 @@
       :onClick="InviteToPrivate"
       >Invite</Button>
     <Overlay class="p-3">
+      <Popup v-model="show_popup">
+         <h4>Invite your friend to this channel</h4>
+        <form>
+          <InputField
+            name="inviter"
+            placeholder="Enter The login"
+            type="text"
+            v-model="inviter"
+            class="text-left p-3 my-4"
+          ></InputField>
+        </form>
+      <Button :onClick="SendInvite" class="px-5">Invite</Button>
+      </Popup>
       <div class="mb-4 room px-4">
         <!-- <b-alert show variant="primary">Primary Alert</b-alert> -->
         <MessageBox
@@ -53,15 +66,17 @@ import { Component, Vue } from "vue-property-decorator";
 import Button from "@/common/components/UI/Button.vue";
 import InputField from "@/common/components/UI/InputField.vue";
 import { Message } from "@/types/Channel";
+import Popup from "@/common/components/UI/Popup.vue";
 import MessageBox from "./Message.vue";
 @Component({
-  components: { Button, InputField, MessageBox },
+  components: { Button, InputField, MessageBox, Popup },
   props: {},
 })
 export default class channelRoom extends Vue {
   msg = "";
   messages: Message[] = [];
-
+  show_popup = false;
+  inviter = '';
   mounted() {
     // for (let i = 0; i < 10; i++)
     //   this.messages.push({
@@ -114,38 +129,10 @@ export default class channelRoom extends Vue {
     }
   }
   InviteToPrivate(){
-      this.$swal({
-        title: 'invite User to this channel',
-        input: 'text',
-        inputAttributes: {
-          autocapitalize: 'off'
-        },
-        showCancelButton: true,
-        confirmButtonText: 'Invite',
-        showLoaderOnConfirm: true,
-        preConfirm: (login) => {
-          return fetch(`//api.github.com/users/${login}`)
-            .then(response => {
-              if (!response.ok) {
-                throw new Error(response.statusText)
-              }
-              return response.json()
-            })
-            .catch(error => {
-              this.$swal.showValidationMessage(
-                `Request failed: ${error}`
-              )
-            })
-        },
-        allowOutsideClick: () => !this.$swal.isLoading()
-      }).then((result) => {
-        if (result.isConfirmed) {
-          this.$swal({
-            title: `${result.value.login}'s avatar`,
-            imageUrl: result.value.avatar_url
-          })
-        }
-      })
+     this.show_popup = true;
+  }
+  SendInvite(){
+    console.log("added succefuly")
   }
 }
 </script>
@@ -182,5 +169,23 @@ input:hover {
 .right-btn {
   position: absolute;
   right: 1%;
+}
+.popup{
+  position:absolute!important;
+}
+.inner{
+  transform: translate(0%, 20%);
+}
+input {
+  background: #b183cd;
+  /* text-align: center; */
+}
+input:focus {
+  background: #b183cd !important;
+  border: 0 !important;
+  outline: 0 !important;
+}
+.inner{
+ background: #ffffff;
 }
 </style>

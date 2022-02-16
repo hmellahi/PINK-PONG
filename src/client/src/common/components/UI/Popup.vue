@@ -1,5 +1,5 @@
 <template>
-  <div class="overlay" v-show="value">
+  <div class="overlay popup" v-show="value">
     <div class="text-center p-5 inner col-md-4 mx-auto my-auto col-md-5">
       <Button class="close-icon bg-transparent" :onClick="onClose"
         ><CloseButtonSVG /></Button

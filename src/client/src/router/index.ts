@@ -16,6 +16,7 @@ import AddFriends from "@/pages/User/Friends/add.vue";
 import requests from "@/pages/User/Friends/Requests.vue";
 import store from "@/store";
 import listFriends from "@/pages/User/Friends/listFriends.vue";
+
 import Chat from "@/pages/Chat/index.vue";
 import listChannels from "@/pages/Chat/listChannels.vue";
 import createChannel from "@/pages/Chat/CreateChannel.vue";
