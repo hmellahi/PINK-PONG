@@ -63,7 +63,7 @@ export class GameGateway {
     const secondPlayer = this.players.find((player) => player.map == map);
 
     if (!secondPlayer) {
-      this.players.push({ socket: player, map, userId: player.userId});
+      this.players.push({ socket: player, map, userId: player.userId });
       return;
     }
     // console.log(map, map);
@@ -87,8 +87,6 @@ export class GameGateway {
     this.players.splice(this.players.indexOf(secondPlayer), 1);
   }
 
-
-
   checkBorders(canvas: any, ball: any): number {
     if (ball.x - ball.radius / 2 <= 0) return 2;
     if (ball.x + ball.radius / 2 >= canvas.width) return 1;
@@ -96,7 +94,10 @@ export class GameGateway {
   }
 
   @SubscribeMessage('paddleMoves')
-  handleMessages(@MessageBody() data: any, @ConnectedSocket() player: Socket|any) {
+  handleMessages(
+    @MessageBody() data: any,
+    @ConnectedSocket() player: Socket | any,
+  ) {
     let { paddle, roomId } = data;
 
     const currentPlayerRoom: Game = this.liveGames.find(
@@ -106,7 +107,8 @@ export class GameGateway {
     // room doesnt exist
     if (!currentPlayerRoom) return 'roomNotFound';
     if (
-      player.userId != currentPlayerRoom.player1 && player.userId != currentPlayerRoom.player2
+      player.userId != currentPlayerRoom.player1 &&
+      player.userId != currentPlayerRoom.player2
     )
       return 'u cant move the paddle hehe ;)';
 
@@ -114,12 +116,16 @@ export class GameGateway {
     this.liveGames[this.liveGames.indexOf(currentPlayerRoom)].paddles[
       isPlayer1 ? 0 : 1
     ] = paddle;
-    player.to(roomId).emit('paddleMoves', { paddle, isPlayer1, canvas:currentPlayerRoom.canvas});
+    player.to(roomId).emit('paddleMoves', {
+      paddle,
+      isPlayer1,
+      canvas: currentPlayerRoom.canvas,
+    });
     // console.log("emitting paddle Pos");
   }
 
   @SubscribeMessage('ballMoves')
-  ballMoves(@MessageBody() data: any, @ConnectedSocket() player: Socket|any) {
+  ballMoves(@MessageBody() data: any, @ConnectedSocket() player: Socket | any) {
     let { ball, canvas, roomId } = data;
 
     const currentPlayerRoom: Game = this.liveGames.find(
@@ -157,18 +163,54 @@ export class GameGateway {
   }
 
   @SubscribeMessage('inviteToGame')
-  inviteToGame(@MessageBody() data: any, @ConnectedSocket() sender: Socket) {
+  inviteToGame(@MessageBody() data: any, @ConnectedSocket() sender: Socket|any) {
     let { receiver } = data;
-    this.pendingRequests[receiver] = sender.id;
+    if (sender.userId == receiver)
+      return {err:true, msg:"u cant invite ur self hehe"}
+    // TODO Check if sender status= online
+    if (false)
+      return {err:true, "this user is already in game,, sorry"}
+    if (false) return {err:true,'you are already in game, you cant invite people'}
+    this.pendingRequests[receiver].push(sender.id);
     sender.to(receiver).emit('inviteToGame');
   }
 
   @SubscribeMessage('declineInvitation')
   declineInvitation(
-    @MessageBody() data: any,
-    @ConnectedSocket() receiver: Socket,
+    @MessageBody() senderId: number,
+    @ConnectedSocket() receiver: Socket | any,
   ) {
-    this.pendingRequests.delete(receiver);
+    this.removePendingRequest(receiver.userId, senderId);
+  }
+
+  removePendingRequest(recieverId: number, senderId: number) {
+    let oldSize = this.pendingRequests[recieverId].length;
+    this.pendingRequests[recieverId] = this.pendingRequests[recieverId].filter(
+      (sender) => sender != senderId,
+    );
+    if (oldSize == this.pendingRequests[recieverId].length) return false;
+    return true;
+  }
+
+  @SubscribeMessage('acceptInvitation')
+  acceptInvitation(
+    @MessageBody() senderSocketId: any,
+    @ConnectedSocket() receiver: Socket | any,
+  ) {
+    // TODO Check if sender status= online
+    if (false) return {err:true, msg:"this sender isnt online, can't accept invitation, sorry"};
+
+    // remove senderId from pending requests
+    if (!this.removePendingRequest(receiver.userId, senderSocketId))
+      return {err:true, msg:'the invitation is no longer available'};
+    if (this.pendingRequests[receiver.userId].length == 0)
+      this.pendingRequests.delete(receiver.userId);
+    // create game
+    const roomId = this.createGame(1, 1, receiver.id, senderSocketId, 1); // TODO CHANGE
+    this.server
+      .to(receiver.id)
+      .to(senderSocketId)
+      .emit('customGameStarted', roomId);
   }
 
   createGame(
@@ -193,28 +235,13 @@ export class GameGateway {
       ],
       map,
       ff: 0,
-      canvas:{width:0,height:0}
+      canvas: { width: 0, height: 0 },
     });
     return roomId;
   }
 
-  @SubscribeMessage('acceptInvitation')
-  acceptInvitation(
-    @MessageBody() data: any,
-    @ConnectedSocket() receiver: Socket,
-  ) {
-    const senderSocketId = this.pendingRequests[receiver.id];
-    // register the game
-    const roomId = this.createGame(1, 1, receiver.id, senderSocketId, 1); // TODO CHANGE
-    this.server
-      .to(receiver.id)
-      .to(senderSocketId)
-      .emit('customGameStarted', roomId);
-    this.pendingRequests.delete(receiver.id);
-  }
-
   @SubscribeMessage('joinGame')
-  joinGame(@MessageBody() data: any, @ConnectedSocket() player: Socket|any) {
+  joinGame(@MessageBody() data: any, @ConnectedSocket() player: Socket | any) {
     const { roomId } = data;
 
     // TODO CHECK USER STATUS
@@ -226,7 +253,9 @@ export class GameGateway {
     // update user status [inGame] TODO
 
     player.join(roomId);
-    let isSpectator = (player.userId != currentGameState.player1) && (player.userId != currentGameState.player2);
+    let isSpectator =
+      player.userId != currentGameState.player1 &&
+      player.userId != currentGameState.player2;
     // console.log()
     //console.log(player.userId, currentGameState.player1, currentGameState.player2, isSpectator);
 
@@ -238,11 +267,11 @@ export class GameGateway {
       isSpectator,
     };
     //console.log("initial score", currentGameState.score1, currentGameState.score2)
-    return { gameData,currentGameState };
+    return { gameData, currentGameState };
   }
 
   @SubscribeMessage('leaveGame')
-  leaveGame(@MessageBody() data: any, @ConnectedSocket() player: Socket|any) {
+  leaveGame(@MessageBody() data: any, @ConnectedSocket() player: Socket | any) {
     const { roomId } = data;
 
     const currentPlayerRoom: Game = this.liveGames.find(
@@ -259,8 +288,7 @@ export class GameGateway {
     let ff;
     if (currentPlayerRoom.player1 == player.userId) {
       ff = 1;
-    } else if (currentPlayerRoom.player1 == player.userId)
-      ff = 2;
+    } else if (currentPlayerRoom.player1 == player.userId) ff = 2;
     else return 'wtf';
     // TODO SAVE IN DATABASE
 
@@ -271,38 +299,42 @@ export class GameGateway {
 
   removeGame(roomId: string) {
     //console.log("before", this.liveGames, roomId)
-    this.liveGames = this.liveGames.filter((game:Game) => game.roomId != roomId);
-   //console.log("after", this.liveGames, roomId)
-
+    this.liveGames = this.liveGames.filter(
+      (game: Game) => game.roomId != roomId,
+    );
+    //console.log("after", this.liveGames, roomId)
   }
 
   @SubscribeMessage('getLiveGames')
-  getLiveGames(@MessageBody() data: any, @ConnectedSocket() player: Socket|any) {
+  getLiveGames(
+    @MessageBody() data: any,
+    @ConnectedSocket() player: Socket | any,
+  ) {
     console.table(this.liveGames);
     return this.liveGames;
   }
 
-  handleDisconnect(player: Socket|any, ...args: any[]) {
-    if (false)return;
+  handleDisconnect(player: Socket | any, ...args: any[]) {
+    if (false) return;
     // this.logger.log(`client leaved queue: ${client.id}`);
     // this.players = this.players.filter((player) => player.id === client.id);
     console.log(`client disconnected: ${player.id}`);
     // TODOS
     // if player was in queue?
     // leavequeue
-    this.players =  this.players.find(
-        (playerinQueue) => playerinQueue.id != player.id,
+    this.players = this.players.filter(
+      (playerinQueue) => playerinQueue.id != player.id,
     );
     // if player was in game
     // end game with lost to the player
     const currentPlayerRoom: Game = this.liveGames.find(
-        (game) => (game.player1 === player.id || game.player2 === player.id )
+      (game) => game.player1 === player.id || game.player2 === player.id,
     );
+    if (!currentPlayerRoom) return;
     let ff;
     if (currentPlayerRoom.player1 == player.userId) {
       ff = 1;
-    } else if (currentPlayerRoom.player1 == player.userId)
-      ff = 2;
+    } else if (currentPlayerRoom.player1 == player.userId) ff = 2;
     this.server.to(currentPlayerRoom.roomId).emit('gameOver', ff);
     this.removeGame(currentPlayerRoom.roomId);
     // this.leaveGame({roomId}, client )
@@ -319,6 +351,6 @@ export class GameGateway {
     }
     //console.log("new user", user.id)
     client.userId = user.id;
-    this.server.to(client.id).emit("hehe")
+    this.server.to(client.id).emit('hehe');
   }
 }

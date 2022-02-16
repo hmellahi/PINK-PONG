@@ -4,11 +4,9 @@ import { FriendsState,User,UserState } from "@/types/user";
 
 const mutations = {
   login(state: UserState) {
-    // TODO make an api call
     state.isAuthenticated = true;
   },
   logout(state: UserState) {
-    // TODO make an api call
     state.isAuthenticated = false;
   },
   setUser(state: UserState, user: User){
@@ -23,6 +21,9 @@ const mutations = {
   },
   setUsername(state: UserState, username: string){
     state.user.login = username;
+  },
+  SET_GAMESOCKET(state: UserState, connection: any){
+    state.gameSocket = connection
   }
 };
 
