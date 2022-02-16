@@ -219,6 +219,37 @@ export default class Game extends Vue {
     );
     this.scores = [this.score, this.score2];
   }
+
+  resizeObjectsOpt() {
+    var xF = this.ball.x / GameConstants.canvas.width;
+    var yF = this.ball.y / GameConstants.canvas.height;
+    var game: any = this.$refs.game;
+    var rx = GameConstants.canvas.width / 10;
+    var ry = GameConstants.canvas.height / 10;
+    if (game) {
+      GameConstants.canvas.width = game.offsetWidth;
+      GameConstants.canvas.height = game.offsetHeight;
+    }
+    this.radius = 10;
+    this.ball.x = xF * GameConstants.canvas.width;
+    this.ball.y = yF * GameConstants.canvas.height;
+    this.isGameOver = false;
+    this.paddleWidth = GameConstants.paddle.width;
+    this.paddleHeight = GameConstants.paddle.height;
+    this.paddle.x = GameConstants.canvas.width - this.paddleWidth - 20;
+    this.paddle.y = this.paddle.y;
+    this.paddle2.x = 20;
+    this.paddle2.y = this.paddle2.y; 
+    this.net.width = GameConstants.canvas.width;
+    this.net.height = GameConstants.canvas.height;
+
+    this.score.x = GameConstants.canvas.width / 4 - 60;
+    this.score.y = 30;
+    this.score2.x = GameConstants.canvas.width - GameConstants.canvas.width / 4;
+    this.score2.y = 30;
+    this.scores = [this.score, this.score2];
+  }
+
   mounted() {
     window.addEventListener("keydown", this.keydown);
     window.addEventListener("keyup", this.keyup);
@@ -362,7 +393,9 @@ export default class Game extends Vue {
     //   GameConstants.canvas.height = 400;
     // }
     // this.init();
-    this.resizeObjects();
+    // this.resizeObjects();
+    this.resizeObjectsOpt();//optimzed version
+
     if (!this.sketch) return;
     this.sketch.resizeCanvas(
       GameConstants.canvas.width,
