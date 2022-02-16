@@ -15,7 +15,7 @@ import { JwtAuthGuard } from '../authentication/Guards/jwtAccess.guard';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from 'src/authentication/auth.service';
 
-let MAX_SCORE = 5;
+let MAX_SCORE = 2;
 
 @WebSocketGateway({
   namespace: 'game',
@@ -88,11 +88,17 @@ export class GameGateway {
   }
 
   checkBorders(canvas: any, ball: any): number {
-    if (ball.x - ball.radius / 2 <= 0) return 2;
-    if (ball.x + ball.radius / 2 >= canvas.width) return 1;
+    let borderWidth = Math.floor(canvas.width / 80);
+    if (ball.x - ball.radius / 2 - borderWidth <= 0) return 2;
+    if (ball.x + ball.radius / 2 + borderWidth>= canvas.width) return 1;
     return 0;
   }
-
+  // checkBorders(): number {
+  //   let borderWidth = Math.floor(canvas.width / 80);
+  //   if (ball.x - ball.radius / 2 - borderWidth <= 0) return 2;
+  //   if (ball.x + ball.radius / 2 + borderWidth>= canvas.width) return 1;
+  //   return 0;
+  // }
   @SubscribeMessage('paddleMoves')
   handleMessages(
     @MessageBody() data: any,
@@ -110,7 +116,7 @@ export class GameGateway {
       player.userId != currentPlayerRoom.player1 &&
       player.userId != currentPlayerRoom.player2
     )
-      return 'u cant move the paddle hehe ;)';
+      return { err: true, msg: 'u cant move the paddle hehe ;)' };
 
     let isPlayer1: number = player.userId == currentPlayerRoom.player1 ? 1 : 0;
     this.liveGames[this.liveGames.indexOf(currentPlayerRoom)].paddles[
@@ -155,7 +161,7 @@ export class GameGateway {
         this.liveGames[roomIndex].score2 >= MAX_SCORE
       ) {
         // Inform everyone that game ends
-        this.server.to(roomId).emit('gameOver', ballHitsBorder);
+        // this.server.to(roomId).emit('gameOver', ballHitsBorder);
         // TODO SAVE IN DATABASE
         this.removeGame(roomId);
       }
@@ -163,14 +169,21 @@ export class GameGateway {
   }
 
   @SubscribeMessage('inviteToGame')
-  inviteToGame(@MessageBody() data: any, @ConnectedSocket() sender: Socket|any) {
+  inviteToGame(
+    @MessageBody() data: any,
+    @ConnectedSocket() sender: Socket | any,
+  ) {
     let { receiver } = data;
     if (sender.userId == receiver)
-      return {err:true, msg:"u cant invite ur self hehe"}
+      return { err: true, msg: 'u cant invite ur self hehe' };
     // TODO Check if sender status= online
     if (false)
-      return {err:true, msg:"this user is already in game,, sorry"}
-    if (false) return {err:true, msg:'you are already in game, you cant invite people'}
+      return { err: true, msg: 'this user is already in game,, sorry' };
+    if (false)
+      return {
+        err: true,
+        msg: 'you are already in game, you cant invite people',
+      };
     this.pendingRequests[receiver].push(sender.id);
     sender.to(receiver).emit('inviteToGame');
   }
@@ -198,11 +211,15 @@ export class GameGateway {
     @ConnectedSocket() receiver: Socket | any,
   ) {
     // TODO Check if sender status= online
-    if (false) return {err:true, msg:"this sender isnt online, can't accept invitation, sorry"};
+    if (false)
+      return {
+        err: true,
+        msg: "this sender isnt online, can't accept invitation, sorry",
+      };
 
     // remove senderId from pending requests
     if (!this.removePendingRequest(receiver.userId, senderSocketId))
-      return {err:true, msg:'the invitation is no longer available'};
+      return { err: true, msg: 'the invitation is no longer available' };
     if (this.pendingRequests[receiver.userId].length == 0)
       this.pendingRequests.delete(receiver.userId);
     // create game
@@ -285,10 +302,10 @@ export class GameGateway {
 
     const roomIndex = this.liveGames.indexOf(currentPlayerRoom);
     //console.log(roomIndex);
-    let ff;
+    let ff = 0;
     if (currentPlayerRoom.player1 == player.userId) {
       ff = 1;
-    } else if (currentPlayerRoom.player1 == player.userId) ff = 2;
+    } else if (currentPlayerRoom.player2 == player.userId) ff = 2;
     else return 'wtf';
     // TODO SAVE IN DATABASE
 

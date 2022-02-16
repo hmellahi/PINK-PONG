@@ -35,7 +35,7 @@ export default class {
     // this.velocityY = Math.floor(Math.random() * 10) + 1;;
     this.velocityX = 1;
     this.velocityY = 1;
-    this.initialSpeed = GameConstants.canvas.width / 200;
+    this.initialSpeed = GameConstants.canvas.width / 400;
     this.speed = this.initialSpeed;
     // this.speed = 1;
     this.color = tempColor;
@@ -146,8 +146,8 @@ export default class {
 
   checkBorders(): number {
     let borderWidth = Math.floor(GameConstants.canvas.width / 80);
-    if (this.x - this.radius / 2 + borderWidth <= 0) return 2;
-    if (this.x + this.radius / 2 - borderWidth>= GameConstants.canvas.width) return 1;
+    if (this.x - this.radius / 2 - borderWidth <= 0) return 2;
+    if (this.x + this.radius / 2 + borderWidth>= GameConstants.canvas.width) return 1;
     return 0;
   }
 }

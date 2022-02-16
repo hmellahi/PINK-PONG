@@ -21,7 +21,7 @@ import P5, {
 import Paddle from "@/common/Game/Objects/Paddle";
 import Score from "@/common/Game/Objects/Score";
 
-const MAX_SCORE = 5;
+const MAX_SCORE = 2;
 const COUNTDOWN = 3;
 
 @Component<Game>({
@@ -262,29 +262,18 @@ export default class Game extends Vue {
       console.log("Connection Failed");
     });
 
-    this.socket.on("gameOver", (ballHitsBorder: any) => {
+    this.socket.on("gameOver", (ff: any) => {
       // this.scores[ballHitsBorder - 1].value++;
       this.isGameOver = true;
       this.intervals.map((interval) => {
         clearInterval(interval);
       });
-      this.showGameOver(this.sketch);
-      // TODO show to the player the he won because the other player quits
-      if (this.gameData.isSpectator) return;
-      console.log({ score1: this.scores[0].value });
-      console.log({ score2: this.scores[1].value });
-      if (
-        (this.scores[1].value > this.scores[0].value &&
-          this.gameData.isPlayer1) ||
-        (this.scores[1].value < this.scores[0].value &&
-          !this.gameData.isPlayer1)
-      )
-        this.playerLost(this.sketch, "you Have Won");
-      else {
-        this.playerLost(this.sketch, "you Have lost");
-      }
-    });
+      // if (ff != 0){
 
+      // }
+     this.over(ff);
+
+    });
     this.socket.on("hehe", () => {
       this.socket.emit("joinGame", { roomId: this.roomId }, (msg: any) => {
         // console.log("msg", { msg });
@@ -339,7 +328,24 @@ export default class Game extends Vue {
       // console.log(this.scores[ballHitsBorder - 1].value);
     });
   }
-
+over(ff:number){
+   this.showGameOver(this.sketch);
+      // TODO show to the player the he won because the other player quits
+      if (this.gameData.isSpectator) return;
+      console.log({ score1: this.scores[0].value });
+      console.log({ score2: this.scores[1].value });
+      if (
+        ff || 
+        (this.scores[1].value > this.scores[0].value &&
+          this.gameData.isPlayer1) ||
+        (this.scores[1].value < this.scores[0].value &&
+          !this.gameData.isPlayer1)
+      )
+        this.playerLost(this.sketch, "you Have Won");
+      else {
+        this.playerLost(this.sketch, "you Have lost");
+      }
+}
   async leaveGame() {
     await this.socket.emit("leaveGame", {
       roomId: this.roomId,
@@ -353,7 +359,7 @@ export default class Game extends Vue {
     // }
     // this.init();
     this.resizeObjects();
-
+    if(!this.sketch)return;
     this.sketch.resizeCanvas(
       GameConstants.canvas.width,
       GameConstants.canvas.height
@@ -380,7 +386,7 @@ export default class Game extends Vue {
     this.drawOerlay(sketch);
     sketch.textSize(GameConstants.canvas.width / 8);
     sketch.textAlign(sketch.CENTER);
-    sketch.fill(255, 0, 0);
+    sketch.fill(255, 255, 255);
     sketch.text(
       "Game Over",
       GameConstants.canvas.width / 2,
@@ -391,7 +397,7 @@ export default class Game extends Vue {
   playerLost(sketch: P5Sketch, won: string) {
     sketch.textSize(GameConstants.canvas.width / 12);
     sketch.textAlign(sketch.CENTER);
-    sketch.fill(255, 0, 0);
+    sketch.fill(255, 255, 255);
     sketch.text(
       won,
       GameConstants.canvas.width / 2,
@@ -434,6 +440,8 @@ export default class Game extends Vue {
   draw(sketch: P5Sketch) {
     if (this.isGameOver) return;
     sketch.background(this.backColor);
+    this.drawOerlay(sketch);
+
     this.background.draw(sketch);
     this.net.draw(sketch);
     this.paddle.draw(sketch);
@@ -456,6 +464,7 @@ export default class Game extends Vue {
         this.isGameOver = true;
         this.scores.map((score) => score.draw(sketch));
         // this.showGameOver(sketch);
+        this.over();
         return;
       }
       // this.isGameOver = true; // change to true
