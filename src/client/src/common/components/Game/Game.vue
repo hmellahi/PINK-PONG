@@ -380,7 +380,7 @@ export default class Game extends Vue {
     this.drawOerlay(sketch);
     sketch.textSize(GameConstants.canvas.width / 8);
     sketch.textAlign(sketch.CENTER);
-    sketch.fill(255, 0, 0);
+    sketch.fill(255, 255, 255);
     sketch.text(
       "Game Over",
       GameConstants.canvas.width / 2,
@@ -391,7 +391,7 @@ export default class Game extends Vue {
   playerLost(sketch: P5Sketch, won: string) {
     sketch.textSize(GameConstants.canvas.width / 12);
     sketch.textAlign(sketch.CENTER);
-    sketch.fill(255, 0, 0);
+    sketch.fill(255, 255, 255);
     sketch.text(
       won,
       GameConstants.canvas.width / 2,
@@ -434,6 +434,8 @@ export default class Game extends Vue {
   draw(sketch: P5Sketch) {
     if (this.isGameOver) return;
     sketch.background(this.backColor);
+    this.drawOerlay(sketch);
+
     this.background.draw(sketch);
     this.net.draw(sketch);
     this.paddle.draw(sketch);
