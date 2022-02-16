@@ -23,10 +23,15 @@ export default class Net {
     //   this.color = tempColor;
     //   this.speed = 10;
   }
-
+  drawOverlay(sketch: P5Sketch) {
+    if (!sketch) return;
+    sketch.fill(83, 19, 126, 127);
+    sketch.noStroke();
+    sketch.rect(0, 0, GameConstants.canvas.width, GameConstants.canvas.height);
+  }
   // draw
   map1(sketch: P5Sketch){
-    let ratio = Math.floor(this.width / 80);
+    let ratio = Math.floor(this.width / 120);
     let x = this.width / 2;
     sketch.stroke(255);
     sketch.strokeWeight(ratio);
@@ -36,6 +41,7 @@ export default class Net {
 
   map2(sketch: P5Sketch){
 
+    this.drawOverlay(sketch);//add overlay
     let ratio = Math.floor(this.width / 80);
     let x = this.width / 2;
     let y = this.height /2;

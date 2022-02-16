@@ -198,7 +198,7 @@ export default class Game extends Vue {
     this.net = new Net(
       GameConstants.canvas.width,
       GameConstants.canvas.height,
-      this.map
+      this.net.map
     );
     this.background = new BackGround();
 
@@ -376,8 +376,8 @@ over(ff:number){
   }
   drawGameObjects(sketch: P5Sketch) {
     sketch.background(this.backColor);
-    this.background.draw(sketch);
     this.net.draw(sketch);
+    this.background.draw(sketch);
     this.ball.draw(sketch);
     this.paddle.draw(sketch);
     this.scores.map((score) => score.draw(sketch));
@@ -450,9 +450,9 @@ over(ff:number){
     if (this.isGameOver) return;
     sketch.background(this.backColor);
     this.drawOerlay(sketch);
+    this.net.draw(sketch);
 
     this.background.draw(sketch);
-    this.net.draw(sketch);
     this.paddle.draw(sketch);
     this.paddle.update();
     this.paddle2.draw(sketch);
@@ -473,7 +473,7 @@ over(ff:number){
         this.isGameOver = true;
         this.scores.map((score) => score.draw(sketch));
         // this.showGameOver(sketch);
-        this.over();
+        this.over(0);
         return;
       }
       // this.isGameOver = true; // change to true
