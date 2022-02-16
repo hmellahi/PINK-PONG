@@ -7,6 +7,7 @@ export interface FriendsState {
 export interface UserState {
   isAuthenticated: boolean;
   user: User;
+  gameSocket:any
 }
 
 export interface User {

@@ -24,7 +24,7 @@
             </div>
           </div>
           <div class="match_btn">
-            <Button :link="'games/' + match.roomId">Watch</Button>
+            <Button :link="'game?id=' + match.roomId">Watch</Button>
           </div>
         </div>
       </div>
@@ -57,14 +57,23 @@ export default class MatchHistory extends Vue {
   }
   async fetchUser(id: Number){
     try {
-      const player1 = await this.$http.get(`users/${id}`);
+      const player1 = await this.$http.get(`users?id=${id}`);
       return player1;
     } catch (error) {
       return ;
     }
   }
   async created() {
-    this.socket = io("http://localhost:3000/game");
+    const Authentication = this.$cookies.get("Authentication");
+    this.socket = io("http://localhost:3000/game", {
+      transportOptions: {
+        polling: {
+          extraHeaders: {
+            Authentication,
+          },
+        },
+      },
+    });
     // this.socket.on("matchFound", (roomId: any) => {
     //   // console.log({ roomId });
     //   this.$router.push("/game?id=" + roomId).catch((err) => {});
@@ -76,6 +85,8 @@ export default class MatchHistory extends Vue {
       const newData = data.map(async (object: any) => {
         const user1 = await this.fetchUser(object.player1) as any | undefined
         const user2 = await this.fetchUser(object.player2) as any | undefined
+        console.log({game:object})
+        console.log({user1})
         this.matches.push({...object, user1: user1.data, user2: user2.data})
       });
     });

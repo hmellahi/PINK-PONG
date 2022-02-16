@@ -40,16 +40,15 @@ export default class App extends Vue {
   isLoginPage: boolean = false;
   socket: any = null;
 
-  listenToEvents() {
-    this.socket = io("http://localhost:3000/game");
-
-    this.socket.on("inviteToGame", (data: any) => {
-      let { senderId } = data;
-    });
+  listenToGameChannelEvents() {
+    // count to 10
+    
   }
 
-  mounted() {
+  async mounted() {
     this.updateIsLoginPage();
+    // await this.$store.dispatch('User/connectToGameSocket', this.$cookies)
+    this.listenToGameChannelEvents();
   }
 
   updateIsLoginPage() {

@@ -18,8 +18,8 @@ const state = () => ({
   //     { duration: "09:10", map: "classic", date: "17/04/2019", result: "11-6" },
   //   ],
   // },
-  user: {
-  }
+  user: {},
+  gameSocket:{}
 });
 
 // getters
