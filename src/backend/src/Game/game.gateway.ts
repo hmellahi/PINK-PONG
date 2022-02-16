@@ -15,7 +15,9 @@ import { JwtAuthGuard } from '../authentication/Guards/jwtAccess.guard';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from 'src/authentication/auth.service';
 
-let MAX_SCORE = 2;
+let MAX_SCORE = 5;
+let ROOM_NOT_FOUND = 'room Not Found';
+let ALREADY_IN_QUEUE = 'u cant join queue, because you are already in queue';
 
 @WebSocketGateway({
   namespace: 'game',
@@ -50,16 +52,13 @@ export class GameGateway {
   }
 
   @SubscribeMessage('joinQueue')
-  joinQueue(
-    @MessageBody() data: any,
-    @ConnectedSocket() player: Socket | any,
-  ): string {
+  joinQueue(@MessageBody() data: any, @ConnectedSocket() player: Socket | any) {
     let { map } = data;
 
     // TODO CHECK FOR USER STAUS
     // TODO UPDATE USER STATUS
     if (this.players.find((p) => p.userId === player.userId))
-      return 'u cant join queue asshole';
+      return { err: ALREADY_IN_QUEUE };
     const secondPlayer = this.players.find((player) => player.map == map);
 
     if (!secondPlayer) {
@@ -111,7 +110,7 @@ export class GameGateway {
     );
 
     // room doesnt exist
-    if (!currentPlayerRoom) return 'roomNotFound';
+    if (!currentPlayerRoom) return { err: ROOM_NOT_FOUND };
     if (
       player.userId != currentPlayerRoom.player1 &&
       player.userId != currentPlayerRoom.player2
@@ -139,8 +138,9 @@ export class GameGateway {
     );
 
     // room doesnt exist
-    if (!currentPlayerRoom)
-      return this.server.to(player.id).emit('roomNotFound');
+    if (!currentPlayerRoom) {
+      return { err: ROOM_NOT_FOUND };
+    }
     const isPlayer1 = player.userId == currentPlayerRoom.player1;
     if (!isPlayer1) return '';
     this.liveGames[this.liveGames.indexOf(currentPlayerRoom)].canvas = canvas;
@@ -266,7 +266,7 @@ export class GameGateway {
       (game) => game.roomId === roomId,
     );
     // room doesnt exist
-    if (!currentGameState) return 'roomNotFound';
+    if (!currentGameState) return { err: ROOM_NOT_FOUND };
     // update user status [inGame] TODO
 
     player.join(roomId);
@@ -294,11 +294,9 @@ export class GameGateway {
     const currentPlayerRoom: Game = this.liveGames.find(
       (game) => game.roomId === roomId,
     );
-    // const currentPlayerRoom = this.liveGames.indexOf()
+
     // room doesnt exist
-    if (!currentPlayerRoom)
-      // return this.server.to(player.id).emit('roomNotFound');
-      return 'roomNotFound';
+    if (!currentPlayerRoom) return { err: ROOM_NOT_FOUND };
 
     const roomIndex = this.liveGames.indexOf(currentPlayerRoom);
     //console.log(roomIndex);
