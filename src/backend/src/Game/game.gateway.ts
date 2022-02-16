@@ -169,8 +169,8 @@ export class GameGateway {
       return {err:true, msg:"u cant invite ur self hehe"}
     // TODO Check if sender status= online
     if (false)
-      return {err:true, "this user is already in game,, sorry"}
-    if (false) return {err:true,'you are already in game, you cant invite people'}
+      return {err:true, msg:"this user is already in game,, sorry"}
+    if (false) return {err:true, msg:'you are already in game, you cant invite people'}
     this.pendingRequests[receiver].push(sender.id);
     sender.to(receiver).emit('inviteToGame');
   }

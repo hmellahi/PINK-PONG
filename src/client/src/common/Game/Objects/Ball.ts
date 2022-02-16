@@ -145,8 +145,9 @@ export default class {
   }
 
   checkBorders(): number {
-    if (this.x - this.radius / 2 <= 0) return 2;
-    if (this.x + this.radius / 2 >= GameConstants.canvas.width) return 1;
+    let borderWidth = Math.floor(GameConstants.canvas.width / 80);
+    if (this.x - this.radius / 2 + borderWidth <= 0) return 2;
+    if (this.x + this.radius / 2 - borderWidth>= GameConstants.canvas.width) return 1;
     return 0;
   }
 }
