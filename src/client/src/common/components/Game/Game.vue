@@ -1,9 +1,8 @@
 <template>
   <div id="game" ref="game" class="h-100">
     <div v-if="!isLoading" >
-      {{gameData.player1}}
-      <img src="/assets/img/2.jpg" alt="" class="player_left"/>
-      <img src="/assets/img/2.jpg" alt="" class="player_right"/>
+      <img :src="player2.avatar_url" alt="" class="player_left"/>
+      <img :src="player1.avatar_url" alt="" class="player_right"/>
       <P5 v-on="{ setup }" />
     </div>
     <div v-else>Loading....</div>
@@ -43,6 +42,8 @@ export default class Game extends Vue {
   intervals: Array<any> = [];
   socket: any = null;
   frames = 0;
+  player1: any = [];
+  player2: any = [];
   // ({ canvas, backColor } = GameConstants)
   // canvasWidth:
   backColor: number = GameConstants.backColor;
@@ -267,7 +268,14 @@ export default class Game extends Vue {
     this.listenToGameEvents();
     //  if(typeof(Worker) !== "undefined") {
   }
-
+  async fetchUser(id: Number){
+    try {
+      const player = await this.$http.get(`users?id=${id}`);
+      return player;
+    } catch (error) {
+      return ;
+    }
+  }
   async listenToGameEvents() {
     const Authentication = this.$cookies.get("Authentication");
     this.socket = io("http://localhost:3000/game", {
@@ -313,11 +321,12 @@ export default class Game extends Vue {
       // }
       this.over(ff);
     });
-    this.socket.on("hehe", () => {
+
+    this.socket.on("hehe",  () => {
       this.socket.emit(
         "joinGame",
         { roomId: this.roomId },
-        ({ msg, err }: any) => {
+        async ({ msg, err }: any) => {
           // console.log("msg", { msg });
 
           if (err) {
@@ -337,6 +346,10 @@ export default class Game extends Vue {
           // }
           if (!this.gameData.isSpectator) {
             this.isLoading = false;
+            const player1 = await this.fetchUser(gameData.player1) as any | undefined
+            const player2 = await this.fetchUser(gameData.player2) as any | undefined
+            this.player1 = player1.data;
+            this.player2 = player2.data;
             return;
           }
           // score

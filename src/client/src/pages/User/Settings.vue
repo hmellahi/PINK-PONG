@@ -108,7 +108,7 @@ export default class Settings extends Vue {
   avatar = {};
   isActive = false;
   success = "";
-  file_image = '';
+  file_image: any = '';
   API_URL = process.env.VUE_APP_API_URL;
   showVerify = false;
   login = this.user.login;

@@ -2233,7 +2233,8 @@ body.light hr.separator {
   top: -1.5rem;
   border-radius: 50%;
   right: 1rem;
-  border: 5px solid #a989bf;
+  border: 4px solid #a70aed;
+  background: #a90bec;
 }
 .player_left{
   position: absolute;
@@ -2242,7 +2243,8 @@ body.light hr.separator {
   top: -1.5rem;
   border-radius: 50%;
   left: 1rem;
-  border: 5px solid #a989bf;
+  border: 4px solid #a70aed;
+  background: #a90bec;
 }
 @media (max-width: 768px) {
   .change_name_input {
