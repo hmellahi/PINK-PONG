@@ -1,6 +1,11 @@
 <template>
   <div id="game" ref="game" class="h-100">
-    <P5 v-if="!isLoading" v-on="{ setup }" />
+    <div v-if="!isLoading" >
+      {{gameData.player1}}
+      <img src="/assets/img/2.jpg" alt="" class="player_left"/>
+      <img src="/assets/img/2.jpg" alt="" class="player_right"/>
+      <P5 v-on="{ setup }" />
+    </div>
     <div v-else>Loading....</div>
   </div>
 </template>

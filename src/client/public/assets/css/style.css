@@ -2226,6 +2226,24 @@ body.light hr.separator {
   border-radius: 50%;
   height: 6rem;
 }
+.player_right{
+  position: absolute;
+  width: 4rem;
+  height: 4rem;
+  top: -1.5rem;
+  border-radius: 50%;
+  right: 1rem;
+  border: 5px solid #a989bf;
+}
+.player_left{
+  position: absolute;
+  width: 4rem;
+  height: 4rem;
+  top: -1.5rem;
+  border-radius: 50%;
+  left: 1rem;
+  border: 5px solid #a989bf;
+}
 @media (max-width: 768px) {
   .change_name_input {
     padding: 1em 0em 1em 1em;

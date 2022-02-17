@@ -108,15 +108,19 @@ export default class Settings extends Vue {
   avatar = {};
   isActive = false;
   success = "";
+  file_image = '';
   API_URL = process.env.VUE_APP_API_URL;
   showVerify = false;
   login = this.user.login;
   onFileChange(e: any) {
+    this.success = '';
     let file: any = e.target.files[0];
     if (file) {
       let reader = new FileReader();
       reader.onload = (e: Event) => {
-        if (e && e.target) this.$store.commit("User/setAvatar", reader.result);
+        if (e && e.target){
+          this.file_image = reader.result;
+        }
       };
       reader.readAsDataURL(file);
       this.$emit("input", file);
@@ -128,6 +132,7 @@ export default class Settings extends Vue {
     formData.append("avatar", file, file.name);
     try {
       await this.$http.post(`users/updateAvatar`, formData);
+      this.$store.commit("User/setAvatar", this.file_image);
     } catch (e: any) {
       this.success = e.response.data.message;
       return;
