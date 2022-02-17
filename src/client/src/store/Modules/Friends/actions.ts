@@ -14,6 +14,7 @@ const actions = {
     let friendsListBackup = [...state.friends];
     commit("REMOVE_FROM", ["friends", friend]);
     try {
+      console.log(friend.id)
       const data = await api.post("friendship/removeFriendship", {
         friendshipId: friend.id,
       });

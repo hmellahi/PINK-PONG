@@ -13,7 +13,8 @@ const state = () => ({
 
 // getters
 const getters = {
-  getChannelMsgs(state: any, channelId: string): Message[] {
+  getChannelMsgs: (state: any) => (channelId: string) => {
+    console.table(state.allMessages);
     return state.allMessages.filter(
       (msg: Message) => msg.channelId === channelId
     );

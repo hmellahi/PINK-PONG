@@ -49,22 +49,13 @@ import { Channel } from "../../types/Channel";
     //   type: Array,
     // },
   },
-  watch: {
-    $route(to, from) {
-      // this.updateIsLoginPage();
-      this.routeName = to.path;
-      // console.log(to.path)
-    },
-  },
 })
 export default class listChannels extends Vue {
   // channels: Channel[];
   currentChannel: Channel;
   password = "";
   show = false;
-  routeName: String;
   created() {
-    // console.log(this.routeName)
     // for (let i = 0; i < 10; i++)
     //   this.channels.push({
     //     name: "WHO FOR 1V1",
@@ -78,6 +69,11 @@ export default class listChannels extends Vue {
       type: "public",
     };
   }
+
+  get currentRouteName() {
+    // console.log(this.$route)
+    return this.$route.path;
+  }
   // get currentChannel() {
   //   return this.channels[0]
   //     ? this.channels[0]
@@ -90,8 +86,8 @@ export default class listChannels extends Vue {
   //   this.showPopup = false;
   // }
   get channels() {
-    console.log(this.$store.state.Chat.publicChannels);
-    if (this.routeName == "/chat") return this.$store.state.Chat.publicChannels;
+    if (!this.currentRouteName || this.currentRouteName == "/chat")
+      return this.$store.state.Chat.publicChannels;
     return this.$store.state.Chat.privateChannels;
   }
   joinChannel(): void {

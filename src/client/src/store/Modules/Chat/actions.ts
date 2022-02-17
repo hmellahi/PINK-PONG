@@ -6,6 +6,7 @@ import store from "@/store";
 import { io, Socket } from "socket.io-client";
 import { ActionContext } from "vuex";
 import { Channel, Message } from "@/types/Channel";
+import moment from "moment";
 
 const { VUE_APP_API_URL: API_URL, VUE_APP_SERVER_URL: SERVER_URL } =
   process.env;
@@ -50,14 +51,29 @@ const actions = {
       });
   },
 
-  // sendMessage(
-  //   { commit, state }: ActionContext<any, any>,
-  //   { msg, channelId }: any
-  // ) {
-  //   commit("ADD_MSG", msg);
-  //   state.chatSocket.emit("message", { msg, channelId });
+  // currentUser():any {
+  //   return store.getters["User/getCurrentUser"];
   // },
-  // mute/ban/invite/leave/edit
+
+  async sendMessage(
+    { commit, state, rootState }: ActionContext<any, any>,
+    { message, channelId }: any
+  ) {
+    let currentUser = await store.getters["User/getCurrentUser"];
+    commit("ADD_MSG", {
+      message,
+      channelId,
+      showTooltip: false,
+      sender:"test", // tODO REMOVE
+      // sender: rootState.User.user.login,
+      // sender: currentUser.login,
+      createdAt: moment().format("mm:ss"), // TODO CHANGE?
+    });
+    // console.log({ store: rootState.User.user });
+    // state.chatSocket.emit("message", { msg, channelId }); // TODO
+  },
+  // JOIN/LEAVE/CREATE/EDIT
+  // mute/ban/invite
   // join
 };
 
