@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Channel } from '../models/channel';
+import { Channel } from '../entites/channel';
 
 @Injectable()
 export class ChatService {
