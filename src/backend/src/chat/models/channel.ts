@@ -7,4 +7,4 @@ export interface Channel {
   username?: string;
   lastMsg?: string;
   createdAt: Date;
-} 
+}  
