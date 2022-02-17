@@ -1,6 +1,6 @@
 <template>
   <div class="history">
-    <h3>My Match History</h3>
+    <h3>Match History</h3>
     <div v-if="matches.length">
       <div v-for="match in matches" class="leader_box match_box">
         <div class="left match_history">
