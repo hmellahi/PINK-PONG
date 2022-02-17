@@ -2,8 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="3dc35d17-8df0-41ab-aa24-27fa4e417318" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/src/client/src/pages/Chat/listChannels.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/client/src/pages/Chat/listChannels.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/client/src/router/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/client/src/router/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -55,7 +54,7 @@
       <workItem from="1644972215230" duration="12055000" />
       <workItem from="1644993481100" duration="1988000" />
       <workItem from="1645011881158" duration="889000" />
-      <workItem from="1645086084772" duration="1188000" />
+      <workItem from="1645086084772" duration="1622000" />
     </task>
     <servers />
   </component>
