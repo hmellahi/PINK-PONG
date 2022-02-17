@@ -60,7 +60,6 @@ export default class listFriends extends Vue {
 
   async unFriend(friend: any) {
     await this.$store.dispatch("Friends/unFriend", friend);
-    await this.$store.dispatch("Friends/fetchFriends");
   }
   sendMessage(friend: any) {
     this.$router.push("/chat/channel/" + friend.id);
@@ -68,6 +67,10 @@ export default class listFriends extends Vue {
   get friends(): any[] {
     // TODO change type
     return this.$store.state.Friends.friends;
+  }
+
+  async mounted() {
+    await this.$store.dispatch("Friends/fetchFriends");
   }
 }
 </script>
