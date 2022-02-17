@@ -71,6 +71,7 @@ export default class Profile extends Vue {
   isMyProfile: boolean = false;
    mounted() {
     this.checkUser();
+    console.log(this.user)
   }
   get userCurrent() {
     return this.$store.getters["User/getCurrentUser"];

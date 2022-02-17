@@ -11,7 +11,51 @@ const mutations = {
   },
   setUser(state: UserState, user: User){
     state.isAuthenticated = true;
-    state.user = Object.assign({}, user);
+    let matches = [
+      {
+        id: 1,
+        image: "/assets/img/2.jpg",
+        score1: "5",
+        score2: "6",
+        map: "/assets/img/map1.jpg",
+        map_name: "Classic",
+        duration: "02:45",
+        date: "2022-08-14",
+        type: "victory",
+        player1: {
+          id: 4,
+          login: "sefiwejof",
+          avatar_url: "/assets/img/2.jpg",
+        },
+        player2: {
+          id: 4,
+          login: "werewrwr",
+          avatar_url: "/assets/img/2.jpg",
+        },
+      },
+      {
+        id: 1,
+        image: "/assets/img/2.jpg",
+        score1: "4",
+        score2: "3",
+        map: "/assets/img/map1.jpg",
+        map_name: "Classic",
+        duration: "02:45",
+        date: "2022-08-14",
+        type: "defeat",
+        player1: {
+          id: 4,
+          login: "sefiwejof",
+          avatar_url: "/assets/img/2.jpg",
+        },
+        player2: {
+          id: 4,
+          login: "werewrwr",
+          avatar_url: "/assets/img/2.jpg",
+        },
+      }
+    ];
+    state.user = Object.assign({matches: matches}, user);
   },
   setAvatar(state: UserState, avatar: string){
     state.user.avatar_url = avatar;
