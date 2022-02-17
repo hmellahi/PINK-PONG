@@ -45,7 +45,7 @@ export class FriendshipController
         const receiverUser = await this.userService.getByLogin(user,recieverLogin);
         if (!receiverUser)
             throw new HttpException("user not exist", HttpStatus.BAD_REQUEST);
-        const requestExist = await this.friendshipService.getFriendship({sender: user, receiver: receiverUser});
+        const requestExist = await this.friendshipService.getFriendship(user, receiverUser);
 
         if (requestExist)
             throw new HttpException("You alerady send request to this user", HttpStatus.BAD_REQUEST)

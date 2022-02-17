@@ -43,9 +43,14 @@ export class FriendshipService
                         })
     }
     
-    public async getFriendship(ops: any)
+    public async getFriendship(user1: UserEntity, user2: UserEntity)
     {
-        return await this.friendshipRepository.findOne(ops);
+        return await this.friendshipRepository.findOne({
+            where: [
+                {sender: user1, receiver: user2},
+                {sender: user2, receiver: user1}
+            ]
+        });
     }
     public async isFriend(user1: UserEntity, user2: UserEntity)
     {
