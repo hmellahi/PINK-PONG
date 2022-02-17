@@ -10,7 +10,7 @@
         <Button link="/chat/create">Create Channel</Button>
       </div>
     </div>
-    <Overlay> <router-view /></Overlay>
+    <Overlay> <router-view :channels="channels" /></Overlay>
   </div>
 </template>
 
@@ -18,11 +18,24 @@
 import { Component, Vue } from "vue-property-decorator";
 import ListChannels from "@/pages/Chat/listChannels.vue";
 import Button from "@/common/components/UI/Button.vue";
+import { Channel } from "../../types/Channel";
 
 @Component({
   components: { Button, ListChannels },
+  watch: {
+    $route(to, from) {
+      // this.updateIsLoginPage();
+    },
+  },
 })
-export default class Chat extends Vue {}
+export default class Chat extends Vue {
+  async mounted() {
+    await this.$store.dispatch("Chat/connectToChatSocket", this.$cookies);
+  }
+  get channels(): any {
+    return this.$store.state.Chat.publicChannels;
+  }
+}
 </script>
 
 <style scoped>

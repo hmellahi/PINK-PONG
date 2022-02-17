@@ -7,7 +7,7 @@
           <span>({{ channel.membersCount }} Members)</span>
         </div>
         <img
-          v-if="channel.isPrivate"
+          v-if="channel.isLocked"
           src="/assets/svg/lock.svg"
           alt=""
           class="icon"
@@ -41,40 +41,70 @@ import Popup from "@/common/components/UI/Popup.vue";
 import LOCKSVG from "../../../public/assets/svg/lock.svg";
 import { Channel } from "../../types/Channel";
 
-@Component({
+@Component<listChannels>({
   components: { Button, LOCKSVG, Popup, InputField },
-  props:{
-    // channels: Array<Channel>
-  }
+  props: {
+    // channels: {
+    //   required: true,
+    //   type: Array,
+    // },
+  },
+  watch: {
+    $route(to, from) {
+      // this.updateIsLoginPage();
+      this.routeName = to.path;
+      // console.log(to.path)
+    },
+  },
 })
 export default class listChannels extends Vue {
-  channels: Channel[] = [];
+  // channels: Channel[];
   currentChannel: Channel;
   password = "";
   show = false;
+  routeName: String;
   created() {
-    for (let i = 0; i < 10; i++)
-      this.channels.push({
-        name: "WHO FOR 1V1",
-        membersCount: i * 3,
-        isPrivate: i % 2 == 0,
-      });
-    this.currentChannel = this.channels[0];
+    // console.log(this.routeName)
+    // for (let i = 0; i < 10; i++)
+    //   this.channels.push({
+    //     name: "WHO FOR 1V1",
+    //     membersCount: i * 3,
+    //     isLocked: i % 2 == 0,
+    //   });
+    this.currentChannel = {
+      name: "",
+      membersCount: 0,
+      isLocked: false,
+      type: "public",
+    };
   }
+  // get currentChannel() {
+  //   return this.channels[0]
+  //     ? this.channels[0]
+  //     : { name: "", membersCount: 0, isLocked: false };
+  // }
+  // set currentChannel(value) {
+  //   this.currentChannel = value;
+  // }
   // closePopup() {
   //   this.showPopup = false;
   // }
+  get channels() {
+    console.log(this.$store.state.Chat.publicChannels);
+    if (this.routeName == "/chat") return this.$store.state.Chat.publicChannels;
+    return this.$store.state.Chat.privateChannels;
+  }
   joinChannel(): void {
-    console.log("pass", this.currentChannel);
+    // console.log("pass", this.currentChannel);
     // TODO VERIVY
     this.$router.push("/chat/channel/" + this.currentChannel.name).catch();
   }
   openPopup(channel: Channel): void {
-    console.log("isprivate : " + channel.isPrivate);
+    // console.log("isLocked : " + channel.isLocked);
     this.currentChannel = channel;
-    if (!channel.isPrivate) return this.joinChannel();
+    if (!channel.isLocked) return this.joinChannel();
     this.show = true;
-    console.log(this.show);
+    // console.log(this.show);
   }
 }
 </script>

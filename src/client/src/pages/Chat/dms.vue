@@ -14,7 +14,7 @@
             <span class="conv-msg"> {{ short(conversation.last_msg) }}</span>
           </div>
           <img
-            v-if="conversation.isPrivate"
+            v-if="conversation.isLocked"
             src="assets/svg/lock.svg"
             alt=""
             class="icon"

@@ -6,23 +6,18 @@
       :onClick="goBackward"
       >Back</Button
     >
-    <Button
-      class="mb-3 col-md-2 right-btn"
-      style="right: 19%;"
-      :link="'#'"
+    <Button class="mb-3 col-md-2 right-btn" style="right: 19%" :link="'#'"
       >Leave</Button
     >
     <Button
       class="mb-3 col-md-2 right-btn"
       :link="'/chat/edit/' + $route.params.name"
-      >Edit</Button>
-    <Button
-      class="mb-3 col-md-2"
-      :onClick="InviteToPrivate"
-      >Invite</Button>
+      >Edit</Button
+    >
+    <Button class="mb-3 col-md-2" :onClick="InviteToPrivate">Invite</Button>
     <Overlay class="p-3">
       <Popup v-model="show_popup">
-         <h4>Invite your friend to this channel</h4>
+        <h4>Invite your friend to this channel</h4>
         <form>
           <InputField
             name="inviter"
@@ -32,7 +27,7 @@
             class="text-left p-3 my-4"
           ></InputField>
         </form>
-      <Button :onClick="SendInvite" class="px-5">Invite</Button>
+        <Button :onClick="SendInvite" class="px-5">Invite</Button>
       </Popup>
       <div class="mb-4 room px-4">
         <!-- <b-alert show variant="primary">Primary Alert</b-alert> -->
@@ -76,7 +71,7 @@ export default class channelRoom extends Vue {
   msg = "";
   messages: Message[] = [];
   show_popup = false;
-  inviter = '';
+  inviter = "";
   mounted() {
     // for (let i = 0; i < 10; i++)
     //   this.messages.push({
@@ -90,7 +85,7 @@ export default class channelRoom extends Vue {
       sender: "karim",
       content: "wach a drari, daaamn",
       isAdmin: false,
-      date: "20:40",
+      // createdAt: "20:40",
       showTooltip: false,
     });
     // for (var i = 0; i < this.messages.length; i++)
@@ -106,7 +101,7 @@ export default class channelRoom extends Vue {
       sender: "leona",
       content: this.msg,
       isAdmin: true,
-      date: "20:40",
+      createdAt: new Date(),
       showTooltip: false,
     });
     this.msg = "";
@@ -128,17 +123,16 @@ export default class channelRoom extends Vue {
       el.scrollIntoView();
     }
   }
-  InviteToPrivate(){
-     this.show_popup = true;
+  InviteToPrivate() {
+    this.show_popup = true;
   }
-  SendInvite(){
-    console.log("added succefuly")
+  SendInvite() {
+    console.log("added succefuly");
   }
 }
 </script>
 
 <style scoped lang="scss">
-
 .btn_title {
   font-size: 1.3rem !important;
 }
@@ -170,10 +164,10 @@ input:hover {
   position: absolute;
   right: 1%;
 }
-.popup{
-  position:absolute!important;
+.popup {
+  position: absolute !important;
 }
-.inner{
+.inner {
   transform: translate(0%, 20%);
 }
 input {
@@ -185,7 +179,7 @@ input:focus {
   border: 0 !important;
   outline: 0 !important;
 }
-.inner{
- background: #ffffff;
+.inner {
+  background: #ffffff;
 }
 </style>

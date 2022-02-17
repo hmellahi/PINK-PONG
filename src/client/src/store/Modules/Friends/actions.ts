@@ -7,12 +7,16 @@ import api from "@/api";
 const { VUE_APP_API_URL: API_URL } = process.env;
 
 const actions = {
-
-  async unFriend({ commit, state }: ActionContext<FriendsState, any>, friend: any) {
+  async unFriend(
+    { commit, state }: ActionContext<FriendsState, any>,
+    friend: any
+  ) {
     let friendsListBackup = [...state.friends];
     commit("REMOVE_FROM", ["friends", friend]);
     try {
-      const data = await api.post('friendship/removeFriendship',{friendshipId: friend.id});
+      const data = await api.post("friendship/removeFriendship", {
+        friendshipId: friend.id,
+      });
     } catch (e) {
       commit("SET_ENTITY", ["friends", friendsListBackup]);
     }
@@ -27,17 +31,17 @@ const actions = {
       // smtg wrong happened
     }
   },
-  
+
   async fetchFriends({ commit }: ActionContext<FriendsState, any>) {
     try {
-      const data = await api.get('friendship/friendships');
+      const data = await api.get("friendship/friendships");
       commit("SET_ENTITY", ["friends", data.data]);
     } catch (e) {}
   },
   async fetchRequests({ commit }: ActionContext<FriendsState, any>) {
     try {
       // TODO make an api call
-      const data = await api.get('friendship/friendshipRequests');
+      const data = await api.get("friendship/friendshipRequests");
       commit("SET_ENTITY", ["requests", data.data]);
     } catch (e) {}
   },
@@ -45,8 +49,8 @@ const actions = {
     try {
       // TODO make an api call
       // let blockedUsers = [{ username: "john", lastSeen: "10m ago" }];
-      const data = await api.get('users/blockedList');
-      console.log(data.data)
+      const data = await api.get("users/blockedList");
+      console.log(data.data);
       commit("SET_ENTITY", ["blockedUsers", data.data]);
     } catch (e) {}
   },
@@ -58,7 +62,9 @@ const actions = {
     try {
       // TODO make an api call
       // console.log(userToBlock)
-      const data = await api.post('users/blockUser',{userId: userToBlock.user.id});
+      const data = await api.post("users/blockUser", {
+        userId: userToBlock.user.id,
+      });
     } catch (e) {
       commit("SET_ENTITY", ["friends", friendsBackup]);
       commit("SET_ENTITY", ["blockedUsers", blockedUsersBackup]);
@@ -71,7 +77,9 @@ const actions = {
     commit("ADD_TO_ENTITY", ["friends", userToUnblock]);
     try {
       // TODO make an api call
-      const data = await api.post('users/unblockUser',{blockId: userToUnblock.id});
+      const data = await api.post("users/unblockUser", {
+        blockId: userToUnblock.id,
+      });
     } catch (e) {
       commit("SET_ENTITY", ["friends", friendsBackup]);
       commit("SET_ENTITY", ["blockedUsers", blockedUsersBackup]);
@@ -80,19 +88,21 @@ const actions = {
   async acceptRequest({ commit, state }: any, request: any) {
     let savedRequests = [...state.requests];
     let savedFriends = [...state.friends];
-    console.log(request)
-    console.log(savedFriends)
+    console.log(request);
+    console.log(savedFriends);
     let newFriend = {
-      id:request.id,
-      status:request.status,
-      user:request.sender,
-      create_date:request.create_date
-    }
+      id: request.id,
+      status: request.status,
+      user: request.sender,
+      create_date: request.create_date,
+    };
     commit("ADD_TO_ENTITY", ["friends", newFriend]);
     commit("REMOVE_FROM", ["requests", request]);
     try {
-      const requestData = await api.post('friendship/acceptFriendRequest',{friendshipRequestId: request.id});
-      console.log(requestData)
+      const requestData = await api.post("friendship/acceptFriendRequest", {
+        friendshipRequestId: request.id,
+      });
+      console.log(requestData);
     } catch (e) {
       commit("SET_ENTITY", ["friends", savedFriends]);
       commit("SET_ENTITY", ["requests", savedRequests]);
@@ -102,7 +112,9 @@ const actions = {
     let savedRequests = [...state.requests];
     commit("REMOVE_FROM", ["requests", request]);
     try {
-      const requestData = await api.post('friendship/declineFriendRequest',{friendshipRequestId: request.id});
+      const requestData = await api.post("friendship/declineFriendRequest", {
+        friendshipRequestId: request.id,
+      });
     } catch (e) {
       commit("SET_ENTITY", ["requests", savedRequests]);
     }

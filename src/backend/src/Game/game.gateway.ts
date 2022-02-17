@@ -325,7 +325,7 @@ export class GameGateway {
     @MessageBody() data: any,
     @ConnectedSocket() player: Socket | any,
   ) {
-    console.table(this.liveGames);
+    // console.table(this.liveGames);
     return this.liveGames;
   }
 

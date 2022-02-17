@@ -49,7 +49,7 @@ import { isValidInput } from "@/common/helpers/Validations";
   components: { InputField, Button },
 })
 export default class editChannel extends Vue {
-  channel: Channel = { name: "", password: "", isPrivate: false };
+  // channel: Channel = { name: "", password: "", isLocked: false };
   oldPassword = "";
   newPassword = "";
   errors = "";
@@ -58,12 +58,12 @@ export default class editChannel extends Vue {
     // console.log(this.$route.params.name);
 
     // show channel data
-    this.channel = { name: "WHOS FOR 1V1" };
+    // this.channel = { name: "WHOS FOR 1V1" };
   }
   editChannel() {
-    console.log(this.channel.name);
-    console.log(this.channel.password);
-    let { name, password } = this.channel;
+    // console.log(this.channel.name);
+    // console.log(this.channel.password);
+    // let { name, password } = this.channel;
     // TODO CHECK IF CHANNEL NAME IS UNIQUE??
     // if (!isValidInput(name) || !isValidInput(password)) {
     //   this.errors = "name and password must be more then 8 characters";
@@ -79,7 +79,7 @@ export default class editChannel extends Vue {
   }
   updateFormDate() {
     let { newPassword, oldPassword } = this;
-    console.log({ name: this.channel.name, oldPassword, newPassword });
+    // console.log({ name: this.  channel.name, oldPassword, newPassword });
   }
 }
 </script>
