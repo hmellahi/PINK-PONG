@@ -10,15 +10,16 @@ export interface Channel {
 }
 
 export interface Message {
-  sender: string;
-  content: string;
+  user_id: string;
+  message: string;
   isAdmin: Boolean;
-  channelId?: string;
+  channelId: string;
   createdAt?: Date | string;
+  sender: string;
   showTooltip?: Boolean;
 }
 
-export interface directMessage {
+export interface directMessage {  
   last_msg: String;
   avatar: String;
   name: String;

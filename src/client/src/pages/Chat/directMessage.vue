@@ -6,6 +6,7 @@
       :onClick="goBackward"
       >Back</Button
     >
+
     <Overlay class="p-3">
       <div class="mb-4 room px-4">
         <MessageBox
@@ -57,13 +58,13 @@ export default class channelRoom extends Vue {
     //     date: "20:40",
     //     showTooltip: false,
     //   });
-    this.messages.push({
-      sender: "karim",
-      content: "wach a drari, daaamn",
-      isAdmin: false,
-      createdAt: new Date(),
-      showTooltip: false,
-    });
+    // this.messages.push({
+    //   sender: "karim",
+    //   content: "wach a drari, daaamn",
+    //   isAdmin: false,
+    //   createdAt: "20:40",
+    //   showTooltip: false,
+    // });
     // for (var i = 0; i < this.messages.length; i++)
     //   this.messages[i].showTooltip = false;
   }
@@ -72,15 +73,16 @@ export default class channelRoom extends Vue {
       this.messages[i].showTooltip = false;
   }
   sendMessage() {
-    if (!this.msg) return;
-    this.messages.push({
-      sender: "leona",
-      content: this.msg,
-      isAdmin: true,
-      createdAt: "20:40",
-      showTooltip: false,
-    });
-    this.msg = "";
+    // if (!this.msg) return;
+    // this.messages.push({
+    //   sender: "leona",
+    //   content: this.msg,
+    //   isAdmin: true,
+    //   createdAt: "20:40",
+    //   showTooltip: false,
+    //   channelId = "";
+    // });
+    // this.msg = "";
   }
   goBackward() {
     this.$router.go(-1);

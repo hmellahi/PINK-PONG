@@ -2,8 +2,14 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="3dc35d17-8df0-41ab-aa24-27fa4e417318" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/src/client/src/pages/Chat/index.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/client/src/pages/Chat/index.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/client/src/pages/Chat/Message.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/client/src/pages/Chat/Message.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/client/src/pages/Chat/channelRoom.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/client/src/pages/Chat/channelRoom.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/client/src/pages/Chat/directMessage.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/client/src/pages/Chat/directMessage.vue" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/client/src/pages/Chat/listChannels.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/client/src/pages/Chat/listChannels.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/client/src/store/Modules/Chat/actions.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/client/src/store/Modules/Chat/actions.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/client/src/store/Modules/Chat/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/client/src/store/Modules/Chat/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/client/src/store/Modules/Friends/actions.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/client/src/store/Modules/Friends/actions.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/client/src/types/Channel.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/client/src/types/Channel.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -59,6 +65,8 @@
       <workItem from="1645011881158" duration="889000" />
       <workItem from="1645086084772" duration="1622000" />
       <workItem from="1645099279950" duration="342000" />
+      <workItem from="1645114514713" duration="185000" />
+      <workItem from="1645127163166" duration="603000" />
     </task>
     <servers />
   </component>

@@ -1,6 +1,6 @@
 <template>
   <div class="msg position-relative">
-    <span class="date">[{{ message.date }}]</span>
+    <span class="date">[{{ message.createdAt }}]</span>
     <span v-if="!isDM">
     <img src="/assets/svg/medal.svg" v-if="message.isAdmin" alt="" />
     </span>
@@ -69,7 +69,7 @@
         </div>
       </template>
     </PopperVue>
-    <span class="content"> {{ message.content }}</span>
+    <span class="content"> {{ message.message }}</span>
   </div>
 </template>
 
