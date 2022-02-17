@@ -16,7 +16,7 @@ export default class Score {
     tempX: number,
     tempY: number,
     tempNumber: number = 0,
-    tempColor: number = 0
+    tempColor: number =0
   ) {
     this.BLOCK_SIZE = 10;
     this.value = tempNumber;
@@ -24,7 +24,7 @@ export default class Score {
     this.y = tempY;
     this.CHARS = [
       "111101101101111",
-      "010010010010010",
+      "110010010010111",
       "111001111100111",
       "111001111001111",
       "101101111001001",

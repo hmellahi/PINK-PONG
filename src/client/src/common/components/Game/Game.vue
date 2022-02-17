@@ -27,6 +27,8 @@ const COUNTDOWN = 3;
 @Component<Game>({
   components: { P5 },
   async beforeRouteLeave(to, from, next) {
+    // prompt("hey")
+
     // console.log("beforeRouteLeave", to.path, from.path);
     await this.leaveGame();
     next();
