@@ -2,8 +2,9 @@
   <div>
     <div class="row mb-4">
       <div class="friends_buttons">
-        <Button link="/chat">Channels</Button>
-        <Button link="/chat/DirectMessages">Private</Button>
+        <Button link="/chat">Public Channels</Button>
+        <Button link="/chat/private">Private Channels</Button>
+        <Button link="/chat/DirectMessages">DMS</Button>
       </div>
       <div class="ml-auto">
         <Button link="/chat/create">Create Channel</Button>
@@ -28,4 +29,5 @@ export default class Chat extends Vue {}
 .overlay {
   height: 21rem;
   overflow: scroll;
-}</style>
+}
+</style>

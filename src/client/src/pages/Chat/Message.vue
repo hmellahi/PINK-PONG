@@ -120,7 +120,7 @@ export default class MessageBox extends Vue {
   InviteToPlay(){
     this.$notify({
       duration: -1,
-      closeOnClick: true,
+      // closeOnClick: true,
       type: 'info',
       title: 'Someone want to play with you !',
     });

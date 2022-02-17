@@ -20,16 +20,26 @@ const isAuthenticated = async () => {
   return true;
 };
 const checkAuth = async (to: Route, from: Route, next: NavigationGuardNext) => {
+  if (to.path == "/login" || to.path == "/verification_code") return next("/");
+  if (to.path.startsWith("/chat/channel/")) return next(); // TODO WTF????
   if (
-    !to.matched.some(
-      (record) =>
-        record.meta.requiresAuth || !record.meta.hasOwnProperty("requiresAuth")
-    )
-  )
+    to.meta &&
+    to.meta.hasOwnProperty("requiresAuth") &&
+    !to.meta.requiresAuth
+  ) {
+    console.log("111");
     return next();
+  }
   let authLog = await isAuthenticated();
-  if (authLog) return next();
-  return next("/login");
+  // console.log("OK");
+  if (authLog) {
+    console.log("OKK");
+    return next();
+  } else {
+    console.log("DOKK");
+    return next("/login");
+  }
+  console.log("OKDK");
 };
 
 export default checkAuth;

@@ -111,6 +111,10 @@ const routes: Array<RouteConfig> = [
         path: "",
         component: listChannels,
       },
+      {
+        path: "private",
+        component: listChannels,
+      },
     ],
   },
   {
@@ -148,12 +152,11 @@ const router = new VueRouter({
   mode: "history",
   base: process.env.BASE_URL,
   routes,
-  // linkActiveClass: "active",
   linkExactActiveClass: "active",
 });
 
-router.beforeEach((to, from, next) => {
-  return checkAuth(to, from, next);
+router.beforeEach(async (to, from, next) => {
+  return await checkAuth(to, from, next);
 });
 
 export default router;
