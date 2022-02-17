@@ -16,7 +16,7 @@ export default class Score {
     tempX: number,
     tempY: number,
     tempNumber: number = 0,
-    tempColor: number
+    tempColor: number = 0
   ) {
     this.BLOCK_SIZE = 10;
     this.value = tempNumber;

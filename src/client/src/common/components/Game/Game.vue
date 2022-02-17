@@ -72,7 +72,7 @@ export default class Game extends Vue {
   worker: any;
   background: BackGround = new BackGround();
 
-  score: Score = new Score(GameConstants.canvas.width / 4 - 60, 30);
+  score: Score = new Score(GameConstants.canvas.width / 4 - 60, 30, 0);
   score2: Score = new Score(
     GameConstants.canvas.width - GameConstants.canvas.width / 4,
     30,
