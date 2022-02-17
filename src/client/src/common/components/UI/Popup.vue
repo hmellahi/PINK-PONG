@@ -1,8 +1,9 @@
 <template>
-  <div class="overlay popup" v-show="value">
-    <div class="text-center p-5 inner col-md-4 mx-auto my-auto col-md-5">
-      <Button class="close-icon bg-transparent" :onClick="onClose"
-        ><CloseButtonSVG /></Button
+  <div class="overlay-popup popup" v-show="value">
+    <div class="text-center p-4 inner col-md-4 mx-auto my-auto col-md-5">
+      <Button class="close-icon bg-transparent" :onClick="onClose">
+        <img src="/assets/svg/close_mark.svg" />
+        </Button
       ><slot></slot>
     </div>
   </div>
@@ -11,10 +12,9 @@
 <script>
 import { Component, Vue } from "vue-property-decorator";
 import Button from "@/common/components/UI/Button.vue";
-import CloseButtonSVG from "../../../../public/assets/svg/close_mark.svg";
 
 @Component({
-  components: { CloseButtonSVG, Button },
+  components: { Button },
   props: {
     value: {
       required: true,
@@ -37,7 +37,7 @@ export default class Popup extends Vue {
 </script>
 
 <style scoped>
-.overlay {
+.overlay-popup {
   width: 100%;
   height: 100%;
   position: absolute;
@@ -45,6 +45,7 @@ export default class Popup extends Vue {
   left: 0;
   background: rgba(0, 0, 0, 0.5);
   z-index: 9999;
+  overflow: hidden;
 }
 .inner {
   background: #53137e;

@@ -29,7 +29,7 @@
       </form>
       <Button :onClick="SendInvite" class="px-5">Invite</Button>
     </Popup>
-    <div class="mb-4 room px-4">
+    <div class="mb-2 room px-4">
       <!-- <b-alert show variant="primary">Primary Alert</b-alert> -->
       <MessageBox
         :isDM="false"
@@ -130,7 +130,7 @@ input:hover {
   //   vertical-align: bottom;
   //   // display: table-cell;
   position: relative;
-
+  padding: 13px;
   //   // height: 0px !important;
 }
 
