@@ -43,6 +43,9 @@ import { Channel } from "../../types/Channel";
 
 @Component({
   components: { Button, LOCKSVG, Popup, InputField },
+  props:{
+    // channels: Array<Channel>
+  }
 })
 export default class listChannels extends Vue {
   channels: Channel[] = [];
@@ -50,7 +53,6 @@ export default class listChannels extends Vue {
   password = "";
   show = false;
   created() {
-    // TODO MAKE AN API CALL to fetch channels
     for (let i = 0; i < 10; i++)
       this.channels.push({
         name: "WHO FOR 1V1",

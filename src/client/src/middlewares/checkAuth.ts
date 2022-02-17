@@ -20,7 +20,7 @@ const isAuthenticated = async () => {
   return true;
 };
 const checkAuth = async (to: Route, from: Route, next: NavigationGuardNext) => {
-  if (to.path == "/login" || to.path == "/verification_code") return next("/");
+  // if (to.path == "/login" || to.path == "/verification_code") return next("/");
   if (to.path.startsWith("/chat/channel/")) return next(); // TODO WTF????
   if (
     to.meta &&
