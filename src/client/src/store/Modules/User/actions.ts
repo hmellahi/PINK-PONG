@@ -2,6 +2,7 @@ import api from "@/api";
 import { Logger } from "@/common/helpers/Logger";
 import router from "@/router";
 import { FriendsState, UserState } from "@/types/user";
+import store from "@/store";
 import { io } from "socket.io-client";
 import { ActionContext } from "vuex";
 
@@ -21,8 +22,9 @@ const actions = {
   async login({ commit }: ActionContext<UserState, any>) {
     // window.location.href = `${API_URL}/auth/login`;
     // FOR TESTING ONLY UNCOMENT THIS
+    let data:any;
     try {
-      let data = await api.post("auth/testLogin", {
+       data = await api.post("auth/testLogin", {
         first_name: generateRandomString(),
         last_name: generateRandomString(),
         email: generateRandomString() + "@zin.com",
@@ -30,6 +32,8 @@ const actions = {
       });
       console.log(data);
     } catch (error) {}
+    // store.commit("User/setUser", data.data);
+
     router.push("/");
   },
   logout({ commit }: ActionContext<UserState, any>) {

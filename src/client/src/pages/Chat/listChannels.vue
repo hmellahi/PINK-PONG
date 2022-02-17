@@ -8,7 +8,7 @@
         </div>
         <img
           v-if="channel.isPrivate"
-          src="assets/svg/lock.svg"
+          src="/assets/svg/lock.svg"
           alt=""
           class="icon"
         />
@@ -65,9 +65,10 @@ export default class listChannels extends Vue {
   joinChannel(): void {
     console.log("pass", this.currentChannel);
     // TODO VERIVY
-    this.$router.push("/chat/channel/" + this.currentChannel.name);
+    this.$router.push("/chat/channel/" + this.currentChannel.name).catch();
   }
   openPopup(channel: Channel): void {
+    console.log("isprivate : " + channel.isPrivate);
     this.currentChannel = channel;
     if (!channel.isPrivate) return this.joinChannel();
     this.show = true;
