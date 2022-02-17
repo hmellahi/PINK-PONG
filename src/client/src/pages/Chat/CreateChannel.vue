@@ -16,7 +16,8 @@
       ></InputField>
       <span>If you don't enter a password then its public</span>
       <div>
-        <input type="checkbox" class="my_checkbox" v-model="channel.isPrivate" /> <span>Private channel</span>
+        <input type="checkbox" class="my_checkbox" v-model="channel.isLocked" />
+        <span>Private channel</span>
       </div>
       <h4>{{ errors }}</h4>
       <!-- <InputField :args="propsToPass"></InputField> -->
@@ -36,12 +37,12 @@ import Checkbox from "@/common/components/UI/Checkbox.vue";
   components: { InputField, Button, Checkbox },
 })
 export default class createChannel extends Vue {
-  channel: Channel = { name: "", password: "", isPrivate:false };
+  // channel: Channel = { name: "", password: "", isLocked: false };
   errors = "";
   createChannel() {
-    console.log(this.channel.name);
-    console.log(this.channel.password);
-    let { name, password } = this.channel;
+    // console.log(this.channel.name);
+    // console.log(this.channel.password);
+    // let { name, password } = this.channel;
     // TODO CHECK IF CHANNEL NAME IS UNIQUE??
     // if (!isValidInput(name) || !isValidInput(password)) {
     //   this.errors = "name and password must be more then 8 characters";
@@ -57,5 +58,4 @@ export default class createChannel extends Vue {
 }
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

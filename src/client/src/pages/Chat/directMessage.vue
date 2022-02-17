@@ -61,7 +61,7 @@ export default class channelRoom extends Vue {
       sender: "karim",
       content: "wach a drari, daaamn",
       isAdmin: false,
-      date: "20:40",
+      createdAt: new Date(),
       showTooltip: false,
     });
     // for (var i = 0; i < this.messages.length; i++)
@@ -77,7 +77,7 @@ export default class channelRoom extends Vue {
       sender: "leona",
       content: this.msg,
       isAdmin: true,
-      date: "20:40",
+      createdAt: "20:40",
       showTooltip: false,
     });
     this.msg = "";
@@ -103,7 +103,6 @@ export default class channelRoom extends Vue {
 </script>
 
 <style scoped lang="scss">
-
 .btn_title {
   font-size: 1.3rem !important;
 }

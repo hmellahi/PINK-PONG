@@ -3,6 +3,7 @@ import Vuex from "vuex";
 import User from "@/store/Modules/User/index";
 import Channel from "@/store/Modules/Channel/index";
 import Friends from "@/store/Modules/Friends/index";
+import Chat from "@/store/Modules/Chat/index";
 
 Vue.use(Vuex);
 
@@ -13,6 +14,7 @@ export default new Vuex.Store({
     Friends,
     User,
     Channel,
+    Chat
   },
-  strict: debug,
+  strict: false,
 });

@@ -32,7 +32,7 @@
         </div>
       </div>
     </div>
-    <h3 v-else> There is no friends Yet</h3>
+    <h3 v-else>There is no friends Yet</h3>
     <!-- <PulseLoader /> -->
     <!-- <div class="spiner">
 
@@ -53,12 +53,14 @@ import Friend from "@/common/components/Friends/Friend.vue";
   components: { Button, CloseSVG, DMSSVG, UNFRINEDSVG, PulseLoader, Friend },
 })
 export default class listFriends extends Vue {
-  blockUser(friend: any) {
-    this.$store.dispatch("Friends/blockUser", friend);
+  async blockUser(friend: any) {
+    await this.$store.dispatch("Friends/blockUser", friend);
+    this.$store.dispatch("Friends/fetchBlockedUsers");
   }
 
-  unFriend(friend: any) {
-    this.$store.dispatch("Friends/unFriend", friend);
+  async unFriend(friend: any) {
+    await this.$store.dispatch("Friends/unFriend", friend);
+    await this.$store.dispatch("Friends/fetchFriends");
   }
   sendMessage(friend: any) {
     this.$router.push("/chat/channel/" + friend.id);
