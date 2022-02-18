@@ -2,6 +2,7 @@ import store from "@/store";
 import { NavigationGuardNext, Route } from "vue-router";
 import axios from "axios";
 import api from "@/api";
+import VueCookies from 'vue-cookies';
 
 const isAuthenticated = async () => {
   // store.state.User.isAuthenticated
@@ -17,6 +18,7 @@ const isAuthenticated = async () => {
     }
   }
   store.commit("User/setUser", data.data);
+  store.dispatch("User/connectToGameSocket", VueCookies);
   return true;
 };
 const checkAuth = async (to: Route, from: Route, next: NavigationGuardNext) => {

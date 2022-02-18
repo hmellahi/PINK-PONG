@@ -1,32 +1,41 @@
 <template>
   <div>
     <Popup v-model="show_popup">
-          <div v-if="!isDM">
-          <div v-if="true" class="mb-2">
-            <span><input class="checkbox_admin" type="checkbox" :value="message.isAdmin" /> Administrator</span>
-          </div>
-          </div>
-          <div class="btn-messages">
-              <Button class="m-0" :link="'/profile/' + message.sender">Profile</Button>
-             <Button class="m-0" :onClick="InviteToPlay">Invite To Play</Button>
-             <Button class="m-0" :link="'/profile/' + message.sender">Ban</Button>
-             <div class="mute-message">
-                <InputField
-                  placeholder=""
-                  v-model="muteDuration"
-                  class="m-2 ml-3 px-2"
-                  style="width: 5rem;"
-                />
-                <Button class="m-0" :link="'/profile/' + message.sender">Mute</Button>
-             </div>
-          </div>
+      <div v-if="!isDM">
+        <div v-if="true" class="mb-2">
+          <span
+            ><input
+              class="checkbox_admin"
+              type="checkbox"
+              :value="message.isAdmin"
+            />
+            Administrator</span
+          >
+        </div>
+      </div>
+      <div class="btn-messages">
+        <Button class="m-0" :link="'/profile/' + message.sender"
+          >Profile</Button
+        >
+        <Button class="m-0" :onClick="InviteToPlay">Invite To Play</Button>
+        <Button class="m-0" :link="'/profile/' + message.sender">Ban</Button>
+        <div class="mute-message">
+          <InputField
+            placeholder=""
+            v-model="muteDuration"
+            class="m-2 ml-3 px-2"
+            style="width: 5rem"
+          />
+          <Button class="m-0" :link="'/profile/' + message.sender">Mute</Button>
+        </div>
+      </div>
     </Popup>
     <div class="msg position-relative">
       <span class="date">[{{ message.createdAt }}]</span>
       <span v-if="!isDM">
-      <img src="/assets/svg/medal.svg" v-if="message.isAdmin" alt="" />
+        <img src="/assets/svg/medal.svg" v-if="message.isAdmin" alt="" />
       </span>
-      <span class="sender" @click="showMsgTooltip(message)"> {{ message.sender }}:</span>
+      <span class="sender" @click="showMsgTooltip"> {{ message.sender }}:</span>
       <span class="content"> {{ message.message }}</span>
     </div>
   </div>
@@ -49,7 +58,7 @@ import Popup from "@/common/components/UI/Popup.vue";
     },
     openHandler: Function,
   },
-  components: {Popup , Button, Checkbox, InputField },
+  components: { Popup, Button, Checkbox, InputField },
 })
 export default class MessageBox extends Vue {
   muteDuration = "45s";
@@ -65,8 +74,7 @@ export default class MessageBox extends Vue {
     // ],
   };
   mounted() {}
-  showMsgTooltip(message: Message) {
-    console.log(message);
+  showMsgTooltip() {
     this.show_popup = !this.show_popup;
   }
 
@@ -75,13 +83,14 @@ export default class MessageBox extends Vue {
       marginLeft: !message.isAdmin ? "5%" : "9%",
     };
   }
-
-  InviteToPlay(){
-    this.$notify({
-      duration: -1,
-      // closeOnClick: true,
-      type: 'info',
-      title: 'Someone want to play with you !',
+  get currentUser() {
+    return this.$store.getters["User/getCurrentUser"];
+  }
+  InviteToPlay() {
+    this.$store.state.User.gameSocket.emit("inviteToPlay", {
+      // reciever: this.message.user_id, TODO CHANGE
+      receiver: 75,
+      senderName: this.currentUser.login ? this.currentUser.login : "someone",
     });
   }
 }
@@ -104,10 +113,10 @@ export default class MessageBox extends Vue {
     background: #b183cd;
     border: 1px solid white;
     border-radius: 10px;
-    z-index:999999;
+    z-index: 999999;
     // background-color: red;
     // margin-left: 19%;
-    margin-bottom: .6rem;
+    margin-bottom: 0.6rem;
     span {
       font-size: 1.3rem;
       font-weight: bold;
@@ -122,10 +131,10 @@ export default class MessageBox extends Vue {
   position: absolute !important;
 }
 .form-control {
-    height: calc(1.5em + 0.75rem + 5px);
+  height: calc(1.5em + 0.75rem + 5px);
 }
-#my-tooltip > span{
-  z-index:99999999;
+#my-tooltip > span {
+  z-index: 99999999;
 }
 .dashboard_main .overlay {
   padding: 20px;

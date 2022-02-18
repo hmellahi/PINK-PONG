@@ -17,7 +17,7 @@
             <div class="content_play">
               <!-- <h6>{{ match.map }}</h6> -->
               <div class="play_time">
-              <span> {{ showCount(match.created_at) }} </span>
+                <span> {{ showCount(match.created_at) }} </span>
                 <!--  duration => now - match.created_at (count up)
                 -->
               </div>
@@ -42,53 +42,40 @@ import { User } from "../../types/user";
 import Button from "@/common/components/UI/Button.vue";
 import Overlay from "@/common/components/UI/Overlay.vue";
 import { io } from "socket.io-client";
-import moment from 'moment';
+import moment from "moment";
 
 @Component({
   components: { Button, Overlay },
 })
 export default class MatchHistory extends Vue {
-  matches:any = [];
-  socket: any = null;
+  matches: any = [];
   count = { seconds: 0, minutes: 0 };
 
-  showCount(date: Date){
+  get socket() {
+    return this.$store.state.User.gameSocket;
+  }
+  showCount(date: Date) {
     return moment(date).fromNow();
   }
-  async fetchUser(id: Number){
+  async fetchUser(id: Number) {
     try {
       const player1 = await this.$http.get(`users?id=${id}`);
       return player1;
     } catch (error) {
-      return ;
+      return;
     }
   }
   async created() {
-    const Authentication = this.$cookies.get("Authentication");
-    
-    this.socket = io(`${process.env.VUE_APP_SERVER_URL}/game`, {
-      transportOptions: {
-        polling: {
-          extraHeaders: {
-            Authentication,
-          },
-        },
-      },
-    });
-    // this.socket.on("matchFound", (roomId: any) => {
-    //   // console.log({ roomId });
-    //   this.$router.push("/game?id=" + roomId).catch((err) => {});
-    // });
     this.socket.on("connect_failed", function (err: any) {
       console.log("Connection Failed");
     });
     this.socket.emit("getLiveGames", (data: any) => {
       const newData = data.map(async (object: any) => {
-        const user1 = await this.fetchUser(object.player1) as any | undefined
-        const user2 = await this.fetchUser(object.player2) as any | undefined
-        console.log({game:object})
-        console.log({user1})
-        this.matches.push({...object, user1: user1.data, user2: user2.data})
+        const user1 = (await this.fetchUser(object.player1)) as any | undefined;
+        const user2 = (await this.fetchUser(object.player2)) as any | undefined;
+        console.log({ game: object });
+        console.log({ user1 });
+        this.matches.push({ ...object, user1: user1.data, user2: user2.data });
       });
     });
   }
