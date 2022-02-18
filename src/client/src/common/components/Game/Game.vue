@@ -492,7 +492,7 @@ export default class Game extends Vue {
     // this.countDown(sketch);
     //online problem
     //uncomnet this to get coundown back each round
-    this.worker = new Worker("game_worker.js");
+    this.worker = new Worker("game_worker.ts");
     this.worker.onmessage = () => {
       this.draw(this.sketch);
     };
