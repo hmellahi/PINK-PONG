@@ -1,8 +1,8 @@
 <template>
   <div id="game" ref="game" class="h-100">
-    <div v-if="!isLoading" >
-      <img :src="player2.avatar_url" alt="" class="player_left"/>
-      <img :src="player1.avatar_url" alt="" class="player_right"/>
+    <div v-if="!isLoading">
+      <img :src="player2.avatar_url" alt="" class="player_left" />
+      <img :src="player1.avatar_url" alt="" class="player_right" />
       <P5 v-on="{ setup }" />
     </div>
     <div v-else>Loading....</div>
@@ -40,7 +40,6 @@ const COUNTDOWN = 3;
 })
 export default class Game extends Vue {
   intervals: Array<any> = [];
-  socket: any = null;
   frames = 0;
   player1: any = [];
   player2: any = [];
@@ -106,7 +105,6 @@ export default class Game extends Vue {
       // GameConstants.canvas.width = 400;
       // GameConstants.canvas.height = 400;
     }
-    this.socket = null;
     this.backColor = GameConstants.backColor;
     this.xBall = GameConstants.canvas.width / 2;
     this.yBall = GameConstants.canvas.height / 2;
@@ -247,7 +245,7 @@ export default class Game extends Vue {
     this.paddle.x = GameConstants.canvas.width - this.paddleWidth - 20;
     this.paddle.y = this.paddle.y;
     this.paddle2.x = 20;
-    this.paddle2.y = this.paddle2.y; 
+    this.paddle2.y = this.paddle2.y;
     this.net.width = GameConstants.canvas.width;
     this.net.height = GameConstants.canvas.height;
 
@@ -268,26 +266,18 @@ export default class Game extends Vue {
     this.listenToGameEvents();
     //  if(typeof(Worker) !== "undefined") {
   }
-  async fetchUser(id: Number){
+  async fetchUser(id: Number) {
     try {
       const player = await this.$http.get(`users?id=${id}`);
       return player;
     } catch (error) {
-      return ;
+      return;
     }
   }
+  get socket() {
+    return this.$store.state.User.gameSocket;
+  }
   async listenToGameEvents() {
-    const Authentication = this.$cookies.get("Authentication");
-    this.socket = io(`${process.env.VUE_APP_SERVER_URL}/game`, {
-      transportOptions: {
-        polling: {
-          extraHeaders: {
-            Authentication,
-          },
-        },
-      },
-    });
-
     this.socket.on("connect", function () {
       // console.log("yes sir")
     });
@@ -322,7 +312,7 @@ export default class Game extends Vue {
       this.over(ff);
     });
 
-    this.socket.on("hehe",  () => {
+    this.socket.on("hehe", () => {
       this.socket.emit(
         "joinGame",
         { roomId: this.roomId },
@@ -336,7 +326,7 @@ export default class Game extends Vue {
           let { gameData, currentGameState } = msg;
           this.gameData = gameData;
           this.net.map = this.gameData.map;
-          console.log({ isplayer1: this.gameData.isPlayer1 });
+          console.log({ isplayer1: this.gameData });
 
           // if (!this.gameData.isPlayer1) {
           //   let tmp: Paddle = this.paddle;
@@ -344,12 +334,17 @@ export default class Game extends Vue {
           //   this.paddle2 = tmp;
           //   console.log("player1");
           // }
+
+          const player1 = (await this.fetchUser(gameData.player1)) as
+            | any
+            | undefined;
+          const player2 = (await this.fetchUser(gameData.player2)) as
+            | any
+            | undefined;
+          this.player1 = player1.data;
+          this.player2 = player2.data;
           if (!this.gameData.isSpectator) {
             this.isLoading = false;
-            const player1 = await this.fetchUser(gameData.player1) as any | undefined
-            const player2 = await this.fetchUser(gameData.player2) as any | undefined
-            this.player1 = player1.data;
-            this.player2 = player2.data;
             return;
           }
           // score
@@ -414,7 +409,7 @@ export default class Game extends Vue {
     // }
     // this.init();
     // this.resizeObjects();
-    this.resizeObjectsOpt();//optimzed version
+    this.resizeObjectsOpt(); //optimzed version
 
     if (!this.sketch) return;
     this.sketch.resizeCanvas(
