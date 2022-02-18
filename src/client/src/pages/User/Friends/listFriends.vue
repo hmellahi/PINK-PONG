@@ -8,7 +8,7 @@
           <!-- <img src="/assets/img/2.jpg" alt="" /> -->
           <div class="content">
             <h6>{{ friend.user.login }}</h6>
-            <!-- <span>{{ friend.user.status }}</span> -->
+            <span>{{ friend }}</span>
           </div>
         </div>
         <div class="friend_actions">
@@ -53,6 +53,7 @@ import Friend from "@/common/components/Friends/Friend.vue";
   components: { Button, CloseSVG, DMSSVG, UNFRINEDSVG, PulseLoader, Friend },
 })
 export default class listFriends extends Vue {
+  status: string = "";
   async blockUser(friend: any) {
     await this.$store.dispatch("Friends/blockUser", friend);
     this.$store.dispatch("Friends/fetchBlockedUsers");
@@ -65,12 +66,46 @@ export default class listFriends extends Vue {
     this.$router.push("/chat/channel/" + friend.id);
   }
   get friends(): any[] {
-    // TODO change type
-    return this.$store.state.Friends.friends;
+    let friendsList: any[] = this.$store.state.Friends.friends;
+    // friendsList = friendsList.map((friend, index): any => {
+    //   return {
+    //     ...friend,
+    //     status_user: this.getUserStatus(friend.user.id, index),
+    //   };
+    // });
+    return friendsList;
   }
-
+  set friends(value: any[]) {
+    this.$store.state.Friends.friends = value;
+  }
+  async getUserStatus(id: number, index: number) {
+    await this.$store.state.User.gameSocket.emit(
+      "getUserStatus",
+      id,
+      (status: string) => {
+        console.log({ index }, { status });
+        // this.status = status;
+        this.friends[index].status_user = status;
+        console.table(this.friends[index]);
+      }
+    );
+  }
   async mounted() {
     await this.$store.dispatch("Friends/fetchFriends");
+    this.friends.map((friend: any, index: number) => {
+      this.getUserStatus(friend.user.id, index);
+    });
+    this.$store.state.User.gameSocket.on(
+      "userStatus",
+      ({ userId, status }: any) => {
+        console.log(userId, status);
+        // this.friends.map((friend, i) => {
+        //   if (friend.user.id == userId) {
+        //     this.friends[i].status_user = status;
+        //   }
+        // });
+      }
+    );
   }
 }
 </script>
