@@ -1,20 +1,34 @@
 import { Injectable } from '@nestjs/common';
+import { CreateChannelDto, DeleteChannelDto, UpdateChannelDto } from '../dtos/channel.dto';
 import { Channel } from '../entites/channel';
 
 @Injectable()
-export class ChatService {
+export class TmpChatService {
+    channels: Channel[] = [];
 
     getChannels() {
-        let channels: Channel[] = [];
-        for (let i = 0; i < 15; i++) {
+        for (let i = 0; i < 5; i++) {
             let newChannel: Channel = {
+                id: i,
                 type: (i % 4 == 0) ? "public" : "private",
                 name: "for fun",
                 createdAt: new Date(),
                 isLocked: (i % 3 == 0) ? true : false,
             };
-            channels.push(newChannel);
+            this.channels.push(newChannel);
         }
-        return channels;
+        return this.channels;
+    }
+
+    createChannel(data: CreateChannelDto) {
+        console.log(data);
+    }
+
+    updateChannel(data: UpdateChannelDto) {
+        console.log(data);
+    }
+
+    deleteChannel(data: DeleteChannelDto) {
+        console.log(data);
     }
 }

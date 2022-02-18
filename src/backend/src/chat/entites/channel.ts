@@ -1,4 +1,5 @@
 export interface Channel {
+  id: number
   type: string;
   name: string;
   isLocked?: Boolean;
@@ -6,5 +7,5 @@ export interface Channel {
   avatarUrl?: string;
   username?: string;
   lastMsg?: string;
-  createdAt: Date;
+  createdAt: Date; 
 }

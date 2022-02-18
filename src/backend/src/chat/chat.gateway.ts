@@ -1,7 +1,7 @@
 import { ConnectedSocket, MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Socket, Server } from 'socket.io';
 import { AuthService } from 'src/authentication/auth.service';
-import { ChatService } from './chat.service';
+import { TmpChatService } from './services/chat.service';
 
 
 
@@ -15,7 +15,7 @@ import { ChatService } from './chat.service';
 export class ChatGateway {
     @WebSocketServer() server: Server;
 
-    constructor(private authService: AuthService, private chatService: ChatService) { }
+    constructor(private authService: AuthService, private chatService: TmpChatService) { }
 
     async handleConnection(client: any) {
         const authentication = await this.authService.getUserFromSocket(client);
@@ -24,17 +24,12 @@ export class ChatGateway {
             return;
         }
         client.userId = authentication.id;
-        console.log(`client connected: ${client.id}`);
+        console.log(`chat client connected: ${client.id}`);
+        this.server.emit('channels', this.chatService.getChannels());
     }
 
 
     handleDisconnect(client: any) {
-        console.log(`client disconnected: ${client.id}`);
+        console.log(`chat client disconnected: ${client.id}`);
     }
-
-    @SubscribeMessage('channels')
-    getChannels(@MessageBody() data: any, @ConnectedSocket() client: any) {
-        console.log(data);
-    }
-
 }
