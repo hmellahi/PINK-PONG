@@ -31,7 +31,3 @@ export class DeleteChannelDto {
     @IsNumber()
     id: number
 }
-
-
-
-

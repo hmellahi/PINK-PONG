@@ -1,6 +1,7 @@
 import { ConnectedSocket, MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Socket, Server } from 'socket.io';
 import { AuthService } from 'src/authentication/auth.service';
+import { MessageDto } from './dtos/message.dto';
 import { TmpChatService } from './services/chat.service';
 
 
@@ -23,6 +24,7 @@ export class ChatGateway {
             client.disconnect();
             return;
         }
+        // join client to all his rooms
         client.userId = authentication.id;
         console.log(`chat client connected: ${client.id}`);
         this.server.emit('channels', this.chatService.getChannels());
@@ -31,5 +33,11 @@ export class ChatGateway {
 
     handleDisconnect(client: any) {
         console.log(`chat client disconnected: ${client.id}`);
+    }
+
+
+    @SubscribeMessage('message')
+    handleEvent(@MessageBody() data: MessageDto){
+        console.log(data);
     }
 }
