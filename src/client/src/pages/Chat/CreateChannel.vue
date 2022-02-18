@@ -37,7 +37,7 @@ import Checkbox from "@/common/components/UI/Checkbox.vue";
   components: { InputField, Button, Checkbox },
 })
 export default class createChannel extends Vue {
-  // channel: Channel = { name: "", password: "", isLocked: false };
+  channel: Channel = { name: "", type:"" };
   errors = "";
   createChannel() {
     // console.log(this.channel.name);
