@@ -278,7 +278,7 @@ export default class Game extends Vue {
   }
   async listenToGameEvents() {
     const Authentication = this.$cookies.get("Authentication");
-    this.socket = io("http://localhost:3000/game", {
+    this.socket = io(`${process.env.VUE_APP_SERVER_URL}/game`, {
       transportOptions: {
         polling: {
           extraHeaders: {

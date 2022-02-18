@@ -43,7 +43,6 @@ export default class VerificationCode extends Vue {
           code:this.verificationCode
         }
       })
-      // http://159.223.102.35:3000/api/auth/2fa/generate
       console.log({data})
        this.$router.push({ path: "/" });
     }catch(e){

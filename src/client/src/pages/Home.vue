@@ -82,6 +82,7 @@ export default class App extends Vue {
 
     this.$router.push({ path: "/play" });
   }
+
 }
 </script>
 

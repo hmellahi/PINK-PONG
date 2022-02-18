@@ -33,7 +33,7 @@ export default class FindMatch extends Vue {
     this.countUpTimer();
     let map = this.$route.query.map == undefined ? "1" : this.$route.query.map;
     const Authentication = this.$cookies.get("Authentication");
-    this.socket = io("http://localhost:3000/game", {
+    this.socket = io(`${process.env.VUE_APP_SERVER_URL}/game`, {
       transportOptions: {
         polling: {
           extraHeaders: {
