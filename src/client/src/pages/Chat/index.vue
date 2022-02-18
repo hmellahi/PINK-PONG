@@ -2,8 +2,8 @@
   <div>
     <div class="row mb-4">
       <div class="friends_buttons">
-        <Button link="/chat">Public Channels</Button>
-        <Button link="/chat/private">Private Channels</Button>
+        <Button link="/chat"> Channels</Button>
+        <Button link="/chat/private">My Channels</Button>
         <Button link="/chat/DirectMessages">DMS</Button>
       </div>
       <div class="ml-auto">

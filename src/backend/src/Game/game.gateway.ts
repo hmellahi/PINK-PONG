@@ -15,6 +15,7 @@ import { JwtAuthGuard } from '../authentication/Guards/jwtAccess.guard';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from 'src/authentication/auth.service';
 import { v4 as uuidv4 } from 'uuid';
+import { join } from 'node:path/win32';
 
 let MAX_SCORE = 9;
 let ROOM_NOT_FOUND = 'room Not Found';
@@ -37,6 +38,9 @@ export class GameGateway {
   setUserStatus(userId: number, newStatus: string) {
     if (!this.users[userId]) return;
     this.users[userId].status = newStatus;
+    this.server
+      .to('activeUsers')
+      .emit('userStatus', { userId, status: newStatus });
   }
 
   getUserId(userId: number) {
@@ -60,7 +64,7 @@ export class GameGateway {
     @ConnectedSocket() player: Socket | any,
   ) {
     this.players = this.players.filter(
-      (playerinQueue) => playerinQueue.id != player.id,
+      (playerinQueue) => playerinQueue.userId != player.userId,
     );
     this.setUserStatus(player.userId, 'Online');
     console.log(`client leaved queue: ${player.id}`);
@@ -362,15 +366,18 @@ export class GameGateway {
   }
 
   async handleDisconnect(player: Socket | any, ...args: any[]) {
+    this.server
+      .to('activeUsers')
+      .emit('userStatus', { userId: player.userId, status: 'Offline' });
     // this.logger.log(`client leaved queue: ${client.id}`);
     console.log(`client disconnected: ${player.id}`);
     let userStatus = this.getUserStatus(player.userId);
-    console.table({userStatus});
+    console.table({ userStatus });
     // if player was in queue?
     // leavequeue
     if (userStatus == 'In Queue') {
       this.players = this.players.filter(
-        (playerinQueue) => playerinQueue.id != player.id,
+        (playerinQueue) => playerinQueue.userId != player.userId,
       );
     } else if (userStatus == 'In Game') {
       console.log(`was in game: ${player.id}`);
@@ -397,6 +404,15 @@ export class GameGateway {
     // do nting
     delete this.users[player.userId];
     console.table(this.users);
+  }
+
+  @SubscribeMessage('getUserStatus')
+  getUserStatusById(
+    @MessageBody() id: any,
+    @ConnectedSocket() player: Socket | any,
+  ) {
+    player.join('activeUsers');
+    return this.getUserStatus(id);
   }
 
   async handleConnection(client: any, ...args: any[]) {
