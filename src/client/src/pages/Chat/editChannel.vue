@@ -9,12 +9,12 @@
     <Overlay>
       <div class="row">
         <form class="text-center col-12">
-          <InputField
+          <!-- <InputField
             name="name"
             placeholder="Enter Name"
             v-model="channel.name"
             class="input-text p-3 col-md-6 my-4"
-          ></InputField>
+          ></InputField> -->
           <!-- <InputField
             name="password"
             type="password"
@@ -22,11 +22,13 @@
             class="center p-3 col-md-6 my-4"
             v-model="channel.oldPassword"
           ></InputField> -->
+          <h2>{{ channel.name }}</h2>
           <InputField
             name="password"
             type="password"
             placeholder="Enter New Password"
             class="input-text p-3 col-md-6 my-4"
+            autocomplete="true"
             v-model="channel.password"
           ></InputField>
           <h4>{{ errors }}</h4>
@@ -49,14 +51,13 @@ import { isValidInput } from "@/common/helpers/Validations";
   components: { InputField, Button },
 })
 export default class editChannel extends Vue {
-  channel: Channel = { name: "", type: "", isLocked: false };
+  channel: Channel = { name: "WHOS 1v1", type: "", isLocked: false };
   oldPassword = "";
   newPassword = "";
   errors = "";
   mounted() {
     // TODO fetch the channel
     // console.log(this.$route.params.name);
-
     // show channel data
     // this.channel = { name: "WHOS FOR 1V1" };
   }

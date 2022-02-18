@@ -13,6 +13,7 @@
         class="input-text p-3 col-md-6 my-4"
         v-model="channel.password"
         type="password"
+        autocomplete="true"
       ></InputField>
       <span>If you don't enter a password then its public</span>
       <div>
