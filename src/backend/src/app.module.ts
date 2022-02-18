@@ -9,8 +9,8 @@ import { join } from 'path';
 import { FriendshipModule } from './friend/friendship.module';
 import { GameGateway } from './Game/game.gateway';
 import { GameModule } from './Game/game.module';
-import { ChatService } from './chat/services/chat.service';
 import { ChatModule } from './chat/chat.module';
+import { TmpChatService } from './chat/services/chat.service';
 
 @Module(
 {
@@ -53,6 +53,6 @@ import { ChatModule } from './chat/chat.module';
     GameModule,
     ChatModule
   ],
-  providers: [ChatService],
+  providers: [TmpChatService],
 })
 export class AppModule {}
