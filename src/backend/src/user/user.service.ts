@@ -30,10 +30,6 @@ export class UserService {
     public async getByEmail(email: string): Promise<UserEntity>
     {
         return await this.userRepository.findOne({email: email});
-        
-        // if (user)
-            // return user;
-        // throw new HttpException("Email not found", HttpStatus.NOT_FOUND);
     }
 
     public async getById(id: number)
@@ -136,5 +132,16 @@ export class UserService {
     async isBlockedUser(blocker: UserEntity, blocked: UserEntity)
     {
         return await this.blockListRepository.findOne({blocker: blocker, blocked});
+    }
+
+    async getUsersByGames()
+    {
+        return (await this.userRepository.find(
+            {
+                order: {
+                    wins: "DESC"
+                }
+            }
+        )).map(({currentRefreshToken, ...res})=> ({...res, currentRefreshToken:undefined}))
     }
 }

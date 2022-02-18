@@ -1,6 +1,8 @@
 import { Column, Entity, Index, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import Friendship from "src/friend/entities/friendship.entity";
 import  BlockList from "./blockedUserList.entity";
+import Game from "src/Game/entities/game.entity";
+
 @Entity()
 export default class  User
 {
@@ -40,6 +42,12 @@ export default class  User
     @Column({type: "timestamp", default: ()=> "CURRENT_TIMESTAMP"})
     create_date: Date;
 
+    @Column({type: "int" ,default: 0})
+    wins: number;
+
+    @Column({type: "int" ,default: 0})
+    losses: number;
+
     //=====
     @OneToMany(()=> Friendship, friendRequest => friendRequest.sender)
     sendedFriendRequests: Friendship[];
@@ -47,11 +55,18 @@ export default class  User
     @OneToMany(()=> Friendship, friendRequest => friendRequest.receiver)
     receivedFriendRequests: Friendship[];
 
+    @OneToMany(() => Game, game => game.first_user)
+    first: Game[]
+
+    @OneToMany(() => Game, game => game.second_user)
+    second: Game[]
+
     //=====
     @OneToMany(()=> BlockList, blockList => blockList.blocker)
     blockedUsersList: BlockList[];
 
     @OneToMany(()=> BlockList, blockList => blockList.blocked)
     blockedByUserList: BlockList[];
+
 
 }
