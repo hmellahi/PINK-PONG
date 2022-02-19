@@ -25,7 +25,7 @@ import P5, {
 import Paddle from "@/common/Game/Objects/Paddle";
 import Score from "@/common/Game/Objects/Score";
 
-const MAX_SCORE = 1;
+const MAX_SCORE = 9;
 const COUNTDOWN = 3;
 
 @Component<Game>({
@@ -429,10 +429,10 @@ export default class Game extends Vue {
     this.countdown.draw(sketch);
   }
   drawOerlay(sketch: P5Sketch) {
-    if (!sketch) return;
-    sketch.fill(83, 19, 126, 127);
-    sketch.noStroke();
-    sketch.rect(0, 0, GameConstants.canvas.width, GameConstants.canvas.height);
+    // if (!sketch) return;
+    // sketch.fill(83, 19, 126, 127);
+    // sketch.noStroke();
+    // sketch.rect(0, 0, GameConstants.canvas.width, GameConstants.canvas.height);
   }
   showGameOver(sketch: P5Sketch) {
     this.drawOerlay(sketch);
@@ -507,7 +507,9 @@ export default class Game extends Vue {
       return;
     }
     this.sendNewBallPostion();
-    sketch.background(this.backColor);
+    // sketch.background(this.backColor);
+    sketch.clear();
+    sketch.background(220, 30);
     if (this.gameData.map != 1) this.drawOerlay(sketch);
     this.net.draw(sketch);
 
