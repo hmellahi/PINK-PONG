@@ -2,6 +2,7 @@ import { Column, Entity, Index, OneToMany, PrimaryGeneratedColumn } from "typeor
 import Friendship from "src/friend/entities/friendship.entity";
 import  BlockList from "./blockedUserList.entity";
 import Game from "src/Game/entities/game.entity";
+import Channel from "src/chat/entities/channel.entity";
 
 @Entity()
 export default class  User
@@ -68,5 +69,7 @@ export default class  User
     @OneToMany(()=> BlockList, blockList => blockList.blocked)
     blockedByUserList: BlockList[];
 
+    @OneToMany(()=> Channel, channel => channel.owner)
+    owendChannels: Channel[];
 
 }
