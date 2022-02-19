@@ -49,7 +49,7 @@ import { isValidInput } from "@/common/helpers/Validations";
   components: { InputField, Button },
 })
 export default class editChannel extends Vue {
-  // channel: Channel = { name: "", password: "", isLocked: false };
+  channel: Channel = { name: "", type: "", isLocked: false };
   oldPassword = "";
   newPassword = "";
   errors = "";
