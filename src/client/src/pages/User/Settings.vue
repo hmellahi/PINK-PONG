@@ -32,8 +32,7 @@
       </div>
       <div v-for="(setting, i) in settings" class="row">
         <h2 class="text-left col-8">{{ setting.name }}</h2>
-        <SwitchBtn class="ml-0 col-4" v-model="setting.isActive"></SwitchBtn>
-        <!-- :onClick="toggle(i)" -->
+        <SwitchBtn class="ml-0 col-4" v-model="setting.isActive" :onClick="toggle(setting.isActive, i)"></SwitchBtn>
       </div>
       <div class="row">
         <h2 class="text-left col-8">2-Factor Authentication</h2>
@@ -200,7 +199,10 @@ export default class Settings extends Vue {
     ];
   }
 
-  toggle(i: any) {}
+  toggle(index: any, value:Boolean) {
+    // console.log("hello")
+    
+  }
 
   async saveData() {
     if (this.user.login == this.login) {
