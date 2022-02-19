@@ -49,7 +49,7 @@ export class UserService {
             return fetchedUser;
         const isFriend = await this.friendshipService.isFriend(user, fetchedUser);
 
-        return  {...fetchedUser, isFriend}; //need opt
+        return  {...fetchedUser, isFriend};
     }
 
     public async findByIdAndUpdate(id:number, updatedUser)
@@ -143,5 +143,17 @@ export class UserService {
                 }
             }
         )).map(({currentRefreshToken, ...res})=> ({...res, currentRefreshToken:undefined}))
+    }
+
+    async increaseWins(user: UserEntity)
+    {
+        user.wins += 1;
+        await this.userRepository.save(user);
+    }
+
+    async increatLosses(user: UserEntity)
+    {
+        user.losses += 1;
+        await this.userRepository.save(user)
     }
 }

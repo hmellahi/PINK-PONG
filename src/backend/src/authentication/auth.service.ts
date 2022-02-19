@@ -179,9 +179,16 @@ export class AuthService
 
     public async getUserFromSocket(socket: Socket)
     {
-        const Authentication :any = socket.handshake.headers.authentication;
-        if (!Authentication)
+        try
+        {
+            const Authentication :any = socket.handshake.headers.authentication;
+            if (!Authentication)
+                return undefined;
+            return await this.getUserFromToken(Authentication);
+        }
+        catch(error)
+        {
             return undefined;
-        return await this.getUserFromToken(Authentication);
+        }
     }
 }
