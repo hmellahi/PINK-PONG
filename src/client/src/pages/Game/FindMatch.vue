@@ -46,7 +46,7 @@ export default class FindMatch extends Vue {
         "joinQueue",
         { userId: this.currentUser.id, map },
         (data: any) => {
-          // console.log({ data });
+          console.log({ data });
         }
       );
     });

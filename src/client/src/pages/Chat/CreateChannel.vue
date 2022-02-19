@@ -14,7 +14,7 @@
         v-model="channel.password"
         type="password"
         autocomplete="true"
-        disabled="channel.isLocked"
+        :disabled="channel.isLocked"
       ></InputField>
       <span>If you don't enter a password then its public</span>
       <div>

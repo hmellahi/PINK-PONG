@@ -78,18 +78,20 @@ export class GameGateway {
   joinQueue(@MessageBody() data: any, @ConnectedSocket() player: Socket | any) {
     let { map } = data;
 
+    console.log({k:"D"});
     if (this.getUserStatus(player.userId) == 'In Queue')
       return { err: ALREADY_IN_QUEUE };
 
     this.setUserStatus(player.userId, 'In Queue');
 
     const secondPlayer = this.players.find((player) => player.map == map);
+    console.log({secondPlayer});
 
     if (!secondPlayer) {
       this.players.push({ socket: player, map, userId: player.userId });
       return;
     }
-    // console.log(map, map);
+    console.log({d:secondPlayer});
 
     const roomId = this.createGame(
       player.userId,
