@@ -2269,7 +2269,7 @@ body.light hr.separator {
   margin-left: 1rem;
 }
 .leaderBoards .leader_box {
-  height: 7rem;
+  height: 4rem;
 }
 @media (max-width: 768px) {
   .change_name_input {

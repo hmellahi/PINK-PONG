@@ -18,7 +18,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { join } from 'node:path/win32';
 import { GameService } from './game.service';
 
-let MAX_SCORE = 9;
+let MAX_SCORE = 1;
 let ROOM_NOT_FOUND = 'room Not Found';
 let ALREADY_IN_QUEUE = 'u cant join queue, because you are already in queue';
 
@@ -78,20 +78,21 @@ export class GameGateway {
   joinQueue(@MessageBody() data: any, @ConnectedSocket() player: Socket | any) {
     let { map } = data;
 
-    console.log({k:"D"});
+    console.log(`client joined queue: ${player.id}`);
     if (this.getUserStatus(player.userId) == 'In Queue')
       return { err: ALREADY_IN_QUEUE };
 
+    console.log(`client heree: ${player.id}`);
     this.setUserStatus(player.userId, 'In Queue');
 
     const secondPlayer = this.players.find((player) => player.map == map);
-    console.log({secondPlayer});
 
+    console.log(`client dd: ${player.id}`);
     if (!secondPlayer) {
       this.players.push({ socket: player, map, userId: player.userId });
       return;
     }
-    console.log({d:secondPlayer});
+    console.log({ d: secondPlayer });
 
     const roomId = this.createGame(
       player.userId,
@@ -434,10 +435,12 @@ export class GameGateway {
 
   async handleConnection(client: any, ...args: any[]) {
     const user = await this.authService.getUserFromSocket(client);
+    console.log({ k: 'D' });
     if (!user) {
       client.disconnect();
       return;
     }
+    console.log({ k: 'b' });
     client.userId = user.id;
     this.server.to(client.id).emit('hehe');
     this.users[user.id] = {

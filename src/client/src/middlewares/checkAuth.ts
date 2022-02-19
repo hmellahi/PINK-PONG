@@ -32,9 +32,9 @@ const checkAuth = async (to: Route, from: Route, next: NavigationGuardNext) => {
   }
   let authLog = true;
   // console.log({ user: store.getters["User/getCurrentUser"] });
-  if (!store.state.User.isAuthenticated) {
+  // if (!store.state.User.isAuthenticated) {
     authLog = await isAuthenticated();
-  }
+// '
   // console.log("OK");
   if (authLog) {
     return next();
