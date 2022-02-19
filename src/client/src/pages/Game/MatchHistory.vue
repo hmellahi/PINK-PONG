@@ -19,6 +19,7 @@
             <h6>{{ showMapName(match.map) }}</h6>
             <div class="play_time">
               <span>{{ match.duration }} </span>
+              <span>{{ match.duration }} </span>
               <span>{{ show_date(match.create_date) }}</span>
             </div>
           </div>
