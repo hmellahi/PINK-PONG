@@ -13,6 +13,8 @@
         class="input-text p-3 col-md-6 my-4"
         v-model="channel.password"
         type="password"
+        autocomplete="true"
+        :disabled="channel.isLocked"
       ></InputField>
       <span>If you don't enter a password then its public</span>
       <div>
@@ -37,7 +39,7 @@ import Checkbox from "@/common/components/UI/Checkbox.vue";
   components: { InputField, Button, Checkbox },
 })
 export default class createChannel extends Vue {
-  // channel: Channel = { name: "", password: "", isLocked: false };
+  channel: Channel = { name: "", type: "" };
   errors = "";
   createChannel() {
     // console.log(this.channel.name);

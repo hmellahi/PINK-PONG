@@ -1,6 +1,6 @@
 <template>
   <div class="friends_lists">
-    <div v-if="friends.length">
+    <div v-if="friends && friends.length">
       <div class="friend_list" v-for="friend of friends">
         <!-- <Friend/> -->
         <div class="friend-info">
@@ -8,7 +8,7 @@
           <!-- <img src="/assets/img/2.jpg" alt="" /> -->
           <div class="content">
             <h6>{{ friend.user.login }}</h6>
-            <!-- <span>{{ friend.user.status }}</span> -->
+            <span>{{ friend.status_user }}</span>
           </div>
         </div>
         <div class="friend_actions">
@@ -53,6 +53,8 @@ import Friend from "@/common/components/Friends/Friend.vue";
   components: { Button, CloseSVG, DMSSVG, UNFRINEDSVG, PulseLoader, Friend },
 })
 export default class listFriends extends Vue {
+  status: string = "";
+  friends: any = [];
   async blockUser(friend: any) {
     await this.$store.dispatch("Friends/blockUser", friend);
     this.$store.dispatch("Friends/fetchBlockedUsers");
@@ -64,13 +66,48 @@ export default class listFriends extends Vue {
   sendMessage(friend: any) {
     this.$router.push("/chat/channel/" + friend.id);
   }
-  get friends(): any[] {
-    // TODO change type
+  get friendsList(): any[] {
     return this.$store.state.Friends.friends;
+  }
+
+  async getUserStatus(id: number) {
+    let statuss = "Offline";
+    await this.$store.state.User.gameSocket.emit(
+      "getUserStatus",
+      id,
+      (status: string) => {
+        console.log({ status });
+        statuss = status;
+        return status;
+      }
+    );
+    return statuss;
   }
 
   async mounted() {
     await this.$store.dispatch("Friends/fetchFriends");
+    const newData = this.friendsList.map(async (object: any) => {
+      this.$store.state.User.gameSocket.emit(
+        "getUserStatus",
+        object.user.id,
+        (status: string) => {
+          console.log({ status });
+          this.friends.push({ ...object, status_user: status });
+          return status;
+        }
+      );
+    });
+    this.$store.state.User.gameSocket.on(
+      "userStatus",
+      ({ userId, status }: any) => {
+        console.log(userId, status);
+        this.friends.map((friend: any, i: any) => {
+          if (friend.user.id == userId) {
+            this.friends[i].status_user = status;
+          }
+        });
+      }
+    );
   }
 }
 </script>

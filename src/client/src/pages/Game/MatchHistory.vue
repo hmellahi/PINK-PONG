@@ -1,29 +1,32 @@
 <template>
   <div class="history">
     <h3>Match History</h3>
-    <div v-if="matches.length">
+    <div v-if="matches && matches.length">
       <div v-for="match in matches" class="leader_box match_box">
         <div class="left match_history">
-          <img :src="match.player1.avatar_url" alt="" />
+          <img :src="match.first_user.avatar_url" alt="" />
           <div class="match_content">
-            <h4 :class="match.type">{{match.type}}</h4>
-            <h3>{{ match.score1 }} : {{ match.score2 }}</h3>
+            <h4 :class="getResult(match)">{{ getResult(match) }}</h4>
+            <h3>
+              {{ match.first_user_score }} : {{ match.second_user_score }}
+            </h3>
           </div>
-          <img class="img_right"  :src="match.player2.avatar_url" alt="" />
+          <img class="img_right" :src="match.second_user.avatar_url" alt="" />
         </div>
         <div class="match_right">
-          <img :src="match.map" alt="" />
+          <img :src="`/assets/img/map${match.map}.jpg`" alt="" />
           <div class="content_play">
-            <h6>{{ match.map_name }}</h6>
+            <h6>{{ showMapName(match.map) }}</h6>
             <div class="play_time">
               <span>{{ match.duration }} </span>
-              <span>{{ match.date }}</span>
+              <span>{{ match.duration }} </span>
+              <span>{{ show_date(match.create_date) }}</span>
             </div>
           </div>
         </div>
       </div>
     </div>
-    <div v-else>There is no History Yet</div>
+    <div v-else>There is no Match History Yet</div>
   </div>
   <!--  </section>-->
 </template>
@@ -33,14 +36,36 @@
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 import { User } from "../../types/user";
+import moment from "moment";
+
 @Component({
   // components: {Title, SideBar },
-  props: {
-    matches: [],
-  },
+  props: ["matches"],
 })
 export default class MatchHistory extends Vue {
-  created() {}
+  created() {
+    // console.log("matches", this.$props.matches);
+  }
+  get currentUser() {
+    return this.$store.getters["User/getCurrentUser"];
+  }
+  show_date(date: any) {
+    return moment(date).format("MMMM Do YYYY");
+  }
+  showMapName(map: Number) {
+    if (map == 1) return "Vanilla";
+    else if (map == 2) return "Speedy";
+    else return "Classic";
+  }
+  getResult(match: any) {
+    let isMe = match.first_user.id == this.currentUser.id ? 1 : 2;
+    if ((isMe == 1 && match.flag == 2) || (isMe == 2 && match.flag == 1))
+      return "victory";
+    else if (match.flag != 0) return "defeat";
+    if (match.first_user_score > match.second_user_score && isMe == 1)
+      return "victory";
+    return "defeat";
+  }
 }
 </script>
 

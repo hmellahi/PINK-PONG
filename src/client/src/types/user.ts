@@ -13,6 +13,7 @@ export interface UserState {
 export interface User {
   login: string;
   avatar_url: string;
+  status:string;
   matches: any[];
   wins: Number;
   loses: Number;

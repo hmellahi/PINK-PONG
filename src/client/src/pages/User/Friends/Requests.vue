@@ -1,29 +1,29 @@
 <template>
   <div class="">
-  <div v-if="requests.length">
-    <div class="friend_list" v-for="request of requests" >
-      <div class="friend-info">
-        <img :src="request.sender.avatar_url" alt="" />
-        <div class="content">
-          <h6>{{ request.sender.login }}</h6>
-          <!-- <span>{{ request.sender.status }}</span> -->
+    <div v-if="requests && requests.length">
+      <div class="friend_list" v-for="request of requests">
+        <div class="friend-info">
+          <img :src="request.sender.avatar_url" alt="" />
+          <div class="content">
+            <h6>{{ request.sender.login }}</h6>
+            <!-- <span>{{ request.sender.status }}</span> -->
+          </div>
         </div>
-      </div>
-      <div class="friend_actions">
-        <!-- <Button :onClick=blockFriend"> -->
-        <div @click="acceptRequest(request)" class="friend_action">
-          <img src="/assets/svg/accept.svg" />
-          <!-- <object data="/assets/svg/accept.svg" type="image/svg+xml"></object> -->
-          <span> Accept</span>
-        </div>
-        <div @click="declineRequest(request)" class="friend_action">
-          <img src="/assets/svg/close.svg" />
-          <span> Decline</span>
+        <div class="friend_actions">
+          <!-- <Button :onClick=blockFriend"> -->
+          <div @click="acceptRequest(request)" class="friend_action">
+            <img src="/assets/svg/accept.svg" />
+            <!-- <object data="/assets/svg/accept.svg" type="image/svg+xml"></object> -->
+            <span> Accept</span>
+          </div>
+          <div @click="declineRequest(request)" class="friend_action">
+            <img src="/assets/svg/close.svg" />
+            <span> Decline</span>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-  <h3 v-else> There is no requests yet </h3>
+    <h3 v-else>There is no requests yet</h3>
   </div>
 </template>
 
