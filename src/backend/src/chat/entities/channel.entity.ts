@@ -1,6 +1,7 @@
 import User from "src/user/entities/user.entity";
 import { Column, Entity, JoinTable, ManyToMany,
-         OneToOne, PrimaryGeneratedColumn
+         ManyToOne,
+         PrimaryGeneratedColumn
         }
         from "typeorm";
 
@@ -17,6 +18,19 @@ export default class Channel
     @JoinTable()
     participants: User[];
 
-    @OneToOne(()=> User)
+    @ManyToOne(()=> User, user => user.owendChannels, {onDelete: "SET NULL"})
     owner: User;
+
+    @Column({nullable: false})
+    type: string;
+
+    @Column({nullable: false})
+    name: string;
+
+    @Column({default: false})
+    isLocked: boolean;
+
+    @Column({nullable:true})
+    password: string;
+
 }   

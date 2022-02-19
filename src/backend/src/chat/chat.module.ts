@@ -2,16 +2,17 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from 'src/authentication/auth.module';
 import { ChatGateway } from './chat.gateway';
-import { ChannelsController } from './controllers/channels.controller';
 import ChannelEntity from './entities/channel.entity';
-import { TmpChatService } from './services/chat.service';
+import { ChatService } from './chat.service';
+import { ChatController } from './chat.controller';
+
 
 @Module({
     imports: [
         AuthModule,
         TypeOrmModule.forFeature([ChannelEntity])
     ],
-    controllers : [ChannelsController],
-    providers: [TmpChatService, ChatGateway]
+    controllers : [ChatController],
+    providers: [ChatService, ChatGateway]
 })
 export class ChatModule { }
