@@ -4,8 +4,6 @@ import { AuthService } from 'src/authentication/auth.service';
 import { MessageDto } from './dtos/message.dto';
 import { TmpChatService } from './services/chat.service';
 
-
-
 @WebSocketGateway({
     namespace: 'chat',
     cors: {
@@ -27,17 +25,15 @@ export class ChatGateway {
         // join client to all his rooms
         client.userId = authentication.id;
         console.log(`chat client connected: ${client.id}`);
-        this.server.emit('channels', this.chatService.getChannels());
+        this.server.emit('channels', await this.chatService.getChannels());
     }
-
 
     handleDisconnect(client: any) {
         console.log(`chat client disconnected: ${client.id}`);
     }
 
-
     @SubscribeMessage('message')
-    handleEvent(@MessageBody() data: MessageDto){
+    handleEvent(@MessageBody() data: MessageDto) {
         console.log(data);
     }
 }
