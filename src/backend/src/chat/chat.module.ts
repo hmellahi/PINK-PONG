@@ -3,7 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from 'src/authentication/auth.module';
 import { ChatGateway } from './chat.gateway';
 import { ChannelsController } from './controllers/channels.controller';
-import  ChannelEntity from './entites/channel.entity';
+import ChannelEntity from './entities/channel.entity';
 import { TmpChatService } from './services/chat.service';
 
 @Module({
@@ -14,4 +14,4 @@ import { TmpChatService } from './services/chat.service';
     controllers : [ChannelsController],
     providers: [TmpChatService, ChatGateway]
 })
-export class ChatModule {}
+export class ChatModule { }
