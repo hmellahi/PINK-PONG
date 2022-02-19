@@ -2,6 +2,7 @@ import store from "@/store";
 import { NavigationGuardNext, Route } from "vue-router";
 import axios from "axios";
 import api from "@/api";
+import VueCookies from "vue-cookies";
 
 const isAuthenticated = async () => {
   // store.state.User.isAuthenticated
@@ -17,29 +18,29 @@ const isAuthenticated = async () => {
     }
   }
   store.commit("User/setUser", data.data);
+  store.dispatch("User/connectToGameSocket", VueCookies);
   return true;
 };
 const checkAuth = async (to: Route, from: Route, next: NavigationGuardNext) => {
   // if (to.path == "/login" || to.path == "/verification_code") return next("/");
-  if (to.path.startsWith("/chat/channel/")) return next(); // TODO WTF????
   if (
     to.meta &&
     to.meta.hasOwnProperty("requiresAuth") &&
     !to.meta.requiresAuth
   ) {
-    console.log("111");
     return next();
   }
-  let authLog = await isAuthenticated();
+  let authLog = true;
+  // console.log({ user: store.getters["User/getCurrentUser"] });
+  // if (!store.state.User.isAuthenticated) {
+    authLog = await isAuthenticated();
+// '
   // console.log("OK");
   if (authLog) {
-    console.log("OKK");
     return next();
   } else {
-    console.log("DOKK");
     return next("/login");
   }
-  console.log("OKDK");
 };
 
 export default checkAuth;

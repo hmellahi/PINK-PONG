@@ -10,7 +10,7 @@ export interface Channel {
 }
 
 export interface Message {
-  user_id: string;
+  user_id: number;
   message: string;
   isAdmin: Boolean;
   channelId: string;
@@ -19,7 +19,7 @@ export interface Message {
   showTooltip?: Boolean;
 }
 
-export interface directMessage {  
+export interface directMessage {
   last_msg: String;
   avatar: String;
   name: String;

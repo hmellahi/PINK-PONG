@@ -121,4 +121,10 @@ export class  UserController
 
         return await this.userService.getBlockedList(user.id);
     }
+
+    @Get("usersByGames")
+    async userByGames()
+    {
+        return await this.userService.getUsersByGames();
+    }
 }

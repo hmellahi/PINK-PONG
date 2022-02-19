@@ -10,7 +10,7 @@ import FriendshipEntity from "src/friend/entities/friendship.entity"
 @Module({
     imports: [
         TypeOrmModule.forFeature(
-            [UserEntity, BlockListEntity, FriendshipEntity]
+            [UserEntity, BlockListEntity]
             ),
         ConfigModule,
         forwardRef(()=> FriendshipModule)

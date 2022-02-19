@@ -14,8 +14,11 @@ import { HttpStatus, HttpException } from '@nestjs/common';
 import { JwtAuthGuard } from '../authentication/Guards/jwtAccess.guard';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from 'src/authentication/auth.service';
+import { v4 as uuidv4 } from 'uuid';
+import { join } from 'node:path/win32';
+import { GameService } from './game.service';
 
-let MAX_SCORE = 9;
+let MAX_SCORE = 1;
 let ROOM_NOT_FOUND = 'room Not Found';
 let ALREADY_IN_QUEUE = 'u cant join queue, because you are already in queue';
 
@@ -29,25 +32,45 @@ let ALREADY_IN_QUEUE = 'u cant join queue, because you are already in queue';
 export class GameGateway {
   @WebSocketServer() server: Server;
 
-  constructor(private authService: AuthService) {}
+  getUserStatus(userId: number) {
+    return this.users[userId] ? this.users[userId].status : 'Offline';
+  }
+
+  setUserStatus(userId: number, newStatus: string) {
+    if (!this.users[userId]) return;
+    this.users[userId].status = newStatus;
+    this.server
+      .to('activeUsers')
+      .emit('userStatus', { userId, status: newStatus });
+  }
+
+  getUserId(userId: number) {
+    console.log({ userId });
+    return this.users[userId] ? this.users[userId].socketId : -1;
+  }
+
+  constructor(
+    private authService: AuthService,
+    private gameService: GameService,
+  ) {}
   // usersInQueue: number[] = [];
   players: any[] = [];
   pendingRequests: any = {};
   liveGames: Game[] = [];
   username: string = '';
+  users: any[] = [];
+
   private logger: Logger = new Logger('AppGateway');
 
   @SubscribeMessage('leaveQueue')
   leaveQueue(
     @MessageBody('userId') userId: number,
-    @ConnectedSocket() player: Socket,
+    @ConnectedSocket() player: Socket | any,
   ) {
-    // this.logger.log(`client leaved queue: ${client.id}`);
-    // console.log(player);
     this.players = this.players.filter(
-      (playerinQueue) => playerinQueue.id != player.id,
+      (playerinQueue) => playerinQueue.userId != player.userId,
     );
-    // TODO UPDATE USER STATUS
+    this.setUserStatus(player.userId, 'Online');
     console.log(`client leaved queue: ${player.id}`);
   }
 
@@ -55,17 +78,21 @@ export class GameGateway {
   joinQueue(@MessageBody() data: any, @ConnectedSocket() player: Socket | any) {
     let { map } = data;
 
-    // TODO CHECK FOR USER STAUS
-    // TODO UPDATE USER STATUS
-    if (this.players.find((p) => p.userId === player.userId))
+    console.log(`client joined queue: ${player.id}`);
+    if (this.getUserStatus(player.userId) == 'In Queue')
       return { err: ALREADY_IN_QUEUE };
+
+    console.log(`client heree: ${player.id}`);
+    this.setUserStatus(player.userId, 'In Queue');
+
     const secondPlayer = this.players.find((player) => player.map == map);
 
+    console.log(`client dd: ${player.id}`);
     if (!secondPlayer) {
       this.players.push({ socket: player, map, userId: player.userId });
       return;
     }
-    // console.log(map, map);
+    console.log({ d: secondPlayer });
 
     const roomId = this.createGame(
       player.userId,
@@ -81,7 +108,9 @@ export class GameGateway {
       .to(player.id)
       .emit('matchFound', roomId);
 
-    // TODO UPDATE USER STATUS
+    this.setUserStatus(player.userId, 'In Game');
+    this.setUserStatus(secondPlayer.userId, 'In Game');
+
     // remove player from queue
     this.players.splice(this.players.indexOf(secondPlayer), 1);
   }
@@ -92,12 +121,7 @@ export class GameGateway {
     if (ball.x + ball.radius / 2 + borderWidth >= canvas.width) return 1;
     return 0;
   }
-  // checkBorders(): number {
-  //   let borderWidth = Math.floor(canvas.width / 80);
-  //   if (ball.x - ball.radius / 2 - borderWidth <= 0) return 2;
-  //   if (ball.x + ball.radius / 2 + borderWidth>= canvas.width) return 1;
-  //   return 0;
-  // }
+
   @SubscribeMessage('paddleMoves')
   handleMessages(
     @MessageBody() data: any,
@@ -162,30 +186,35 @@ export class GameGateway {
       ) {
         // Inform everyone that game ends
         // this.server.to(roomId).emit('gameOver', ballHitsBorder);
-        // TODO SAVE IN DATABASE
+        this.saveGame(currentPlayerRoom);
         this.removeGame(roomId);
       }
     }
   }
 
-  @SubscribeMessage('inviteToGame')
+  @SubscribeMessage('inviteToPlay')
   inviteToGame(
     @MessageBody() data: any,
     @ConnectedSocket() sender: Socket | any,
   ) {
-    let { receiver } = data;
+    let { receiver, senderName } = data;
     if (sender.userId == receiver)
       return { err: true, msg: 'u cant invite ur self hehe' };
-    // TODO Check if sender status= online
-    if (false)
-      return { err: true, msg: 'this user is already in game,, sorry' };
-    if (false)
+    if (this.getUserStatus(receiver) == 'In Game')
+      return { err: true, msg: 'this user is already in game, sorry' };
+    if (this.getUserStatus(sender.userId) == 'In Game')
       return {
         err: true,
         msg: 'you are already in game, you cant invite people',
       };
+    this.pendingRequests[receiver] = [];
     this.pendingRequests[receiver].push(sender.id);
-    sender.to(receiver).emit('inviteToGame');
+    console.log({ id: this.getUserId(receiver) });
+    sender.to(this.getUserId(receiver)).emit('inviteToPlay', {
+      senderName,
+      senderSocketId: sender.id,
+      senderId: sender.userId,
+    });
   }
 
   @SubscribeMessage('declineInvitation')
@@ -207,11 +236,12 @@ export class GameGateway {
 
   @SubscribeMessage('acceptInvitation')
   acceptInvitation(
-    @MessageBody() senderSocketId: any,
+    @MessageBody() data: any,
     @ConnectedSocket() receiver: Socket | any,
   ) {
-    // TODO Check if sender status= online
-    if (false)
+    let { senderId, senderSocketId } = data;
+    console.log({ data });
+    if (this.getUserStatus(receiver.userId) == 'Offline')
       return {
         err: true,
         msg: "this sender isnt online, can't accept invitation, sorry",
@@ -223,7 +253,13 @@ export class GameGateway {
     if (this.pendingRequests[receiver.userId].length == 0)
       this.pendingRequests.delete(receiver.userId);
     // create game
-    const roomId = this.createGame(1, 1, receiver.id, senderSocketId, 1); // TODO CHANGE
+    const roomId = this.createGame(
+      receiver.userId,
+      senderId,
+      receiver.id,
+      senderSocketId,
+      1,
+    );
     this.server
       .to(receiver.id)
       .to(senderSocketId)
@@ -237,7 +273,8 @@ export class GameGateway {
     player2SockerId: string,
     map: number,
   ) {
-    const roomId = player1SockerId + player2SockerId;
+    const roomId = uuidv4();
+    console.log({ roomId });
     this.liveGames.push({
       roomId,
       player1: player1ID,
@@ -262,6 +299,9 @@ export class GameGateway {
     const { roomId } = data;
 
     // TODO CHECK USER STATUS
+    // if (this.getUserStatus()){
+
+    // }
     const currentGameState: Game = this.liveGames.find(
       (game) => game.roomId === roomId,
     );
@@ -275,7 +315,9 @@ export class GameGateway {
       player.userId != currentGameState.player2;
     // console.log()
     //console.log(player.userId, currentGameState.player1, currentGameState.player2, isSpectator);
-
+    if (!isSpectator) {
+      this.setUserStatus(player.userId, 'In Game');
+    }
     let gameData = {
       player1: currentGameState.player1,
       player2: currentGameState.player2,
@@ -284,6 +326,7 @@ export class GameGateway {
       isSpectator,
     };
     //console.log("initial score", currentGameState.score1, currentGameState.score2)
+    // console.table(this.users);
     return { msg: { gameData, currentGameState } };
   }
 
@@ -306,7 +349,7 @@ export class GameGateway {
     } else if (currentPlayerRoom.player2 == player.userId) ff = 2;
     else return 'wtf';
     // TODO SAVE IN DATABASE
-
+    this.saveGame(currentPlayerRoom);
     // Inform everyone that game ends
     this.server.to(roomId).emit('gameOver', ff);
     this.removeGame(roomId);
@@ -329,43 +372,81 @@ export class GameGateway {
     return this.liveGames;
   }
 
-  handleDisconnect(player: Socket | any, ...args: any[]) {
-    if (false) return;
+  async handleDisconnect(player: Socket | any, ...args: any[]) {
+    this.server
+      .to('activeUsers')
+      .emit('userStatus', { userId: player.userId, status: 'Offline' });
     // this.logger.log(`client leaved queue: ${client.id}`);
-    // this.players = this.players.filter((player) => player.id === client.id);
     console.log(`client disconnected: ${player.id}`);
-    // TODOS
+    let userStatus = this.getUserStatus(player.userId);
+    // console.table({ userStatus });
     // if player was in queue?
     // leavequeue
-    this.players = this.players.filter(
-      (playerinQueue) => playerinQueue.id != player.id,
-    );
-    // if player was in game
-    // end game with lost to the player
-    const currentPlayerRoom: Game = this.liveGames.find(
-      (game) => game.player1 === player.id || game.player2 === player.id,
-    );
-    if (!currentPlayerRoom) return;
-    let ff;
-    if (currentPlayerRoom.player1 == player.userId) {
-      ff = 1;
-    } else if (currentPlayerRoom.player1 == player.userId) ff = 2;
-    this.server.to(currentPlayerRoom.roomId).emit('gameOver', ff);
-    this.removeGame(currentPlayerRoom.roomId);
-    // this.leaveGame({roomId}, client )
+    if (userStatus == 'In Queue') {
+      this.players = this.players.filter(
+        (playerinQueue) => playerinQueue.userId != player.userId,
+      );
+    } else if (userStatus == 'In Game') {
+      console.log(`was in game: ${player.id}`);
+      // if player was in game
+      // end game with lost to the player
+      const currentPlayerRoom: Game = this.liveGames.find(
+        (game) =>
+          game.player1 === player.userId || game.player2 === player.userId,
+      );
+      console.log(`was here too: ${player.id}`);
+
+      if (currentPlayerRoom) {
+        let ff;
+        if (currentPlayerRoom.player1 == player.userId) {
+          ff = 1;
+        } else if (currentPlayerRoom.player2 == player.userId) ff = 2;
+        await this.server.to(currentPlayerRoom.roomId).emit('gameOver', ff);
+        this.saveGame(currentPlayerRoom);
+        this.removeGame(currentPlayerRoom.roomId);
+      }
+      console.log(`quited: ${player.id}`);
+    }
     // else
     // do nting
+    delete this.users[player.userId];
+    // console.table(this.users);
+  }
+
+  saveGame(game: Game): void {
+    console.log({ game });
+    this.gameService.createGame({
+      user1Id: game.player1,
+      user2Id: game.player2,
+      first_user_score: game.score1,
+      second_user_score: game.score2,
+      flag: game.ff,
+      map: game.map,
+    });
+  }
+  @SubscribeMessage('getUserStatus')
+  getUserStatusById(
+    @MessageBody() id: any,
+    @ConnectedSocket() player: Socket | any,
+  ) {
+    player.join('activeUsers');
+    return this.getUserStatus(id);
   }
 
   async handleConnection(client: any, ...args: any[]) {
     const user = await this.authService.getUserFromSocket(client);
+    console.log({ k: 'D' });
     if (!user) {
-      //console.log("imposter")
       client.disconnect();
       return;
     }
-    //console.log("new user", user.id)
+    console.log({ k: 'b' });
     client.userId = user.id;
     this.server.to(client.id).emit('hehe');
+    this.users[user.id] = {
+      status: 'online',
+      socketId: client.id,
+    };
+    // console.table(this.users);
   }
 }

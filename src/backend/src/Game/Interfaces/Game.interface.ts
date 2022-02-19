@@ -7,6 +7,11 @@ export interface Ball{
     y:number
 }
 
+export interface userData{
+    socketId:string,
+    status:"Online"|"In Queue"|"Offline"|"In Game"
+}
+
 export interface Game {
     // id?: number;
     roomId:string;

@@ -26,6 +26,7 @@
           type="password"
           v-model="password"
           class="text-left p-3 my-4"
+          autocomplete="on"
         ></InputField>
       </form>
       <Button :onClick="joinChannel" class="px-5">Join</Button>
@@ -60,7 +61,7 @@ export default class listChannels extends Vue {
     //   this.channels.push({
     //     name: "WHO FOR 1V1",
     //     membersCount: i * 3,
-    //     isLocked: i % 2 == 0,
+    //     isLocked: i % 2 == 0,Ï
     //   });
     this.currentChannel = {
       name: "",
@@ -78,7 +79,7 @@ export default class listChannels extends Vue {
   //   return this.channels[0]
   //     ? this.channels[0]
   //     : { name: "", membersCount: 0, isLocked: false };
-  // }
+  // }Ï
   // set currentChannel(value) {
   //   this.currentChannel = value;
   // }

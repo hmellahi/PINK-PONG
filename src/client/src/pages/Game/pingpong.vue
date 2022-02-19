@@ -29,17 +29,7 @@ export default class Auth extends Vue {
   }
   beforeUnmount() {
     console.log("am leaving...");
-    // this.socket.emit("leaveQueue", { userId: 2 });
   }
-  //   this.socket = io("http://localhost:3000/game");
-  //   this.socket.on("paddleMoves", (roomId: any) => {
-  //     console.log({ roomId });
-  //     this.$router.push("/game?id=" + roomId);
-  //   });
-  //   this.socket.emit("paddleMoves", { userId: 2 }, (data: any) => {
-  //     console.log({ data });
-  //   });
-  // }
 }
 </script>
 

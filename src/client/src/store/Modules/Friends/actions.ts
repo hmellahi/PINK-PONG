@@ -14,7 +14,7 @@ const actions = {
     let friendsListBackup = [...state.friends];
     commit("REMOVE_FROM", ["friends", friend]);
     try {
-      console.log(friend.id)
+      console.log({ unfriend:friend.id})
       const data = await api.post("friendship/removeFriendship", {
         friendshipId: friend.id,
       });
@@ -76,6 +76,7 @@ const actions = {
     let friendsBackup = [...state.friends];
     commit("REMOVE_FROM", ["blockedUsers", userToUnblock]);
     commit("ADD_TO_ENTITY", ["friends", userToUnblock]);
+    console.log({userToUnblock})
     try {
       // TODO make an api call
       const data = await api.post("users/unblockUser", {
