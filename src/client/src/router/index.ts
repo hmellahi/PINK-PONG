@@ -97,6 +97,7 @@ const routes: Array<RouteConfig> = [
   },
   {
     path: "/chat",
+    name: "chat",
     component: Chat,
     children: [
       {
@@ -124,6 +125,7 @@ const routes: Array<RouteConfig> = [
   {
     path: "/chat/channel/:name",
     component: channelRoom,
+    name: "createChannel",
   },
   {
     path: "/chat/directMessage/:name",

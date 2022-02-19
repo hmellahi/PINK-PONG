@@ -18,7 +18,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { join } from 'node:path/win32';
 import { GameService } from './game.service';
 
-let MAX_SCORE = 1;
+let MAX_SCORE = 9;
+
 let ROOM_NOT_FOUND = 'room Not Found';
 let ALREADY_IN_QUEUE = 'u cant join queue, because you are already in queue';
 
