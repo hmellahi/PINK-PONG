@@ -6,7 +6,7 @@ import { TmpChatService } from "../services/chat.service";
 @Controller("chat")
 export class ChannelsController {
 
-    constructor(private chatService: TmpChatService) { }
+    constructor(private chatService: TmpChatService) {}
 
 
     @Post('createChannel')

@@ -1,7 +1,7 @@
-export interface Channel {
+export interface ChannelPost {
   id: number
   type: string;
-  name: string;
+  name?: string;
   isLocked?: Boolean;
   membersCount?: Number;
   avatarUrl?: string;

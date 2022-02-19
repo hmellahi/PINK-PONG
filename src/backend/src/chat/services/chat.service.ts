@@ -1,27 +1,22 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { CreateChannelDto, DeleteChannelDto, UpdateChannelDto } from '../dtos/channel.dto';
-import { Channel } from '../entites/channel';
+import { ChannelPostEntity } from '../entities/channel.entity';
 
 @Injectable()
 export class TmpChatService {
-    channels: Channel[] = [];
+    constructor(
+        @InjectRepository(ChannelPostEntity)
+        private readonly channelPostRepository: Repository<ChannelPostEntity>,
+    ) { }
 
-    getChannels() {
-        for (let i = 0; i < 5; i++) {
-            let newChannel: Channel = {
-                id: i,
-                type: (i % 4 == 0) ? "public" : "private",
-                name: "for fun",
-                createdAt: new Date(),
-                isLocked: (i % 3 == 0) ? true : false,
-            };
-            this.channels.push(newChannel);
-        }
-        return this.channels;
+    async getChannels() {
+        return await this.channelPostRepository.find();
     }
 
     createChannel(data: CreateChannelDto) {
-        console.log(data);
+        return this.channelPostRepository.save(data);
     }
 
     updateChannel(data: UpdateChannelDto) {
