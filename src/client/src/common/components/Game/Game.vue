@@ -496,6 +496,16 @@ export default class Game extends Vue {
 
   draw(sketch: P5Sketch) {
     if (this.isGameOver) return;
+    if (
+      this.scores[0].value >= MAX_SCORE ||
+      this.scores[1].value >= MAX_SCORE
+    ) {
+      this.isGameOver = true;
+      this.scores.map((score) => score.draw(sketch));
+      // this.showGameOver(sketch);
+      this.over(0);
+      return;
+    }
     this.sendNewBallPostion();
     sketch.background(this.backColor);
     if (this.gameData.map != 1) this.drawOerlay(sketch);
@@ -518,11 +528,15 @@ export default class Game extends Vue {
       this.paddle.reset();
       if (this.gameData.isPlayer1) this.sendNewPaddleVelocity(this.paddle);
       else this.sendNewPaddleVelocity(this.paddle2);
-      if (this.scores[ballHitsBorder - 1].value >= MAX_SCORE) {
+      if (
+        this.scores[0].value >= MAX_SCORE ||
+        this.scores[1].value >= MAX_SCORE
+      ) {
         this.isGameOver = true;
         this.scores.map((score) => score.draw(sketch));
         // this.showGameOver(sketch);
         this.over(0);
+        console.log("GAME OVER", this.scores);
         return;
       }
       // this.isGameOver = true; // change to true
