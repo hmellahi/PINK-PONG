@@ -2,7 +2,7 @@
   <div>
     <h3>Lives Games</h3>
     <Overlay class="history">
-      <div v-if="matches.length">
+      <div v-if="matches && matches.length">
         <div v-for="match in matches" class="leader_box match_box">
           <div class="left match_history">
             <img :src="match.user1.avatar_url" alt="" />

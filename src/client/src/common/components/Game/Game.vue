@@ -25,7 +25,7 @@ import P5, {
 import Paddle from "@/common/Game/Objects/Paddle";
 import Score from "@/common/Game/Objects/Score";
 
-const MAX_SCORE = 9;
+const MAX_SCORE = 1;
 const COUNTDOWN = 3;
 
 @Component<Game>({

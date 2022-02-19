@@ -16,8 +16,9 @@ import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from 'src/authentication/auth.service';
 import { v4 as uuidv4 } from 'uuid';
 import { join } from 'node:path/win32';
+import { GameService } from './game.service';
 
-let MAX_SCORE = 9;
+let MAX_SCORE = 1;
 let ROOM_NOT_FOUND = 'room Not Found';
 let ALREADY_IN_QUEUE = 'u cant join queue, because you are already in queue';
 
@@ -48,7 +49,10 @@ export class GameGateway {
     return this.users[userId] ? this.users[userId].socketId : -1;
   }
 
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private gameService: GameService,
+  ) {}
   // usersInQueue: number[] = [];
   players: any[] = [];
   pendingRequests: any = {};
@@ -74,18 +78,21 @@ export class GameGateway {
   joinQueue(@MessageBody() data: any, @ConnectedSocket() player: Socket | any) {
     let { map } = data;
 
+    console.log(`client joined queue: ${player.id}`);
     if (this.getUserStatus(player.userId) == 'In Queue')
       return { err: ALREADY_IN_QUEUE };
 
+    console.log(`client heree: ${player.id}`);
     this.setUserStatus(player.userId, 'In Queue');
 
     const secondPlayer = this.players.find((player) => player.map == map);
 
+    console.log(`client dd: ${player.id}`);
     if (!secondPlayer) {
       this.players.push({ socket: player, map, userId: player.userId });
       return;
     }
-    // console.log(map, map);
+    console.log({ d: secondPlayer });
 
     const roomId = this.createGame(
       player.userId,
@@ -179,7 +186,7 @@ export class GameGateway {
       ) {
         // Inform everyone that game ends
         // this.server.to(roomId).emit('gameOver', ballHitsBorder);
-        // TODO SAVE IN DATABASE
+        this.saveGame(currentPlayerRoom);
         this.removeGame(roomId);
       }
     }
@@ -252,7 +259,7 @@ export class GameGateway {
       receiver.id,
       senderSocketId,
       1,
-    ); // TODO CHANGE
+    );
     this.server
       .to(receiver.id)
       .to(senderSocketId)
@@ -319,7 +326,7 @@ export class GameGateway {
       isSpectator,
     };
     //console.log("initial score", currentGameState.score1, currentGameState.score2)
-    console.table(this.users);
+    // console.table(this.users);
     return { msg: { gameData, currentGameState } };
   }
 
@@ -342,7 +349,7 @@ export class GameGateway {
     } else if (currentPlayerRoom.player2 == player.userId) ff = 2;
     else return 'wtf';
     // TODO SAVE IN DATABASE
-
+    this.saveGame(currentPlayerRoom);
     // Inform everyone that game ends
     this.server.to(roomId).emit('gameOver', ff);
     this.removeGame(roomId);
@@ -372,7 +379,7 @@ export class GameGateway {
     // this.logger.log(`client leaved queue: ${client.id}`);
     console.log(`client disconnected: ${player.id}`);
     let userStatus = this.getUserStatus(player.userId);
-    console.table({ userStatus });
+    // console.table({ userStatus });
     // if player was in queue?
     // leavequeue
     if (userStatus == 'In Queue') {
@@ -395,17 +402,28 @@ export class GameGateway {
           ff = 1;
         } else if (currentPlayerRoom.player2 == player.userId) ff = 2;
         await this.server.to(currentPlayerRoom.roomId).emit('gameOver', ff);
+        this.saveGame(currentPlayerRoom);
         this.removeGame(currentPlayerRoom.roomId);
-        // SAVE IN DATABASE
       }
       console.log(`quited: ${player.id}`);
     }
     // else
     // do nting
     delete this.users[player.userId];
-    console.table(this.users);
+    // console.table(this.users);
   }
 
+  saveGame(game: Game): void {
+    console.log({ game });
+    this.gameService.createGame({
+      user1Id: game.player1,
+      user2Id: game.player2,
+      first_user_score: game.score1,
+      second_user_score: game.score2,
+      flag: game.ff,
+      map: game.map,
+    });
+  }
   @SubscribeMessage('getUserStatus')
   getUserStatusById(
     @MessageBody() id: any,
@@ -417,16 +435,18 @@ export class GameGateway {
 
   async handleConnection(client: any, ...args: any[]) {
     const user = await this.authService.getUserFromSocket(client);
+    console.log({ k: 'D' });
     if (!user) {
       client.disconnect();
       return;
     }
+    console.log({ k: 'b' });
     client.userId = user.id;
     this.server.to(client.id).emit('hehe');
     this.users[user.id] = {
       status: 'online',
       socketId: client.id,
     };
-    console.table(this.users);
+    // console.table(this.users);
   }
 }

@@ -27,22 +27,19 @@
           <div class="col-md-12">Games</div>
         </div>
         <div class="col-md-6">
-          <!-- <div class="col-md-12 ml-0">{{ user.wins + user.loses }}</div> -->
-          <div class="col-md-12 ml-0">0</div>
+          <div class="col-md-12 ml-0">{{ user.wins + user.losses }}</div>
         </div>
         <div class="col-md-6 mt-2">
           <div class="col-md-12 ml-0">Win</div>
         </div>
         <div class="col-md-6 mt-2">
-          <div class="col-md-12 ml-0">0</div>
-          <!-- <div class="col-md-12 ml-0">{{ user.wins }}</div> -->
+          <div class="col-md-12 ml-0">{{ user.wins }}</div>
         </div>
         <div class="col-md-6 mt-2">
           <div class="col-md-12 ml-0">Lost</div>
         </div>
         <div class="col-md-6 mt-2">
-          <div class="col-md-12 ml-0">0</div>
-          <!-- <div class="col-md-12 ml-0">{{ user.loses }}</div> -->
+          <div class="col-md-12 ml-0">{{ user.losses }}</div>
         </div>
       </div>
     </div>
@@ -74,6 +71,7 @@ export default class Profile extends Vue {
   isMyProfile: boolean = false;
   mounted() {
     this.checkUser();
+    this.fetchMatches();
     console.log(this.user);
     this.$store.state.User.gameSocket.on(
       "userStatus",
@@ -84,6 +82,21 @@ export default class Profile extends Vue {
         }
       }
     );
+  }
+  async fetchMatches() {
+    try {
+      let data = await this.$http({
+        method: "get",
+        url: "game/games",
+        data: {
+          user: this.user,
+        },
+      });
+      this.user.matches = data.data;
+      console.log(this.user.matches);
+    } catch (e) {
+      console.log(e);
+    }
   }
   async getUserStatus(id: number) {
     let statuss = "Offline";
