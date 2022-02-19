@@ -1,15 +1,15 @@
 <template>
   <div class="history">
     <h3>Match History</h3>
-    <div v-if="matches.length">
+    <div v-if="matches && matches.length">
       <div v-for="match in matches" class="leader_box match_box">
         <div class="left match_history">
           <img :src="match.player1.avatar_url" alt="" />
           <div class="match_content">
-            <h4 :class="match.type">{{match.type}}</h4>
+            <h4 :class="match.type">{{ match.type }}</h4>
             <h3>{{ match.score1 }} : {{ match.score2 }}</h3>
           </div>
-          <img class="img_right"  :src="match.player2.avatar_url" alt="" />
+          <img class="img_right" :src="match.player2.avatar_url" alt="" />
         </div>
         <div class="match_right">
           <img :src="match.map" alt="" />
@@ -23,7 +23,7 @@
         </div>
       </div>
     </div>
-    <div v-else>There is no History Yet</div>
+    <div v-else>There is no Match History Yet</div>
   </div>
   <!--  </section>-->
 </template>

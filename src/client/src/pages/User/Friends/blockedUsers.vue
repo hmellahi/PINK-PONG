@@ -1,6 +1,6 @@
 <template>
   <div class="friends_lists">
-    <div v-if="blockedFriends.length">
+    <div v-if="blockedFriends && blockedFriends.length">
       <div class="friend_list" v-for="friend of blockedFriends">
         <div class="friend-info">
           <img :src="friend.user.avatar_url" alt="" />
@@ -18,7 +18,7 @@
         </div>
       </div>
     </div>
-    <h3 v-else> There is no Blocked User yet </h3>
+    <h3 v-else>There is no Blocked User yet</h3>
   </div>
 </template>
 
@@ -40,7 +40,6 @@ export default class blockedUsers extends Vue {
     this.$store.dispatch("Friends/unBlockUser", friend);
   }
   // count from 0 to 100
-  
 }
 </script>
 <style scoped></style>

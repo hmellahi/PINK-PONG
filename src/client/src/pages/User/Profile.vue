@@ -74,6 +74,7 @@ export default class Profile extends Vue {
   isMyProfile: boolean = false;
   mounted() {
     this.checkUser();
+    this.fetchMatches();
     console.log(this.user);
     this.$store.state.User.gameSocket.on(
       "userStatus",
@@ -84,6 +85,21 @@ export default class Profile extends Vue {
         }
       }
     );
+  }
+  async fetchMatches() {
+    try {
+      let data = await this.$http({
+        method: "get",
+        url: "game/games",
+        data: {
+          user: this.user,
+        },
+      });
+      this.user.matches = data.data;
+      console.log(data);
+    } catch (e) {
+      console.log(e);
+    }
   }
   async getUserStatus(id: number) {
     let statuss = "Offline";
