@@ -5,6 +5,7 @@ import { UserService } from 'src/user/user.service';
 import { Repository } from 'typeorm';
 import { CreateGameDto } from './dtos/createGame.dto';
 import GameEntity from './entities/game.entity';
+
 @Injectable()
 export class GameService {
   constructor(
@@ -16,12 +17,21 @@ export class GameService {
   public async createGame(data: any) {
     var game: CreateGameDto = data;
 
-    console.log(data);
     game.first_user = await this.userService.getById(data.user1Id);
     game.second_user = await this.userService.getById(data.user2Id);
+
+    if (game.first_user_score > game.second_user_score)
+    {
+        await this.userService.increaseWins(game.first_user);
+        await this.userService.increatLosses(game.second_user);
+    }
+    else
+    {
+        await this.userService.increaseWins(game.second_user);
+        await this.userService.increatLosses(game.first_user);
+    }
+
     const newGame = this.gameRepository.create(game);
-    //increase wins score for winner
-    // increase losses score for loser
     return await this.gameRepository.save(newGame);
   }
 
