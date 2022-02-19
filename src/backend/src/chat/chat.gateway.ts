@@ -1,8 +1,8 @@
-import { ConnectedSocket, MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
+import { MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Socket, Server } from 'socket.io';
 import { AuthService } from 'src/authentication/auth.service';
+import { ChatService } from './chat.service';
 import { MessageDto } from './dtos/message.dto';
-import { TmpChatService } from './services/chat.service';
 
 @WebSocketGateway({
     namespace: 'chat',
@@ -14,9 +14,13 @@ import { TmpChatService } from './services/chat.service';
 export class ChatGateway {
     @WebSocketServer() server: Server;
 
-    constructor(private authService: AuthService, private chatService: TmpChatService) { }
+    constructor(
+        private authService: AuthService,
+        private chatService: ChatService,
+        ){}
 
-    async handleConnection(client: any) {
+    async handleConnection(client: any)
+    {
         const authentication = await this.authService.getUserFromSocket(client);
         if (!authentication) {
             client.disconnect();

@@ -1,12 +1,12 @@
 import { Body, Controller, Delete, Post, Put } from "@nestjs/common";
-import { CreateChannelDto, DeleteChannelDto, UpdateChannelDto, } from "../dtos/channel.dto";
-import { TmpChatService } from "../services/chat.service";
+import { ChatService } from "./chat.service";
+import { CreateChannelDto, DeleteChannelDto, UpdateChannelDto, } from "./dtos/channel.dto";
 
 
 @Controller("chat")
-export class ChannelsController {
+export class ChatController {
 
-    constructor(private chatService: TmpChatService) {}
+    constructor(private chatService: ChatService) {}
 
 
     @Post('createChannel')

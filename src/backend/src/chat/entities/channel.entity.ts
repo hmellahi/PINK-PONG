@@ -1,23 +1,36 @@
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from "typeorm";
+import User from "src/user/entities/user.entity";
+import { Column, Entity, JoinTable, ManyToMany,
+         ManyToOne,
+         PrimaryGeneratedColumn
+        }
+        from "typeorm";
 
-@Entity('chat_channels')
-export class ChannelPostEntity {
+@Entity()
+export default class Channel
+{
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column({ default: '' })
+    @Column({type: "timestamp", default: ()=> "CURRENT_TIMESTAMP"})
+    create_date: Date;
+
+    @ManyToMany(()=> User)
+    @JoinTable()
+    participants: User[];
+
+    @ManyToOne(()=> User, user => user.owendChannels, {onDelete: "SET NULL"})
+    owner: User;
+
+    @Column({nullable: false})
     type: string;
 
-    @Column({ default: '' })
+    @Column({nullable: false})
     name: string;
 
-    @Column({ default: false })
+    @Column({default: false})
     isLocked: boolean;
 
-    @Column({ default: 1 })
-    participentsCount: number;
+    @Column({nullable:true})
+    password: string;
 
-    @CreateDateColumn()
-    createdAt: Date;
-
-}
+}   
