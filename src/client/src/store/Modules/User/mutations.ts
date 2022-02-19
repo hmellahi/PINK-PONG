@@ -4,7 +4,7 @@ import { FriendsState, User, UserState } from "@/types/user";
 
 const mutations = {
   login(state: UserState) {
-    state.isAuthenticated = true;
+    // state.isAuthenticated = true;
   },
   logout(state: UserState) {
     state.isAuthenticated = false;
