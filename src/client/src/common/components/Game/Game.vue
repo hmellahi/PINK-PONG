@@ -10,11 +10,19 @@
 </template>
 
 <script lang="ts">
+// declare module '*.mp3';
+// declare module '*.wav';
+
+
 import sound from '../../../../public/assets/sounds/wallHitSound.wav'
 import sound2 from '../../../../public/assets/sounds/scoreSound.wav'
 import sound3 from '../../../../public/assets/sounds/mario_coin.mp3'
 // import sound1 from '../../../../public/assets/sounds/wallHitSound.wav'
 import sound4 from '../../../../public/assets/sounds/Clairo.mp3'
+import sound5 from '../../../../public/assets/sounds/ball-bounce.mp3'
+import sound6 from '../../../../public/assets/sounds/golf-ball-hit.wav'
+
+
 
 import { GameConstants } from "../../Game/constants";
 import Ball from "../../Game/Objects/Ball";
@@ -31,7 +39,7 @@ import P5, {
 import Paddle from "@/common/Game/Objects/Paddle";
 import Score from "@/common/Game/Objects/Score";
 
-const MAX_SCORE = 1;
+const MAX_SCORE = 5;
 const COUNTDOWN = 3;
 
 @Component<Game>({
@@ -106,6 +114,9 @@ export default class Game extends Vue {
   scoreSound:any;
   marioCoin: any;
   Clairo: any;
+  ballBounce: any;
+  ballHit: any;
+
   init() {
     // console.log("setup");
     // var game = document.getElementById("game");
@@ -275,13 +286,14 @@ export default class Game extends Vue {
     window.addEventListener("resize", this.resize);
     this.init();
     this.roomId = this.$route.query.id;
-    // this.hitSound = new Audio("sounds/hitSound.wav");
-    // this.wallHitSound = new Audio("sounds/wallHitSound.wav");
     this.wallHitSound = new Audio(sound);
-  
     this.scoreSound = new Audio(sound2);
     this.marioCoin = new Audio(sound3);
     this.Clairo = new Audio(sound4);
+    this.ballBounce = new Audio(sound5);
+    this.ballHit = new Audio(sound6);
+
+
 // this.Clairo.play();
     // this.Clairo = new Audio("sounds/Clairo - Sofia-L9l8zCOwEII.mp3");
 // this.marioCoin.play();
@@ -295,8 +307,9 @@ export default class Game extends Vue {
     }
     console.log({ isSoundOn: this.isSoundOn, isMusicOn: this.isMusicOn });
     // here do ur shit...
-    if (this.isMusicOn){
-      this.marioCoin.play();
+    if (!this.isMusicOn){
+      // this.marioCoin.play();
+      this.Clairo.play();
     }
   }
   async fetchUser(id: Number) {
@@ -556,14 +569,22 @@ export default class Game extends Vue {
     if (this.ball.hits(player)) {
       this.ball.reverse(player, player == this.paddle);
       // send
+      if (!this.isSoundOn )
+      {
       console.log("play sound");
       // this.wallHitSound.play();
       // this.marioCoin.play();
-      this.wallHitSound.play();
+      // this.wallHitSound.play();
+    this.ballBounce.play();
+    // this.ballHit.play();
+      }
     }
     let ballHitsBorder = this.ball.checkBorders();
     if (ballHitsBorder) {
+         if (!this.isSoundOn )
+      {
       this.scoreSound.play();
+      }
       this.ball.reset();
       this.paddle.reset();
       if (this.gameData.isPlayer1) this.sendNewPaddleVelocity(this.paddle);
