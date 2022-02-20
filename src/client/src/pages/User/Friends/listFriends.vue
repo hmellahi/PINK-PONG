@@ -58,10 +58,12 @@ export default class listFriends extends Vue {
   async blockUser(friend: any) {
     await this.$store.dispatch("Friends/blockUser", friend);
     this.$store.dispatch("Friends/fetchBlockedUsers");
+    await this.fetchFriends();
   }
 
   async unFriend(friend: any) {
     await this.$store.dispatch("Friends/unFriend", friend);
+    await this.fetchFriends();
   }
   sendMessage(friend: any) {
     this.$router.push("/chat/channel/" + friend.id);
@@ -84,14 +86,14 @@ export default class listFriends extends Vue {
     return statuss;
   }
 
-  async mounted() {
+  async fetchFriends(){
     await this.$store.dispatch("Friends/fetchFriends");
+    this.friends = []
     const newData = this.friendsList.map(async (object: any) => {
       this.$store.state.User.gameSocket.emit(
         "getUserStatus",
         object.user.id,
         (status: string) => {
-          console.log({ status });
           this.friends.push({ ...object, status_user: status });
           return status;
         }
@@ -100,7 +102,6 @@ export default class listFriends extends Vue {
     this.$store.state.User.gameSocket.on(
       "userStatus",
       ({ userId, status }: any) => {
-        console.log(userId, status);
         this.friends.map((friend: any, i: any) => {
           if (friend.user.id == userId) {
             this.friends[i].status_user = status;
@@ -108,6 +109,9 @@ export default class listFriends extends Vue {
         });
       }
     );
+  }
+  async mounted() {
+   await this.fetchFriends();
   }
 }
 </script>

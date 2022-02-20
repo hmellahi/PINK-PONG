@@ -1,8 +1,8 @@
 <template>
   <div id="app">
     <notifications class="my-style">
-      <template slot="body" slot-scope="props">
-        <div>
+      <template slot="body" slot-scope="props" >
+        <div :class="props.item.type">
           <a class="title">
             {{ props.item.title }}
           </a>
@@ -102,29 +102,32 @@ export default class App extends Vue {
 <style lang="scss">
 .my-style {
   .vue-notification-wrapper {
-    padding: 10px;
     margin: 0 5px 5px;
-
     font-size: 12px;
-
     color: #ffffff;
-    background: #44a4fc;
-    border-left: 5px solid #187fe7;
+  }
+}
+    .info {
+      background: #2196f3;
+      border-left-color: #2196f3;
+      padding: 10px;
+    }
 
     .warn {
       background: #ffb648;
       border-left-color: #f48a06;
+      padding: 10px;
     }
 
     .error {
       background: #e54d42;
       border-left-color: #b82e24;
+      padding: 10px;
     }
 
     .success {
       background: #68cd86;
       border-left-color: #42a85f;
+      padding: 10px;
     }
-  }
-}
 </style>

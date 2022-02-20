@@ -22,7 +22,7 @@
         alt=""
       />
     </div>
-    <Overlay class="row mt-4 p-4">
+    <Overlay class=" mt-4 p-4">
       <div
         v-for="(user, i) in users"
         class="col-md-12 row leaderBoards"

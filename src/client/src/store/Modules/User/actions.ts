@@ -81,7 +81,11 @@ const actions = {
       ({ err, msg }: any) => {
         if (err) {
           // show toast with error message (ila jat 3la khatrk)
-          console.log(msg);
+          Vue.notify({
+            duration: -1,
+            type: "danger",
+            title: msg,
+          });
         }
       }
     );
@@ -100,7 +104,11 @@ const actions = {
       ({ roomId, err, msg }: any) => {
         if (err) {
           // show toast with error message (ila jat 3la khatrk)
-          console.log(msg);
+          Vue.notify({
+            duration: -1,
+            type: "danger",
+            title: err.msg,
+          });
         } else router.push(`/game?id=${roomId}`);
       }
     );
