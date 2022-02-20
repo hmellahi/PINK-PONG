@@ -20,12 +20,19 @@
         <Button class="m-0" :onClick="InviteToPlay">Invite To Play</Button>
         <Button class="m-0" :link="'/profile/' + message.sender">Ban</Button>
         <div class="mute-message">
-          <InputField
+          <!-- <InputField
             placeholder=""
             v-model="muteDuration"
             class="m-2 ml-3 px-2"
             style="width: 5rem"
-          />
+          /> -->
+          <select v-model="muteDuration" class="m-2 ml-3 px-2" style="width: 5rem">
+            <option value="15">15 min</option>
+            <option value="60">1 hr</option>
+            <option value="180">3 hr</option>
+            <option value="480">8 hr</option>
+            <option value="1440">24 hr</option>
+          </select>
           <Button class="m-0" :link="'/profile/' + message.sender">Mute</Button>
         </div>
       </div>
@@ -61,7 +68,7 @@ import Popup from "@/common/components/UI/Popup.vue";
   components: { Popup, Button, Checkbox, InputField },
 })
 export default class MessageBox extends Vue {
-  muteDuration = "45s";
+  muteDuration = 15;
   show_popup = false;
   options = {
     placement: "top",
