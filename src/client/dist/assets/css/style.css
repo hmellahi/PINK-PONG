@@ -1,8 +1,20 @@
+@import url("https://fonts.googleapis.com/css2?family=Coda&display=swap");
+
+@font-face {
+  font-family: "Merienda";
+  src: local("Merienda"), url(../fonts/BeatWorddemo.ttf) format("truetype");
+}
+* {
+  font-family: "Merienda";
+  /* font-family: "Coda"; */
+}
 html {
   overflow-x: hidden;
   height: 100%;
 }
-
+.main {
+  height: 30em;
+}
 body {
   font-family: "Rajdhani", sans-serif;
   font-size: 15px;
@@ -18,6 +30,18 @@ body {
   background-image: url("/assets/img/header.jfif");
 }
 
+.input-text {
+  margin: 1em auto !important;
+  /* padding: 25px; */
+  font-size: 20px;
+}
+
+.center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
 input:focus {
   outline: none !important;
   border: 0 !important;
@@ -1743,7 +1767,7 @@ body.light hr.separator {
   margin-bottom: 3em;
   /* background: #ac3ff29c; */
   overflow-y: auto;
-  height: 30em;
+  height: 35em;
   position: relative;
   border: 3px solid #53137e;
 
@@ -1799,6 +1823,7 @@ body.light hr.separator {
   border: 1px solid #fff;
   padding: 1em 10em 1em 1em;
   color: white !important;
+  margin-bottom: 0.3rem;
 }
 
 .change_name_input::placeholder {
@@ -1903,7 +1928,7 @@ body.light hr.separator {
 
 .friends_lists {
   margin: 0;
-  height: 85%;
+  /* height: 85%; */
   overflow-y: scroll;
   width: 100%;
   overflow-x: hidden;
@@ -1966,12 +1991,12 @@ body.light hr.separator {
 .leader_box {
   display: flex;
   justify-content: space-between;
-  flex-wrap: wrap;
   margin-bottom: 10px;
   padding: 10px;
   background: rgba(0, 0, 0, 0.3) !important;
   border-radius: 10px;
   color: white !important;
+  /* align-items: center; */
 }
 
 .leader_box .left {
@@ -2031,25 +2056,26 @@ body.light hr.separator {
   align-items: center;
   border-right: 1px solid #eee;
   padding-right: 4em;
-  padding-left: 2em;
+  padding-left: 3sem;
 }
 
 .match_history img {
-  width: 60px;
-  height: 60px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   box-shadow: inset 0px 0px 4px 2px #c864f8;
   background: #1f0644;
   padding: 10px;
-  margin-right: 20px;
+  margin-right: 10px;
 }
 
 .match_history .match_content {
-  padding: 0em 4em;
+  padding: 0em 1em;
 }
 
 .match_history .match_content .victory {
   color: #44cb49;
+  font-size: 1rem;
 }
 
 .match_history .match_content .defeat {
@@ -2059,6 +2085,7 @@ body.light hr.separator {
 .match_history .match_content h3 {
   color: #fff;
   font-weight: 700;
+  font-size: 1rem;
 }
 
 .match_right {
@@ -2066,6 +2093,7 @@ body.light hr.separator {
   align-content: center;
   justify-content: center;
   align-items: center;
+  margin-left: 1rem;
 }
 
 .match_right img {
@@ -2115,7 +2143,134 @@ body.light hr.separator {
   width: 10rem;
   height: 10rem;
 }
+.side h2 {
+  font-size: 0.9rem;
+}
+.fa_factor {
+  background: #eeeeee45;
+  display: flex;
+  padding: 0.5rem;
+  justify-content: space-evenly;
+}
+.fa_factor img {
+  width: 150px;
+  margin-left: 1rem;
+}
+.verify_factor {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: space-between;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+}
+/* .overlay{
+  height:35rem!important;
+  overflow: scroll;
+} */
+.history {
+  height: 26rem !important;
+}
+.infos_profile {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+.success_msg {
+  color: rgb(108 190 255);
+}
+.update_info {
+}
+.avatar_setting .avatar_change {
+  width: 100px;
+  border-radius: 50%;
+  height: 100px;
+}
+.room {
+  background-color: #53137e;
+  height: 20rem;
+  border-radius: 10px;
+  overflow: auto;
+  overflow-y: auto;
+  display: flex;
+  justify-content: flex-end;
+  flex-direction: column;
+}
+.popup_wrapper {
+  position: absolute;
+  top: -5em;
+  background: #eee;
+  padding: 1em 1em;
+  border-radius: 8px;
+}
 
+.checkbox_admin {
+  width: 25px;
+  height: 25px;
+  border: 1px solid #832121;
+  position: relative;
+  top: 0.3rem;
+}
+.my_checkbox {
+  width: 2rem;
+  height: 1.3rem;
+  position: relative;
+  top: 0.3rem;
+}
+.avatar_profile img {
+  width: 100px;
+  border-radius: 50%;
+  height: 6rem;
+}
+.player_right {
+  position: absolute;
+  width: 4rem;
+  height: 4rem;
+  top: -1.5rem;
+  border-radius: 50%;
+  right: 1rem;
+  border: 4px solid #a70aed;
+  background: #a90bec;
+}
+.player_left {
+  position: absolute;
+  width: 4rem;
+  height: 4rem;
+  top: -1.5rem;
+  border-radius: 50%;
+  left: 1rem;
+  border: 4px solid #a70aed;
+  background: #a90bec;
+}
+.btn-messages {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+}
+.btn-messages a {
+  margin: 0.3rem !important;
+}
+.mute-message {
+  display: flex;
+}
+.leader_board {
+  display: flex;
+  justify-content: space-between;
+  align-content: center;
+  align-items: center;
+}
+.leader_board img {
+  width: 3rem;
+  border-radius: 50%;
+}
+.leader_board h4 {
+  margin-left: 1rem;
+}
+.leaderBoards .leader_box {
+  height: 4rem;
+}
 @media (max-width: 768px) {
   .change_name_input {
     padding: 1em 0em 1em 1em;
@@ -2131,7 +2286,7 @@ body.light hr.separator {
   }
 
   .dashboard_main {
-    padding: 60px 1em 60px;
+    padding: 10px 1em 60px;
   }
 
   .btn-friends {
@@ -2171,11 +2326,70 @@ body.light hr.separator {
   }
 
   .match_right {
-    margin-top: 1.5em;
-    margin-left: 3em;
+    margin-top: 0em;
+    margin-left: 1em;
+    margin-bottom: 0.5rem;
   }
 
   .match_right img {
     margin-right: 1em;
+  }
+  .leader_box .left {
+    margin-top: 1rem;
+  }
+  .main {
+    top: 5rem;
+  }
+  .side h2 {
+    display: none !important;
+  }
+  .side span {
+    position: relative;
+    top: 0;
+  }
+  .side {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+  .side .btn_title {
+    font-size: 1.3rem !important;
+    width: 22% !important;
+    height: 3rem;
+    text-align: center !important;
+  }
+  .friends_buttons a {
+    font-size: 0.8rem !important;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: center;
+    align-items: center;
+    justify-content: center;
+  }
+  .friend_actions .friend_action {
+    margin-right: 1em;
+  }
+  .overlay {
+    padding: 10px !important;
+  }
+  .avatar_profile {
+    text-align: center;
+    display: flex;
+    flex-wrap: nowrap;
+  }
+  .avatar_profile img {
+    width: 100px;
+  }
+  .avatar_profile span {
+    font-size: 1rem;
+  }
+  .leader_box {
+    flex-wrap: wrap;
+  }
+  .fa_factor {
+    flex-wrap: wrap;
+  }
+  .verify_factor .change_name_input {
+    margin-bottom: 1rem;
   }
 }

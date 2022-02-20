@@ -30,10 +30,41 @@
           </div>
         </div>
       </div>
-      <div v-for="(setting, i) in settings" class="row">
+      <!-- <div v-for="(setting, i) in settings" class="row">
         <h2 class="text-left col-8">{{ setting.name }}</h2>
-        <SwitchBtn class="ml-0 col-4" v-model="setting.isActive"></SwitchBtn>
+<<<<<<< HEAD
+        <SwitchBtn class="ml-0 col-4" v-model="setting.isActive" :onClick="toggle(setting.isActive, i)"></SwitchBtn>
+=======
+        <SwitchBtn
+          v-if="i == 0"
+          class="ml-0 col-4"
+          v-model="setting.isActive"
+          :onClick="toggleA"
+        ></SwitchBtn>
+        <SwitchBtn
+          v-else
+          class="ml-0 col-4"
+          v-model="setting.isActive"
+          :onClick="toggleB"
+        ></SwitchBtn>
         <!-- :onClick="toggle(i)" -->
+      <!-- </div> -->
+      <div class="row">
+        <h2 class="text-left col-8">{{ settings[0].name }}</h2>
+        <SwitchBtn
+          class="ml-0 col-4"
+          v-model="settings[0].isActive"
+          :onClick="toggleA"
+        ></SwitchBtn>
+      </div>
+      <div class="row">
+        <h2 class="text-left col-8">{{ settings[1].name }}</h2>
+        <SwitchBtn
+          class="ml-0 col-4"
+          v-model="settings[1].isActive"
+          :onClick="toggleB"
+        ></SwitchBtn>
+>>>>>>> 382390b7383d4b6bef8ab6776f92356bc9d44824
       </div>
       <div class="row">
         <h2 class="text-left col-8">2-Factor Authentication</h2>
@@ -108,17 +139,18 @@ export default class Settings extends Vue {
   avatar = {};
   isActive = false;
   success = "";
-  file_image: any = '';
+  a = 0;
+  file_image: any = "";
   API_URL = process.env.VUE_APP_API_URL;
   showVerify = false;
   login = this.user.login;
   onFileChange(e: any) {
-    this.success = '';
+    this.success = "";
     let file: any = e.target.files[0];
     if (file) {
       let reader = new FileReader();
       reader.onload = (e: Event) => {
-        if (e && e.target){
+        if (e && e.target) {
           this.file_image = reader.result;
         }
       };
@@ -190,17 +222,37 @@ export default class Settings extends Vue {
     // this.logout();
   }
   created() {
+    //localStorage[this.user.id + "#settings#0"]
+    if (!localStorage[this.user.id + "#settings#0"])
+      localStorage[this.user.id + "#settings#0"] = "true";
+    if (!localStorage[this.user.id + "#settings#1"])
+      localStorage[this.user.id + "#settings#1"] = "true";
+    let isMusicOn = localStorage[this.user.id + "#settings#0"] == "true";
+    let isSoundOn = localStorage[this.user.id + "#settings#1"] == "true";
+
     this.settings = [
-      { name: "Music", isActive: true },
-      { name: "Sound", isActive: true },
-      // {
-      //   name: "2-Factor Authentication",
-      //   isActive: this.user.two_factor_auth_enabled,
-      // },
+      { name: "Music", isActive: isMusicOn },
+      { name: "Sound", isActive: isSoundOn },
     ];
   }
 
-  toggle(i: any) {}
+<<<<<<< HEAD
+  toggle(index: any, value:Boolean) {
+    // console.log("hello")
+    
+=======
+  toggleA() {
+    console.log("toggleA");
+    let newValue = this.settings[0].isActive.toString();
+    localStorage[this.user.id + "#settings#" + 0] = newValue;
+  }
+
+  toggleB() {
+    // console.log(this.settings[1].isActive.toString());
+    let newValue = this.settings[1].isActive.toString();
+    localStorage[this.user.id + "#settings#" + 1] = newValue;
+>>>>>>> 382390b7383d4b6bef8ab6776f92356bc9d44824
+  }
 
   async saveData() {
     if (this.user.login == this.login) {

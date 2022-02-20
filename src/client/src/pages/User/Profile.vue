@@ -12,10 +12,16 @@
         <p class="user-name p-0 text-center my-auto">{{ user.login }}</p>
         {{ user.status }}
         <Button
-          class="w-100 m-0 mb-0 f1"
+          class="w-100 m-0 mb-3 f1"
           v-if="!isMyProfile && !user.isFriend"
           :onClick="sendFriendReq"
           >Send Friend Request</Button
+        >
+        <Button
+          class="w-100 m-0 mb-0 f1"
+          v-if="!isMyProfile"
+          :onClick="inviteToPlay"
+          >InviteToPlay</Button
         >
         <p v-if="message" class="success_msg">{{ message }}</p>
       </div>
@@ -98,6 +104,7 @@ export default class Profile extends Vue {
       console.log(e);
     }
   }
+
   async getUserStatus(id: number) {
     let statuss = "Offline";
     // if (this.userCurrent.id === id) {
@@ -152,6 +159,20 @@ export default class Profile extends Vue {
     } catch (e) {
       this.message = e.response.data.message;
     }
+  }
+
+  inviteToPlay() {
+    console.log({ u: this.user });
+    this.$store.state.User.gameSocket.emit(
+      "inviteToPlay",
+      {
+        receiver: this.user.id,
+        senderName: this.userCurrent.login ? this.userCurrent.login : "someone",
+      },
+      (msg: any) => {
+        console.log(msg);
+      }
+    );
   }
 }
 </script>

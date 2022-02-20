@@ -23,10 +23,10 @@ import { Component, Vue } from "vue-property-decorator";
       type: Boolean,
       required: true,
     },
-    // onClick: {
-    //   type: Function,
-    //   required: true,
-    // },
+    onClick: {
+      type: Function,
+      required: true,
+    },
   },
 })
 export default class SwitchBtn extends Vue {
@@ -55,7 +55,7 @@ export default class SwitchBtn extends Vue {
   toggle() {
     // console.log("Toggling indicator");
     this.$emit("input", !this.value);
-    // this.onClick();
+    this.onClick();
   }
 }
 </script>

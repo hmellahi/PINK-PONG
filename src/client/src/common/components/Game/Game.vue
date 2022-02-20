@@ -10,6 +10,12 @@
 </template>
 
 <script lang="ts">
+import sound from '../../../../public/assets/sounds/wallHitSound.wav'
+import sound2 from '../../../../public/assets/sounds/scoreSound.wav'
+import sound3 from '../../../../public/assets/sounds/mario_coin.mp3'
+// import sound1 from '../../../../public/assets/sounds/wallHitSound.wav'
+import sound4 from '../../../../public/assets/sounds/Clairo.mp3'
+
 import { GameConstants } from "../../Game/constants";
 import Ball from "../../Game/Objects/Ball";
 // import require from "http";
@@ -25,7 +31,7 @@ import P5, {
 import Paddle from "@/common/Game/Objects/Paddle";
 import Score from "@/common/Game/Objects/Score";
 
-const MAX_SCORE = 9;
+const MAX_SCORE = 1;
 const COUNTDOWN = 3;
 
 @Component<Game>({
@@ -76,6 +82,8 @@ export default class Game extends Vue {
     GameConstants.canvas.height,
     this.map
   );
+  isMusicOn = false;
+  isSoundOn = false;
   worker: any;
   background: BackGround = new BackGround();
 
@@ -93,6 +101,11 @@ export default class Game extends Vue {
   roomId: any = "";
   gameData: any = {};
   isLoading: boolean = true;
+  hitSound: any;
+  wallHitSound:any;
+  scoreSound:any;
+  marioCoin: any;
+  Clairo: any;
   init() {
     // console.log("setup");
     // var game = document.getElementById("game");
@@ -262,9 +275,29 @@ export default class Game extends Vue {
     window.addEventListener("resize", this.resize);
     this.init();
     this.roomId = this.$route.query.id;
-
+    // this.hitSound = new Audio("sounds/hitSound.wav");
+    // this.wallHitSound = new Audio("sounds/wallHitSound.wav");
+    this.wallHitSound = new Audio(sound);
+  
+    this.scoreSound = new Audio(sound2);
+    this.marioCoin = new Audio(sound3);
+    this.Clairo = new Audio(sound4);
+// this.Clairo.play();
+    // this.Clairo = new Audio("sounds/Clairo - Sofia-L9l8zCOwEII.mp3");
+// this.marioCoin.play();
     this.listenToGameEvents();
     //  if(typeof(Worker) !== "undefined") {
+    if (localStorage[this.currentUser.id + "#settings#0"]) {
+      this.isMusicOn = localStorage[this.currentUser.id + "#settings#0"];
+    }
+    if (localStorage[this.currentUser.id + "#settings#1"]) {
+      this.isSoundOn = localStorage[this.currentUser.id + "#settings#1"];
+    }
+    console.log({ isSoundOn: this.isSoundOn, isMusicOn: this.isMusicOn });
+    // here do ur shit...
+    if (this.isMusicOn){
+      this.marioCoin.play();
+    }
   }
   async fetchUser(id: Number) {
     try {
@@ -507,9 +540,9 @@ export default class Game extends Vue {
       return;
     }
     this.sendNewBallPostion();
-    // sketch.background(this.backColor);
-    sketch.clear();
-    sketch.background(220, 30);
+    sketch.background(this.backColor);
+    // sketch.clear();
+    // sketch.background(220, 30); => the third map
     if (this.gameData.map != 1) this.drawOerlay(sketch);
     this.net.draw(sketch);
 
@@ -523,9 +556,14 @@ export default class Game extends Vue {
     if (this.ball.hits(player)) {
       this.ball.reverse(player, player == this.paddle);
       // send
+      console.log("play sound");
+      // this.wallHitSound.play();
+      // this.marioCoin.play();
+      this.wallHitSound.play();
     }
     let ballHitsBorder = this.ball.checkBorders();
     if (ballHitsBorder) {
+      this.scoreSound.play();
       this.ball.reset();
       this.paddle.reset();
       if (this.gameData.isPlayer1) this.sendNewPaddleVelocity(this.paddle);
