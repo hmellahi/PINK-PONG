@@ -5,9 +5,13 @@ import { ChatGateway } from './chat.gateway';
 import ChannelEntity from './entities/channel.entity';
 import { ChatService } from './chat.service';
 import { ChatController } from './chat.controller';
+import { UserModule } from 'src/user/user.module';
 
 @Module({
-  imports: [AuthModule, TypeOrmModule.forFeature([ChannelEntity])],
+  imports: [AuthModule,
+    TypeOrmModule.forFeature([ChannelEntity]),
+    UserModule
+  ],
   controllers: [ChatController],
   providers: [ChatService, ChatGateway],
 })

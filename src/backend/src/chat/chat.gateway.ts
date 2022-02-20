@@ -12,7 +12,7 @@ import { MessageDto } from './dtos/message.dto';
 @WebSocketGateway({
   namespace: 'chat',
   cors: {
-    origin: 'http://10.11.2.10:5000',
+    origin: 'http://127.0.0.1:5000',
     credentials: true,
   },
 })
@@ -33,7 +33,7 @@ export class ChatGateway {
     // join client to all his rooms
     client.userId = authentication.id;
     console.log(`chat client connected: ${client.id}`);
-    this.server.emit('channels', await this.chatService.getChannels());
+    this.server.emit('channels', await this.chatService.getChannels(authentication));
   }
 
   handleDisconnect(client: any) {
