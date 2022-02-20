@@ -2,7 +2,7 @@ import { Body, Controller, Delete, Get, HttpCode, Post, Put, Req, UseGuards } fr
 import { JwtAuthGuard } from "src/authentication/Guards/jwtAccess.guard";
 import { RequestWithUser } from "src/authentication/Interfaces/requestWithUser.interface";
 import { ChatService } from "./chat.service";
-import { AddMemberDto, CreateChannelDto, JoinChannelDto, } from "./dtos/channel.dto";
+import { AddAdminDto, AddMemberDto, CreateChannelDto, JoinChannelDto, LeaveChannelDto, UpdateChannelPassword, } from "./dtos/channel.dto";
 
 @UseGuards(JwtAuthGuard)
 
@@ -54,6 +54,35 @@ export class ChatController {
     {
         const {user} = request;
         await this.chatService.addMember(user, data)
+    }
+
+    @Post("leaveChannel")
+    @HttpCode(200)
+    async leaveChannel(@Req() request: RequestWithUser,
+                        @Body() data: LeaveChannelDto)
+    {
+        const {user} = request;
+        await this.chatService.leaveChannel(user, data);
+    }
+
+    @Post("updateChannelPassword")
+    @HttpCode(200)
+    async updateChannelPassword(@Req() request: RequestWithUser,
+                                @Body() data: UpdateChannelPassword)
+    {
+        const {user} = request;
+        await this.chatService.updateChannelPassword(user, data);
+    }
+
+
+
+    @Post("addAdmin")
+    @HttpCode(200)
+    async addAdmin(@Req() request: RequestWithUser,
+                                @Body() data: AddAdminDto)
+    {
+        const {user} = request;
+        await this.chatService.addAdmin(user, data);
     }
 
 }
