@@ -1,7 +1,7 @@
-import { ForbiddenException, HttpCode, HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { ForbiddenException, HttpCode, HttpException, HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { AddMemberDto, CreateChannelDto, JoinChannelDto } from './dtos/channel.dto';
+import { AddAdminDto, AddMemberDto, CreateChannelDto, JoinChannelDto, LeaveChannelDto, UpdateChannelPassword } from './dtos/channel.dto';
 import ChannelEntity  from './entities/channel.entity';
 import * as bcrypt from "bcrypt";
 import { AuthService } from 'src/authentication/auth.service';
@@ -22,7 +22,7 @@ export class ChatService {
     {
         if (data.isLocked)
             data.password = await bcrypt.hash(data.password, 10);   
-        const newChannel = this.channelRepository.create({...data, members:[data.owner]});
+        const newChannel = this.channelRepository.create({...data, members:[data.owner], admins:[data.owner]});
         return await this.channelRepository.save(newChannel);
     }
 
@@ -31,9 +31,9 @@ export class ChatService {
                             .find(
                                 {
                                     where: {type: "public"},
-                                    relations:["owner", "members"]}
+                                    relations:["owner", "members", "admins"]}
                                 ))
-                            .map((channel)=>
+                            .filter((channel)=>
                             {
                                 if (!this.isMember(channel, user))
                                     return channel;
@@ -44,9 +44,9 @@ export class ChatService {
         return (await this.channelRepository
                             .find(
                                 {
-                                    relations:["owner", "members"]}
+                                    relations:["owner", "members", "admins"]}
                                 ))
-                            .map((channel)=>
+                            .filter((channel)=>
                             {
                                 if (this.isMember(channel, user))
                                     return channel;
@@ -98,8 +98,74 @@ export class ChatService {
         await this.channelRepository.save(channel);                           
     }
 
+    async leaveChannel(member: UserEntity, data: LeaveChannelDto)
+    {   
+        const channel = await this.channelRepository.findOne({id:data.channelId}, {relations: ['members']});
+
+        if (!channel || !this.isMember(channel, member))
+            throw new HttpException("Channel not found or User not A member", HttpStatus.BAD_REQUEST);
+        
+        await this.channelRepository
+                                .createQueryBuilder()
+                                .relation('members')
+                                .of({id: data.channelId})
+                                .remove(member);
+        await this.channelRepository
+                                .createQueryBuilder()
+                                .relation('admins')
+                                .of({id: data.channelId})
+                                .remove(member);
+
+        await this.channelRepository
+                                .update({id: data.channelId, owner: member}, {owner: null})    
+    }
+
+    public async  updateChannelPassword(member: UserEntity, data:UpdateChannelPassword)
+    {
+        const channel = await this.channelRepository
+                                .findOne(
+                                    {id: data.channelId}, 
+                                    {relations:['owner', 'admins']}
+                            );
+        if (!channel)
+            throw new HttpException("Channel not exist", HttpStatus.NOT_FOUND);
+        //checking if this member is the owner or admin
+        if ((!channel.owner || channel.owner.id !== member.id) &&
+             !this.isAdmin(channel, member))
+            throw new UnauthorizedException;
+        if (data.isLocked)
+            channel.password = await bcrypt.hash(data.password, 10);
+        channel.isLocked = data.isLocked;
+        await this.channelRepository.save(channel);
+    }
+
+    public async addAdmin(member: UserEntity, data:AddAdminDto)
+    {
+        const newAdmin = await this.userService.getById(data.userId);
+
+        const channel = await this.channelRepository
+                                .findOne(
+                                    {id: data.channelId},
+                                    {relations: ['admins']}
+                                );
+        if (!channel || this.isAdmin(channel, newAdmin))
+            throw new HttpException("Channel not exist  or User already admin", HttpStatus.BAD_REQUEST);
+        if (!this.isAdmin(channel, member))
+            throw new ForbiddenException;
+        await this.channelRepository
+                .createQueryBuilder()
+                .relation('admins')
+                .of({id: data.channelId})
+                .add(newAdmin);
+    }
+
     private isMember(channel: ChannelEntity, userToFind: UserEntity)
     {
         return channel.members.find(user => user.id === userToFind.id);
+    }
+
+    private isAdmin(channel: ChannelEntity, userToFind: UserEntity)
+    {
+        return channel.admins.find(user => user.id === userToFind.id);
     }
 }

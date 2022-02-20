@@ -41,3 +41,34 @@ export class AddMemberDto
     @IsNumber()
     channelId: number;
 }
+
+export class LeaveChannelDto
+{
+    @IsNotEmpty()
+    @IsNumber()
+    channelId: number;
+}
+
+export class UpdateChannelPassword
+{
+    @IsNotEmpty()
+    @IsNumber()
+    channelId: number;
+
+    @IsNotEmpty()
+    @IsBoolean()
+    isLocked: boolean;
+
+    password: string;
+}
+
+export class AddAdminDto
+{
+    @IsNotEmpty()
+    @IsNumber()
+    channelId: number;
+
+    @IsNotEmpty()
+    @IsNumber()
+    userId: number;
+}

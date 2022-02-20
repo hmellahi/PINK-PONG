@@ -1,9 +1,10 @@
 create channel [done]
 join to a channel [done]
 add member [done]
-leave a channel
+leave a channel [done]
+update password channel [done]
+add admin to a channel [done]
 
-update channel
 
 get channel
 create message

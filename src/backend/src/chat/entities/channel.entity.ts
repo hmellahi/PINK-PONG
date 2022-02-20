@@ -19,6 +19,10 @@ export default class Channel
     @JoinTable()
     members: User[];
 
+    @ManyToMany(()=> User, {nullable: false, onDelete:"CASCADE"})
+    @JoinTable()
+    admins: User[];
+
     @ManyToOne(()=> User, user => user.owendChannels, {onDelete: "SET NULL"})
     owner: User;
 
@@ -33,5 +37,6 @@ export default class Channel
 
     @Column({nullable:true})
     password: string;
+
 
 }   

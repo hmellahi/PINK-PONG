@@ -39,6 +39,8 @@ export class GameService {
     return await this.gameRepository.find({
       where: [{ first_user: user }, { second_user: user }],
       relations: ['first_user', 'second_user'],
-    });
+      order: { create_date: "DESC"}
+    }
+    );
   }
 }
