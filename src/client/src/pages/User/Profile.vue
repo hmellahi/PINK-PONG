@@ -170,7 +170,11 @@ export default class Profile extends Vue {
         senderName: this.userCurrent.login ? this.userCurrent.login : "someone",
       },
       (msg: any) => {
-        console.log(msg);
+          this.$notify({
+            duration: -1,
+            type: "danger",
+            title: msg.msg,
+          });
       }
     );
   }

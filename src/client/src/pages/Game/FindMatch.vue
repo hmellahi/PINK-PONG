@@ -47,7 +47,11 @@ export default class FindMatch extends Vue {
         { userId: this.currentUser.id, map },
         (data: any) => {
           // console.log({ data });
-          alert(data)
+          this.$notify({
+            duration: -1,
+            type: "danger",
+            title: data.err,
+          });
         }
       );
     });
