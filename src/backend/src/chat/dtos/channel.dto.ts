@@ -1,15 +1,35 @@
-import { IsBoolean, isBoolean, IsNotEmpty, IsNumber, isNumber, IsString, isString } from "class-validator";
+import { IsBoolean, isBoolean, IsNotEmpty, IsNumber, IsString } from "class-validator";
+import UserEntity from "src/user/entities/user.entity";
 
-export class CreateChannelDto {
+export class CreateChannelDto
+{
     @IsNotEmpty()
     @IsString()
     type: string;
 
+    @IsNotEmpty()
+    @IsString()
     name: string;
 
+    @IsNotEmpty()
+    @IsBoolean()
     isLocked: boolean;
 
-    password: string;
+    password?: string;
+
+    owner?: UserEntity;
+}
+
+
+export class JoinChannelDto
+{
+    @IsNotEmpty()
+    @IsNumber()
+    channelId: number;
+
+    password?: string;
+
+    user?: UserEntity;
 }
 
 export class UpdateChannelDto {

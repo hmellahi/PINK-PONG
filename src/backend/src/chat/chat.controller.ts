@@ -1,18 +1,45 @@
-import { Body, Controller, Delete, Post, Put } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpCode, Post, Put, Req, UseGuards } from "@nestjs/common";
+import { JwtAuthGuard } from "src/authentication/Guards/jwtAccess.guard";
+import { RequestWithUser } from "src/authentication/Interfaces/requestWithUser.interface";
 import { ChatService } from "./chat.service";
-import { CreateChannelDto, DeleteChannelDto, UpdateChannelDto, } from "./dtos/channel.dto";
+import { CreateChannelDto, DeleteChannelDto, JoinChannelDto, UpdateChannelDto, } from "./dtos/channel.dto";
 
+@UseGuards(JwtAuthGuard)
 
 @Controller("chat")
 export class ChatController {
     constructor(private chatService: ChatService) {}
 
     @Post('createChannel')
-    createChannel(@Body() data: CreateChannelDto) {
-        this.chatService.createChannel(data);
+    @HttpCode(200)
+    async createChannel(@Req() request: RequestWithUser,
+                     @Body() data: CreateChannelDto)
+    {
+        const {user} = request;
+        data.owner = user;
+        await this.chatService.createChannel(data);
     }
 
-    @Put('updateChannel')
+    @Get("channels")
+    async getChannels(@Req() request: RequestWithUser)
+    {
+        const {user} = request;
+
+        return await this.chatService.getChannels(user);
+    }
+
+    @Post("joinChannel")
+    @HttpCode(200)
+    async joinChannel(@Req() request: RequestWithUser,
+                        @Body() data: JoinChannelDto)
+    {
+        const {user} = request;
+
+        data.user = user;
+        await this.chatService.joinChannel(data);
+    }
+
+    @Post('updateChannel')
     updateChannel(@Body() data: UpdateChannelDto) {
         this.chatService.updateChannel(data);
     }

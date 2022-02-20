@@ -33,7 +33,7 @@ export class ChatGateway {
     // join client to all his rooms
     client.userId = authentication.id;
     console.log(`chat client connected: ${client.id}`);
-    this.server.emit('channels', await this.chatService.getChannels());
+    this.server.emit('channels', await this.chatService.getChannels(authentication));
   }
 
   handleDisconnect(client: any) {

@@ -1,3 +1,4 @@
+import { Exclude } from "class-transformer";
 import User from "src/user/entities/user.entity";
 import { Column, Entity, JoinTable, ManyToMany,
          ManyToOne,
@@ -14,7 +15,7 @@ export default class Channel
     @Column({type: "timestamp", default: ()=> "CURRENT_TIMESTAMP"})
     create_date: Date;
 
-    @ManyToMany(()=> User)
+    @ManyToMany(()=> User, {nullable: false, onDelete:"CASCADE"})
     @JoinTable()
     participants: User[];
 
@@ -30,6 +31,7 @@ export default class Channel
     @Column({default: false})
     isLocked: boolean;
 
+    @Exclude()
     @Column({nullable:true})
     password: string;
 

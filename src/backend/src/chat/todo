@@ -1,6 +1,7 @@
 create channel
 join to a channel
-get channel
 update channel
+
+get channel
 create message
 get all messages for a channel
