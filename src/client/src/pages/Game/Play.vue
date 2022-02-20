@@ -43,7 +43,6 @@ export default class Play extends Vue {
   connection: any = null;
   updateMap(mapname: String) {
     this.selected = mapname;
-    // this.connection = new WebSocket("wss://localhost:3000/game");
   }
   boxMapClass(mapname: String) {
     return "box_map " + (mapname == this.selected ? "selected" : "");

@@ -25,7 +25,7 @@ import P5, {
 import Paddle from "@/common/Game/Objects/Paddle";
 import Score from "@/common/Game/Objects/Score";
 
-const MAX_SCORE = 9;
+const MAX_SCORE = 1;
 const COUNTDOWN = 3;
 
 @Component<Game>({
@@ -76,6 +76,8 @@ export default class Game extends Vue {
     GameConstants.canvas.height,
     this.map
   );
+  isMusicOn = false;
+  isSoundOn = false;
   worker: any;
   background: BackGround = new BackGround();
 
@@ -265,6 +267,14 @@ export default class Game extends Vue {
 
     this.listenToGameEvents();
     //  if(typeof(Worker) !== "undefined") {
+    if (localStorage[this.currentUser.id + "#settings#0"]) {
+      this.isMusicOn = localStorage[this.currentUser.id + "#settings#0"];
+    }
+    if (localStorage[this.currentUser.id + "#settings#1"]) {
+      this.isSoundOn = localStorage[this.currentUser.id + "#settings#1"];
+    }
+    console.log({ isSoundOn: this.isSoundOn, isMusicOn: this.isMusicOn });
+    // here do ur shit...
   }
   async fetchUser(id: Number) {
     try {
@@ -507,9 +517,9 @@ export default class Game extends Vue {
       return;
     }
     this.sendNewBallPostion();
-    // sketch.background(this.backColor);
-    sketch.clear();
-    sketch.background(220, 30);
+    sketch.background(this.backColor);
+    // sketch.clear();
+    // sketch.background(220, 30); => the third map
     if (this.gameData.map != 1) this.drawOerlay(sketch);
     this.net.draw(sketch);
 

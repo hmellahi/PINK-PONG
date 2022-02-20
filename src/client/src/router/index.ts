@@ -97,7 +97,6 @@ const routes: Array<RouteConfig> = [
   },
   {
     path: "/chat",
-    name: "chat",
     component: Chat,
     children: [
       {
@@ -135,9 +134,6 @@ const routes: Array<RouteConfig> = [
     path: "/find_match",
     name: "find_match",
     component: FindMatch,
-    meta: {
-      requiresAuth: true,
-    },
   },
   {
     path: "/login",
