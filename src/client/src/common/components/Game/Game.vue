@@ -10,27 +10,6 @@
 </template>
 
 <script lang="ts">
-<<<<<<< HEAD
-import sound from "../../../../public/assets/sounds/wallHitSound.wav";
-import sound2 from "../../../../public/assets/sounds/scoreSound.wav";
-import sound3 from "../../../../public/assets/sounds/mario_coin.mp3";
-// import sound1 from '../../../../public/assets/sounds/wallHitSound.wav'
-import sound4 from "../../../../public/assets/sounds/Clairo.mp3";
-=======
-// declare module '*.mp3';
-// declare module '*.wav';
-
-
-// import sound from '../../../../public/assets/sounds/wallHitSound.wav'
-// import sound2 from '../../../../public/assets/sounds/scoreSound.wav'
-// import sound3 from '../../../../public/assets/sounds/mario_coin.mp3'
-// // import sound1 from '../../../../public/assets/sounds/wallHitSound.wav'
-// import sound4 from '../../../../public/assets/sounds/Clairo.mp3'
-// import sound5 from '../../../../public/assets/sounds/ball-bounce.mp3'
-// import sound6 from '../../../../public/assets/sounds/golf-ball-hit.wav'
-
-
->>>>>>> 35861e6c6b11290e4b251ae774d8694bee99eeba
 
 import { GameConstants } from "../../Game/constants";
 import Ball from "../../Game/Objects/Ball";
@@ -297,16 +276,6 @@ export default class Game extends Vue {
     window.addEventListener("resize", this.resize);
     this.init();
     this.roomId = this.$route.query.id;
-<<<<<<< HEAD
-    // this.hitSound = new Audio("sounds/hitSound.wav");
-    // this.wallHitSound = new Audio("sounds/wallHitSound.wav");
-    this.wallHitSound = new Audio(sound);
-
-    this.scoreSound = new Audio(sound2);
-    this.marioCoin = new Audio(sound3);
-    this.Clairo = new Audio(sound4);
-    // this.Clairo.play();
-=======
 var sound = '/assets/sounds/wallHitSound.wav';
 var sound2 = '/assets/sounds/scoreSound.wav';
 var sound3 = '/assets/sounds/mario_coin.mp3';
@@ -325,7 +294,6 @@ var sound8 = 'assets/sounds/alex-productions-epic-cinematic-gaming-cyberpunk-res
 
 
 // this.Clairo.play();
->>>>>>> 35861e6c6b11290e4b251ae774d8694bee99eeba
     // this.Clairo = new Audio("sounds/Clairo - Sofia-L9l8zCOwEII.mp3");
     // this.marioCoin.play();
     this.listenToGameEvents();
@@ -338,14 +306,9 @@ var sound8 = 'assets/sounds/alex-productions-epic-cinematic-gaming-cyberpunk-res
     }
     console.log({ isSoundOn: this.isSoundOn, isMusicOn: this.isMusicOn });
     // here do ur shit...
-<<<<<<< HEAD
-    if (this.isMusicOn) {
-      this.marioCoin.play();
-=======
     if (this.isMusicOn){
       // this.marioCoin.play();
       this.Clairo.play();
->>>>>>> 35861e6c6b11290e4b251ae774d8694bee99eeba
     }
   }
   async fetchUser(id: Number) {
