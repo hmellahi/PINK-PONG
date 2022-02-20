@@ -10,11 +10,11 @@
 </template>
 
 <script lang="ts">
-import sound from '../../../../public/assets/sounds/wallHitSound.wav'
-import sound2 from '../../../../public/assets/sounds/scoreSound.wav'
-import sound3 from '../../../../public/assets/sounds/mario_coin.mp3'
+import sound from "../../../../public/assets/sounds/wallHitSound.wav";
+import sound2 from "../../../../public/assets/sounds/scoreSound.wav";
+import sound3 from "../../../../public/assets/sounds/mario_coin.mp3";
 // import sound1 from '../../../../public/assets/sounds/wallHitSound.wav'
-import sound4 from '../../../../public/assets/sounds/Clairo.mp3'
+import sound4 from "../../../../public/assets/sounds/Clairo.mp3";
 
 import { GameConstants } from "../../Game/constants";
 import Ball from "../../Game/Objects/Ball";
@@ -102,8 +102,8 @@ export default class Game extends Vue {
   gameData: any = {};
   isLoading: boolean = true;
   hitSound: any;
-  wallHitSound:any;
-  scoreSound:any;
+  wallHitSound: any;
+  scoreSound: any;
   marioCoin: any;
   Clairo: any;
   init() {
@@ -278,13 +278,13 @@ export default class Game extends Vue {
     // this.hitSound = new Audio("sounds/hitSound.wav");
     // this.wallHitSound = new Audio("sounds/wallHitSound.wav");
     this.wallHitSound = new Audio(sound);
-  
+
     this.scoreSound = new Audio(sound2);
     this.marioCoin = new Audio(sound3);
     this.Clairo = new Audio(sound4);
-// this.Clairo.play();
+    // this.Clairo.play();
     // this.Clairo = new Audio("sounds/Clairo - Sofia-L9l8zCOwEII.mp3");
-// this.marioCoin.play();
+    // this.marioCoin.play();
     this.listenToGameEvents();
     //  if(typeof(Worker) !== "undefined") {
     if (localStorage[this.currentUser.id + "#settings#0"]) {
@@ -295,7 +295,7 @@ export default class Game extends Vue {
     }
     console.log({ isSoundOn: this.isSoundOn, isMusicOn: this.isMusicOn });
     // here do ur shit...
-    if (this.isMusicOn){
+    if (this.isMusicOn) {
       this.marioCoin.play();
     }
   }
@@ -349,10 +349,15 @@ export default class Game extends Vue {
       this.socket.emit(
         "joinGame",
         { roomId: this.roomId },
-        async ({ msg, err }: any) => {
+        async ({ err }: any) => {
           // console.log("msg", { msg });
 
           if (err) {
+            this.$notify({
+              duration: -1,
+              type: "danger",
+              title: err,
+            });
             this.$router.push({ path: "/" });
             return;
           }

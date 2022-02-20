@@ -229,8 +229,8 @@ export class GameGateway {
 
     if (sender.userId == receiver)
       return { err: true, msg: 'u cant invite ur self hehe' };
-    if (this.getUserStatus(receiver) == 'In Game')
-      return { err: true, msg: 'this user is already in game, sorry' };
+    if (this.getUserStatus(receiver) != 'Online')
+      return { err: true, msg: 'this user is already in game, or offline sorry' };
     if (this.getUserStatus(sender.userId) == 'In Game')
       return {
         err: true,

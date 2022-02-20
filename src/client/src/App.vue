@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <notifications class="my-style">
-      <template slot="body" slot-scope="props" >
+      <template slot="body" slot-scope="props">
         <div :class="props.item.type">
           <a class="title">
             {{ props.item.title }}
@@ -9,7 +9,7 @@
           <a class="close" @click="props.close">
             <i class="fa fa-fw fa-close"></i>
           </a>
-          <div v-if="!props.item.text" @click="props.close">
+          <div v-if="props.item.type != 'danger'" @click="props.close">
             <button
               class="btn btn-primary"
               @click="AcceptRequest(props.item.data)"
@@ -107,27 +107,31 @@ export default class App extends Vue {
     color: #ffffff;
   }
 }
-    .info {
-      background: #2196f3;
-      border-left-color: #2196f3;
-      padding: 10px;
-    }
+.info {
+  background: #2196f3;
+  border-left-color: #2196f3;
+  padding: 10px;
+}
 
-    .warn {
-      background: #ffb648;
-      border-left-color: #f48a06;
-      padding: 10px;
-    }
+.warn {
+  background: #ffb648;
+  border-left-color: #f48a06;
+  padding: 10px;
+}
 
-    .error {
-      background: #e54d42;
-      border-left-color: #b82e24;
-      padding: 10px;
-    }
-
-    .success {
-      background: #68cd86;
-      border-left-color: #42a85f;
-      padding: 10px;
-    }
+.error {
+  background: #e54d42;
+  border-left-color: #b82e24;
+  padding: 10px;
+}
+.danger {
+  background: #e54d42;
+  border-left-color: #b82e24;
+  padding: 10px;
+}
+.success {
+  background: #68cd86;
+  border-left-color: #42a85f;
+  padding: 10px;
+}
 </style>

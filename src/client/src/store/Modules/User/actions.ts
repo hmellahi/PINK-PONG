@@ -23,7 +23,14 @@ const generateRandomString = () => {
 const listenToNotifications = (gameSocket: Socket) => {
   gameSocket.on("inviteToPlay", (data: any) => {
     console.log({ data });
-    let { senderName, receiver, senderSocketId, senderId } = data;
+    let { senderName, receiver, senderSocketId, senderId, err, msg } = data;
+    // if (err){
+    //   Vue.notify({
+    //     duration: -1,
+    //     type: "danger",
+    //     title: msg,
+    //   });
+    // }
     console.log({ rec: store.state.User.user.id }, { receiver });
     if (receiver != store.state.User.user.id) return;
     Vue.notify({
@@ -107,7 +114,7 @@ const actions = {
           Vue.notify({
             duration: -1,
             type: "danger",
-            title: err.msg,
+            title: msg,
           });
         } else router.push(`/game?id=${roomId}`);
       }
