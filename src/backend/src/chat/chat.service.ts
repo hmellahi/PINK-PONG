@@ -1,18 +1,20 @@
 import { ForbiddenException, HttpCode, HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CreateChannelDto, DeleteChannelDto, JoinChannelDto, UpdateChannelDto } from './dtos/channel.dto';
+import { AddMemberDto, CreateChannelDto, JoinChannelDto } from './dtos/channel.dto';
 import ChannelEntity  from './entities/channel.entity';
 import * as bcrypt from "bcrypt";
 import { AuthService } from 'src/authentication/auth.service';
 import UserEntity from 'src/user/entities/user.entity';
+import { UserService } from 'src/user/user.service';
 
 @Injectable()
 export class ChatService {
     constructor(
         @InjectRepository(ChannelEntity)
         private readonly channelRepository: Repository<ChannelEntity>,
-        private readonly authService: AuthService
+        private readonly authService: AuthService,
+        private readonly userService: UserService
     ) { }
 
 
@@ -20,7 +22,7 @@ export class ChatService {
     {
         if (data.isLocked)
             data.password = await bcrypt.hash(data.password, 10);   
-        const newChannel = this.channelRepository.create({...data, participants:[data.owner]});
+        const newChannel = this.channelRepository.create({...data, members:[data.owner]});
         return await this.channelRepository.save(newChannel);
     }
 
@@ -29,11 +31,24 @@ export class ChatService {
                             .find(
                                 {
                                     where: {type: "public"},
-                                    relations:["owner", "participants"]}
+                                    relations:["owner", "members"]}
                                 ))
                             .map((channel)=>
                             {
-                                if (!this.alreadyJoined(channel, user))
+                                if (!this.isMember(channel, user))
+                                    return channel;
+                            }); // it's need to be filtered
+    }
+
+    async getMyChannels(user:UserEntity) {
+        return (await this.channelRepository
+                            .find(
+                                {
+                                    relations:["owner", "members"]}
+                                ))
+                            .map((channel)=>
+                            {
+                                if (this.isMember(channel, user))
                                     return channel;
                             }); // it's need to be filtered
     }
@@ -44,11 +59,11 @@ export class ChatService {
                                 .findOne(
                                     {
                                         where: {id:data.channelId},
-                                        relations: ['participants']
+                                        relations: ['members']
                                     }
                             );
 
-        if (!channel || this.alreadyJoined(channel, data.user))
+        if (!channel || this.isMember(channel, data.user))
             throw new HttpException("Channel not found or You already Joined", HttpStatus.NOT_FOUND);
         
         if (channel.isLocked)
@@ -58,36 +73,33 @@ export class ChatService {
             await this.authService.verifyPassword(channel.password,data.password);
         }
 
-        channel.participants.push(data.user);
+        channel.members.push(data.user);
         await this.channelRepository.save(channel);
     }
 
-    async addParticipant(member: UserEntity, newMember: UserEntity,
-                        channelId: number)
+    async addMember(member: UserEntity, data: AddMemberDto)
     {
+        const newMember = await this.userService.getByLogin(member,data.login);
+
+        if (!newMember)
+            throw new HttpException("user not exist", HttpStatus.NOT_FOUND);
         const channel = await this.channelRepository
                                 .findOne(
                                     {
-                                        where: { id: channelId},
-                                        relations: ['participants']
+                                        where: { id: data.channelId},
+                                        relations: ['members']
                                     }
                                 );
-        if (!this.alreadyJoined(channel, member))
+        if (!this.isMember(channel, member))
             throw new ForbiddenException;
-        channel.participants.push(newMember);
-        await this.channelRepository.save(channel);
-                                    
-    }
-    updateChannel(data: UpdateChannelDto) {
-        console.log(data);
+        if (this.isMember(channel, newMember))
+            throw new HttpException("User already a member", HttpStatus.BAD_REQUEST);
+        channel.members.push(newMember);
+        await this.channelRepository.save(channel);                           
     }
 
-    deleteChannel(data: DeleteChannelDto) {
-        console.log(data);
-    }
-
-    private alreadyJoined(channel: ChannelEntity, userToFind: UserEntity)
+    private isMember(channel: ChannelEntity, userToFind: UserEntity)
     {
-        return channel.participants.find(user => user.id === userToFind.id);
+        return channel.members.find(user => user.id === userToFind.id);
     }
 }

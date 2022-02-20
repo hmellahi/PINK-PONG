@@ -2,7 +2,7 @@ import { Body, Controller, Delete, Get, HttpCode, Post, Put, Req, UseGuards } fr
 import { JwtAuthGuard } from "src/authentication/Guards/jwtAccess.guard";
 import { RequestWithUser } from "src/authentication/Interfaces/requestWithUser.interface";
 import { ChatService } from "./chat.service";
-import { CreateChannelDto, DeleteChannelDto, JoinChannelDto, UpdateChannelDto, } from "./dtos/channel.dto";
+import { AddMemberDto, CreateChannelDto, JoinChannelDto, } from "./dtos/channel.dto";
 
 @UseGuards(JwtAuthGuard)
 
@@ -28,6 +28,14 @@ export class ChatController {
         return await this.chatService.getChannels(user);
     }
 
+    @Get("myChannels")
+    async getMyChannels(@Req() request: RequestWithUser)
+    {
+        const {user} = request;
+
+        return await this.chatService.getMyChannels(user);
+    }
+
     @Post("joinChannel")
     @HttpCode(200)
     async joinChannel(@Req() request: RequestWithUser,
@@ -39,14 +47,13 @@ export class ChatController {
         await this.chatService.joinChannel(data);
     }
 
-    @Post('updateChannel')
-    updateChannel(@Body() data: UpdateChannelDto) {
-        this.chatService.updateChannel(data);
-    }
-
-    @Delete('deleteChannel')
-    deleteChannel(@Body() data: DeleteChannelDto) {
-        this.chatService.deleteChannel(data);
+    @Post("addMember")
+    @HttpCode(200)
+    async addMember(@Req() request: RequestWithUser,
+                    @Body() data:AddMemberDto)
+    {
+        const {user} = request;
+        await this.chatService.addMember(user, data)
     }
 
 }

@@ -32,22 +32,12 @@ export class JoinChannelDto
     user?: UserEntity;
 }
 
-export class UpdateChannelDto {
+export class AddMemberDto
+{
+    @IsNotEmpty()
+    login: string;
+
     @IsNotEmpty()
     @IsNumber()
-    id: number
-
-    type: string;
-
-    name: string;
-
-    isLocked: boolean;
-
-    password: string;
-}
-
-export class DeleteChannelDto {
-    @IsNotEmpty()
-    @IsNumber()
-    id: number
+    channelId: number;
 }

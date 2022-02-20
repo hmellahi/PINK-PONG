@@ -1,5 +1,8 @@
-create channel
-join to a channel
+create channel [done]
+join to a channel [done]
+add member [done]
+leave a channel
+
 update channel
 
 get channel

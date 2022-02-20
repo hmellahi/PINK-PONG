@@ -17,7 +17,7 @@ export default class Channel
 
     @ManyToMany(()=> User, {nullable: false, onDelete:"CASCADE"})
     @JoinTable()
-    participants: User[];
+    members: User[];
 
     @ManyToOne(()=> User, user => user.owendChannels, {onDelete: "SET NULL"})
     owner: User;
@@ -31,7 +31,6 @@ export default class Channel
     @Column({default: false})
     isLocked: boolean;
 
-    @Exclude()
     @Column({nullable:true})
     password: string;
 
