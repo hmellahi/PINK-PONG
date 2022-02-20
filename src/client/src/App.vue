@@ -12,9 +12,7 @@
           <div v-if="!props.item.text" @click="props.close">
             <button
               class="btn btn-primary"
-              @click="
-                AcceptRequest(props.item.data)
-              "
+              @click="AcceptRequest(props.item.data)"
             >
               Accept
             </button>
@@ -22,7 +20,7 @@
             <button
               class="btn btn-danger"
               style="background: #f44336"
-              @click="declineRequest"
+              @click="declineRequest(props.item.data)"
             >
               Decline
             </button>
@@ -72,14 +70,10 @@ export default class App extends Vue {
   isLoginPage: boolean = false;
   socket: any = null;
 
-  listenToGameChannelEvents() {
-    // count to 10
-  }
-
   async mounted() {
     this.updateIsLoginPage();
-    await this.$store.dispatch("User/connectToGameSocket", this.$cookies);
-    this.listenToGameChannelEvents();
+    console.clear();
+    // await this.$store.dispatch("User/connectToGameSocket", this.$cookies);
   }
 
   updateIsLoginPage() {
@@ -87,22 +81,21 @@ export default class App extends Vue {
     let paths = ["/login", "/verification_code", "/auth/callback"];
     this.isLoginPage = paths.includes(this.$route.path);
   }
-  AcceptRequest(data:any) {
-    // console.log("im here");
-    // this.$notify({
-    //   type: "success",
-    //   title: "Nice you accept the request",
-    //   text: "Lets plaaaay !!",
-    // });
-    // console.table(this.$props.item);
-    let { senderSocketId, senderId}  = data;
+  AcceptRequest(data: any) {
+    let { senderSocketId, senderId } = data;
     console.log({ senderSocketId, senderId });
     this.$store.dispatch("User/acceptInvitation", {
       senderSocketId,
       senderId,
     });
   }
-  declineRequest() {}
+  declineRequest(data: any) {
+    let { senderSocketId, senderId } = data;
+    this.$store.dispatch("User/declineInvitation", {
+      senderId,
+      senderSocketId,
+    });
+  }
 }
 </script>
 

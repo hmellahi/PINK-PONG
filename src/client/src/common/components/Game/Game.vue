@@ -11,7 +11,7 @@
 
 <script lang="ts">
 import sound from '../../../../public/assets/sounds/wallHitSound.wav'
-// import sound2 from '../../../../public/assets/sounds/scoreSound.wav'
+import sound2 from '../../../../public/assets/sounds/scoreSound.wav'
 import sound3 from '../../../../public/assets/sounds/mario_coin.mp3'
 // import sound1 from '../../../../public/assets/sounds/wallHitSound.wav'
 import sound4 from '../../../../public/assets/sounds/Clairo.mp3'
@@ -82,6 +82,8 @@ export default class Game extends Vue {
     GameConstants.canvas.height,
     this.map
   );
+  isMusicOn = false;
+  isSoundOn = false;
   worker: any;
   background: BackGround = new BackGround();
 
@@ -277,14 +279,25 @@ export default class Game extends Vue {
     // this.wallHitSound = new Audio("sounds/wallHitSound.wav");
     this.wallHitSound = new Audio(sound);
   
-    // this.scoreSound = new Audio("sounds/scoreSound.wav");
+    this.scoreSound = new Audio(sound2);
     this.marioCoin = new Audio(sound3);
     this.Clairo = new Audio(sound4);
-this.Clairo.play();
+// this.Clairo.play();
     // this.Clairo = new Audio("sounds/Clairo - Sofia-L9l8zCOwEII.mp3");
-this.marioCoin.play();
+// this.marioCoin.play();
     this.listenToGameEvents();
     //  if(typeof(Worker) !== "undefined") {
+    if (localStorage[this.currentUser.id + "#settings#0"]) {
+      this.isMusicOn = localStorage[this.currentUser.id + "#settings#0"];
+    }
+    if (localStorage[this.currentUser.id + "#settings#1"]) {
+      this.isSoundOn = localStorage[this.currentUser.id + "#settings#1"];
+    }
+    console.log({ isSoundOn: this.isSoundOn, isMusicOn: this.isMusicOn });
+    // here do ur shit...
+    if (this.isMusicOn){
+      this.marioCoin.play();
+    }
   }
   async fetchUser(id: Number) {
     try {
@@ -449,10 +462,10 @@ this.marioCoin.play();
     this.countdown.draw(sketch);
   }
   drawOerlay(sketch: P5Sketch) {
-    if (!sketch) return;
-    sketch.fill(83, 19, 126, 127);
-    sketch.noStroke();
-    sketch.rect(0, 0, GameConstants.canvas.width, GameConstants.canvas.height);
+    // if (!sketch) return;
+    // sketch.fill(83, 19, 126, 127);
+    // sketch.noStroke();
+    // sketch.rect(0, 0, GameConstants.canvas.width, GameConstants.canvas.height);
   }
   showGameOver(sketch: P5Sketch) {
     this.drawOerlay(sketch);
@@ -516,8 +529,20 @@ this.marioCoin.play();
 
   draw(sketch: P5Sketch) {
     if (this.isGameOver) return;
+    if (
+      this.scores[0].value >= MAX_SCORE ||
+      this.scores[1].value >= MAX_SCORE
+    ) {
+      this.isGameOver = true;
+      this.scores.map((score) => score.draw(sketch));
+      // this.showGameOver(sketch);
+      this.over(0);
+      return;
+    }
     this.sendNewBallPostion();
     sketch.background(this.backColor);
+    // sketch.clear();
+    // sketch.background(220, 30); => the third map
     if (this.gameData.map != 1) this.drawOerlay(sketch);
     this.net.draw(sketch);
 
@@ -532,21 +557,26 @@ this.marioCoin.play();
       this.ball.reverse(player, player == this.paddle);
       // send
       console.log("play sound");
-      // this.hitSound.play();
+      // this.wallHitSound.play();
       // this.marioCoin.play();
-  this.wallHitSound.play();
+      this.wallHitSound.play();
     }
     let ballHitsBorder = this.ball.checkBorders();
     if (ballHitsBorder) {
+      this.scoreSound.play();
       this.ball.reset();
       this.paddle.reset();
       if (this.gameData.isPlayer1) this.sendNewPaddleVelocity(this.paddle);
       else this.sendNewPaddleVelocity(this.paddle2);
-      if (this.scores[ballHitsBorder - 1].value >= MAX_SCORE) {
+      if (
+        this.scores[0].value >= MAX_SCORE ||
+        this.scores[1].value >= MAX_SCORE
+      ) {
         this.isGameOver = true;
         this.scores.map((score) => score.draw(sketch));
         // this.showGameOver(sketch);
         this.over(0);
+        console.log("GAME OVER", this.scores);
         return;
       }
       // this.isGameOver = true; // change to true

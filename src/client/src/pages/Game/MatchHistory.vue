@@ -59,10 +59,14 @@ export default class MatchHistory extends Vue {
   }
   getResult(match: any) {
     let isMe = match.first_user.id == this.currentUser.id ? 1 : 2;
+    console.log(match.flag, this.currentUser.id, match.first_user.id, match.second_user.id);
     if ((isMe == 1 && match.flag == 2) || (isMe == 2 && match.flag == 1))
       return "victory";
     else if (match.flag != 0) return "defeat";
-    if (match.first_user_score > match.second_user_score && isMe == 1)
+    if (
+      (match.first_user_score > match.second_user_score && isMe == 1) ||
+      (match.first_user_score < match.second_user_score && isMe == 2)
+    )
       return "victory";
     return "defeat";
   }

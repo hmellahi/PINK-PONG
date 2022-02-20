@@ -94,7 +94,12 @@ export default class listChannels extends Vue {
   joinChannel(): void {
     // console.log("pass", this.currentChannel);
     // TODO VERIVY
-    this.$router.push("/chat/channel/" + this.currentChannel.name).catch();
+    this.$router
+      .replace({
+        path: "/chat/channel/" + this.currentChannel.name,
+      })
+    // .catch();
+    // window.location.replace("/chat/DirectMessages");
   }
   openPopup(channel: Channel): void {
     // console.log("isLocked : " + channel.isLocked);

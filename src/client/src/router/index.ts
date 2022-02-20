@@ -124,6 +124,7 @@ const routes: Array<RouteConfig> = [
   {
     path: "/chat/channel/:name",
     component: channelRoom,
+    name: "createChannel",
   },
   {
     path: "/chat/directMessage/:name",
@@ -133,9 +134,6 @@ const routes: Array<RouteConfig> = [
     path: "/find_match",
     name: "find_match",
     component: FindMatch,
-    meta: {
-      requiresAuth: true,
-    },
   },
   {
     path: "/login",

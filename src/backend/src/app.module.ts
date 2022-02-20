@@ -10,7 +10,6 @@ import { FriendshipModule } from './friend/friendship.module';
 import { GameGateway } from './Game/game.gateway';
 import { GameModule } from './Game/game.module';
 import { ChatModule } from './chat/chat.module';
-import { TmpChatService } from './chat/services/chat.service';
 
 @Module(
 {
@@ -53,6 +52,5 @@ import { TmpChatService } from './chat/services/chat.service';
     GameModule,
     ChatModule
   ],
-  providers: [TmpChatService],
 })
 export class AppModule {}

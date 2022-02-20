@@ -22,7 +22,11 @@ const isAuthenticated = async () => {
   return true;
 };
 const checkAuth = async (to: Route, from: Route, next: NavigationGuardNext) => {
-  // if (to.path == "/login" || to.path == "/verification_code") return next("/");
+  // if (to.path.startsWith("/chat")) {
+  //   store.dispatch("User/connectToGameSocket", VueCookies);
+  //   return next();
+  // }
+
   if (
     to.meta &&
     to.meta.hasOwnProperty("requiresAuth") &&
@@ -33,8 +37,9 @@ const checkAuth = async (to: Route, from: Route, next: NavigationGuardNext) => {
   let authLog = true;
   // console.log({ user: store.getters["User/getCurrentUser"] });
   // if (!store.state.User.isAuthenticated) {
-    authLog = await isAuthenticated();
-// '
+  // if (to.path.startsWith("/chat")) return next();
+  authLog = await isAuthenticated();
+  // '
   // console.log("OK");
   if (authLog) {
     return next();

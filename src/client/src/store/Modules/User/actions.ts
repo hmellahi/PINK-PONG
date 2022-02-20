@@ -22,9 +22,10 @@ const generateRandomString = () => {
 
 const listenToNotifications = (gameSocket: Socket) => {
   gameSocket.on("inviteToPlay", (data: any) => {
-    console.log({data});
-    let { senderName, senderSocketId, senderId } = data;
-
+    console.log({ data });
+    let { senderName, receiver, senderSocketId, senderId } = data;
+    console.log({ rec: store.state.User.user.id }, { receiver });
+    if (receiver != store.state.User.user.id) return;
     Vue.notify({
       duration: -1,
       type: "info",
@@ -32,13 +33,19 @@ const listenToNotifications = (gameSocket: Socket) => {
       data: {
         senderSocketId: senderSocketId,
         senderId: senderId,
-      }
+      },
     });
   });
-  gameSocket.on("customGameStarted", (roomId : string) => {
-    console.log({roomId});
+  gameSocket.on("userStatus", ({ userId, status }: any) => {
+    if (store.state.User.user.id == userId && status == "Offline") {
+      console.log("wtf a zbi");
+      gameSocket.emit("userStatus", "Online");
+    }
+  });
+  gameSocket.on("customGameStarted", (roomId: string) => {
+    console.log({ roomId });
     router.push(`/game?id=${roomId}`);
-  })
+  });
 };
 
 const actions = {
@@ -100,9 +107,9 @@ const actions = {
 
   declineGameInvite(
     { commit, state }: ActionContext<UserState, any>,
-    invitationSenderId: number
+    { senderSocketId, senderId }: any
   ) {
-    state.gameSocket.emit("declineInvitation", invitationSenderId);
+    state.gameSocket.emit("declineInvitation", { senderSocketId, senderId });
   },
 
   connectToGameSocket({ commit }: ActionContext<UserState, any>, cookies: any) {
