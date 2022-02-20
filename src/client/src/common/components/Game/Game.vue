@@ -14,13 +14,13 @@
 // declare module '*.wav';
 
 
-import sound from '../../../../public/assets/sounds/wallHitSound.wav'
-import sound2 from '../../../../public/assets/sounds/scoreSound.wav'
-import sound3 from '../../../../public/assets/sounds/mario_coin.mp3'
-// import sound1 from '../../../../public/assets/sounds/wallHitSound.wav'
-import sound4 from '../../../../public/assets/sounds/Clairo.mp3'
-import sound5 from '../../../../public/assets/sounds/ball-bounce.mp3'
-import sound6 from '../../../../public/assets/sounds/golf-ball-hit.wav'
+// import sound from '../../../../public/assets/sounds/wallHitSound.wav'
+// import sound2 from '../../../../public/assets/sounds/scoreSound.wav'
+// import sound3 from '../../../../public/assets/sounds/mario_coin.mp3'
+// // import sound1 from '../../../../public/assets/sounds/wallHitSound.wav'
+// import sound4 from '../../../../public/assets/sounds/Clairo.mp3'
+// import sound5 from '../../../../public/assets/sounds/ball-bounce.mp3'
+// import sound6 from '../../../../public/assets/sounds/golf-ball-hit.wav'
 
 
 
@@ -283,19 +283,27 @@ export default class Game extends Vue {
     this.scores = [this.score, this.score2];
   }
 
-  mounted() {
+  async mounted() {
     window.addEventListener("keydown", this.keydown);
     window.addEventListener("keyup", this.keyup);
     window.addEventListener("resize", this.resize);
     this.init();
     this.roomId = this.$route.query.id;
-    // var s = '../../../../public/assets/sounds/wallHitSound.wav';
-    this.wallHitSound = new Audio(sound);
-    this.scoreSound = new Audio(sound2);
-    this.marioCoin = new Audio(sound3);
-    this.Clairo = new Audio(sound4);
-    this.ballBounce = new Audio(sound5);
-    this.ballHit = new Audio(sound6);
+var sound = '/assets/sounds/wallHitSound.wav';
+var sound2 = '/assets/sounds/scoreSound.wav';
+var sound3 = '/assets/sounds/mario_coin.mp3';
+var sound4 = '/assets/sounds/Clairo.mp3';
+var sound5 = 'assets/sounds/ball-bounce.mp3';
+var sound6 = 'assets/sounds/golf-ball-hit.wav';
+var sound7 = 'assets/sounds/TunePocket-Ping-Pong-Ball-Bouce-Hit-Preview.mp3';
+var sound8 = 'assets/sounds/alex-productions-epic-cinematic-gaming-cyberpunk-reset.mp3';
+
+    this.wallHitSound = await new Audio(sound);
+    this.scoreSound = await new Audio(sound2);
+    this.marioCoin = await new Audio(sound3);
+    this.Clairo = await new Audio(sound8);
+    this.ballBounce = await new Audio(sound5);
+    this.ballHit = await new Audio(sound7);
 
 
 // this.Clairo.play();
@@ -479,10 +487,10 @@ export default class Game extends Vue {
     this.countdown.draw(sketch);
   }
   drawOerlay(sketch: P5Sketch) {
-    // if (!sketch) return;
-    // sketch.fill(83, 19, 126, 127);
-    // sketch.noStroke();
-    // sketch.rect(0, 0, GameConstants.canvas.width, GameConstants.canvas.height);
+    if (!sketch) return;
+    sketch.fill(83, 19, 126, 127);
+    sketch.noStroke();
+    sketch.rect(0, 0, GameConstants.canvas.width, GameConstants.canvas.height);
   }
   showGameOver(sketch: P5Sketch) {
     this.drawOerlay(sketch);
@@ -599,11 +607,13 @@ export default class Game extends Vue {
         this.scores[0].value >= MAX_SCORE ||
         this.scores[1].value >= MAX_SCORE
       ) {
+        this.Clairo.pause();
         this.isGameOver = true;
         this.scores.map((score) => score.draw(sketch));
         // this.showGameOver(sketch);
         this.over(0);
         console.log("GAME OVER", this.scores);
+        
         return;
       }
       // this.isGameOver = true; // change to true
