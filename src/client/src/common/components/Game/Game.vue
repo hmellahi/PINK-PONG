@@ -10,6 +10,12 @@
 </template>
 
 <script lang="ts">
+import sound from '../../../../public/assets/sounds/wallHitSound.wav'
+import sound2 from '../../../../public/assets/sounds/scoreSound.wav'
+import sound3 from '../../../../public/assets/sounds/mario_coin.mp3'
+// import sound1 from '../../../../public/assets/sounds/wallHitSound.wav'
+import sound4 from '../../../../public/assets/sounds/Clairo.mp3'
+
 import { GameConstants } from "../../Game/constants";
 import Ball from "../../Game/Objects/Ball";
 // import require from "http";
@@ -95,6 +101,11 @@ export default class Game extends Vue {
   roomId: any = "";
   gameData: any = {};
   isLoading: boolean = true;
+  hitSound: any;
+  wallHitSound:any;
+  scoreSound:any;
+  marioCoin: any;
+  Clairo: any;
   init() {
     // console.log("setup");
     // var game = document.getElementById("game");
@@ -264,7 +275,16 @@ export default class Game extends Vue {
     window.addEventListener("resize", this.resize);
     this.init();
     this.roomId = this.$route.query.id;
-
+    // this.hitSound = new Audio("sounds/hitSound.wav");
+    // this.wallHitSound = new Audio("sounds/wallHitSound.wav");
+    this.wallHitSound = new Audio(sound);
+  
+    this.scoreSound = new Audio(sound2);
+    this.marioCoin = new Audio(sound3);
+    this.Clairo = new Audio(sound4);
+// this.Clairo.play();
+    // this.Clairo = new Audio("sounds/Clairo - Sofia-L9l8zCOwEII.mp3");
+// this.marioCoin.play();
     this.listenToGameEvents();
     //  if(typeof(Worker) !== "undefined") {
     if (localStorage[this.currentUser.id + "#settings#0"]) {
@@ -275,6 +295,9 @@ export default class Game extends Vue {
     }
     console.log({ isSoundOn: this.isSoundOn, isMusicOn: this.isMusicOn });
     // here do ur shit...
+    if (this.isMusicOn){
+      this.marioCoin.play();
+    }
   }
   async fetchUser(id: Number) {
     try {
@@ -533,9 +556,14 @@ export default class Game extends Vue {
     if (this.ball.hits(player)) {
       this.ball.reverse(player, player == this.paddle);
       // send
+      console.log("play sound");
+      // this.wallHitSound.play();
+      // this.marioCoin.play();
+      this.wallHitSound.play();
     }
     let ballHitsBorder = this.ball.checkBorders();
     if (ballHitsBorder) {
+      this.scoreSound.play();
       this.ball.reset();
       this.paddle.reset();
       if (this.gameData.isPlayer1) this.sendNewPaddleVelocity(this.paddle);

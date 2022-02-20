@@ -32,6 +32,9 @@
       </div>
       <!-- <div v-for="(setting, i) in settings" class="row">
         <h2 class="text-left col-8">{{ setting.name }}</h2>
+<<<<<<< HEAD
+        <SwitchBtn class="ml-0 col-4" v-model="setting.isActive" :onClick="toggle(setting.isActive, i)"></SwitchBtn>
+=======
         <SwitchBtn
           v-if="i == 0"
           class="ml-0 col-4"
@@ -61,6 +64,7 @@
           v-model="settings[1].isActive"
           :onClick="toggleB"
         ></SwitchBtn>
+>>>>>>> 382390b7383d4b6bef8ab6776f92356bc9d44824
       </div>
       <div class="row">
         <h2 class="text-left col-8">2-Factor Authentication</h2>
@@ -232,6 +236,11 @@ export default class Settings extends Vue {
     ];
   }
 
+<<<<<<< HEAD
+  toggle(index: any, value:Boolean) {
+    // console.log("hello")
+    
+=======
   toggleA() {
     console.log("toggleA");
     let newValue = this.settings[0].isActive.toString();
@@ -242,6 +251,7 @@ export default class Settings extends Vue {
     // console.log(this.settings[1].isActive.toString());
     let newValue = this.settings[1].isActive.toString();
     localStorage[this.user.id + "#settings#" + 1] = newValue;
+>>>>>>> 382390b7383d4b6bef8ab6776f92356bc9d44824
   }
 
   async saveData() {
