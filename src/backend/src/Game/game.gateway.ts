@@ -18,7 +18,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { join } from 'node:path/win32';
 import { GameService } from './game.service';
 
-let MAX_SCORE = 9;
+let MAX_SCORE = 1;
 
 let ROOM_NOT_FOUND = 'room Not Found';
 let ALREADY_IN_QUEUE = 'u cant join queue, because you are already in queue';
@@ -34,6 +34,7 @@ export class GameGateway {
   @WebSocketServer() server: Server;
 
   getUserStatus(userId: number) {
+    console.table(this.users);
     return this.users[userId] ? this.users[userId].status : 'Offline';
   }
 
@@ -68,40 +69,62 @@ export class GameGateway {
     @MessageBody('userId') userId: number,
     @ConnectedSocket() player: Socket | any,
   ) {
-    this.players = this.players.filter(
-      (playerinQueue) => playerinQueue.userId != player.userId,
-    );
+    this.removePlayer(player.userId);
     this.setUserStatus(player.userId, 'Online');
-    console.log(`client leaved queue: ${player.id}`);
+    // console.log(`client leaved queue: ${player.id}`);
+  }
+
+  @SubscribeMessage('userStatus')
+  userStatus(
+    @MessageBody() status: string,
+    @ConnectedSocket() player: Socket | any,
+  ) {
+    this.setUserStatus(player.userId, status);
+  }
+
+  removePlayer(playerId: number) {
+    this.players = this.players.filter(
+      (playerinQueue) => playerinQueue.userId != playerId,
+    );
   }
 
   @SubscribeMessage('joinQueue')
   joinQueue(@MessageBody() data: any, @ConnectedSocket() player: Socket | any) {
     let { map } = data;
 
-    console.log(`client joined queue: ${player.id}`);
-    if (this.getUserStatus(player.userId) == 'In Queue')
+    // console.log(`client joined queue: ${player.id}`);
+    console.table(this.players);
+    if (
+      this.players.find(
+        (playersInQueue) => playersInQueue.userId === player.userId,
+      ) ||
+      this.getUserStatus(player.userId) == 'In Queue'
+    )
       return { err: ALREADY_IN_QUEUE };
 
-    console.log(`client heree: ${player.id}`);
+    // console.log(`client heree: ${player.id}`);
     this.setUserStatus(player.userId, 'In Queue');
 
     const secondPlayer = this.players.find((player) => player.map == map);
 
-    console.log(`client dd: ${player.id}`);
+    // console.log(`client dd: ${player.id}`);
     if (!secondPlayer) {
       this.players.push({ socket: player, map, userId: player.userId });
       return;
     }
-    console.log({ d: secondPlayer });
-
-    const roomId = this.createGame(
-      player.userId,
-      secondPlayer.userId,
-      player.id,
-      secondPlayer.socket.id,
-      map,
-    );
+    // console.log({ d: secondPlayer });
+    let roomId;
+    try {
+      roomId = this.createGame(
+        player.userId,
+        secondPlayer.userId,
+        player.id,
+        secondPlayer.socket.id,
+        map,
+      );
+    } catch (err) {
+      return { err: 'something went wrong' };
+    }
 
     // alert players
     this.server
@@ -113,7 +136,8 @@ export class GameGateway {
     this.setUserStatus(secondPlayer.userId, 'In Game');
 
     // remove player from queue
-    this.players.splice(this.players.indexOf(secondPlayer), 1);
+    this.removePlayer(player.userId);
+    this.removePlayer(secondPlayer.userId);
   }
 
   checkBorders(canvas: any, ball: any): number {
@@ -189,6 +213,8 @@ export class GameGateway {
         // this.server.to(roomId).emit('gameOver', ballHitsBorder);
         this.saveGame(currentPlayerRoom);
         this.removeGame(roomId);
+        this.setUserStatus(currentPlayerRoom.player1, 'Online');
+        this.setUserStatus(currentPlayerRoom.player2, 'Online');
       }
     }
   }
@@ -198,7 +224,9 @@ export class GameGateway {
     @MessageBody() data: any,
     @ConnectedSocket() sender: Socket | any,
   ) {
+    console.log({ data });
     let { receiver, senderName } = data;
+
     if (sender.userId == receiver)
       return { err: true, msg: 'u cant invite ur self hehe' };
     if (this.getUserStatus(receiver) == 'In Game')
@@ -208,26 +236,56 @@ export class GameGateway {
         err: true,
         msg: 'you are already in game, you cant invite people',
       };
+    // console.log('heeeyo');
+    // if (
+    //   this.pendingRequests[receiver] &&
+    //   this.pendingRequests[receiver].find((senderId) => senderId == sender.id)
+    // )
+    //   return {
+    //     err: true,
+    //     msg: 'you already sent this user a request',
+    //   };
     this.pendingRequests[receiver] = [];
     this.pendingRequests[receiver].push(sender.id);
+    // console.log('heeeyo1');
+    if (this.getUserId(receiver) == -1) return;
+    // sender.to(this.getUserId(receiver)).emit('inviteToPlay', {
+    //   senderName,
+    //   senderSocketId: sender.id,
+    //   senderId: sender.userId,
     console.log({ id: this.getUserId(receiver) });
-    sender.to(this.getUserId(receiver)).emit('inviteToPlay', {
+    // });
+    sender.to('activeUsers').emit('inviteToPlay', {
       senderName,
       senderSocketId: sender.id,
       senderId: sender.userId,
+      receiver,
     });
+    // sender.to(this.getUserId(receiver)).emit('inviteToPlay', {
+    //   senderName,
+    //   senderSocketId: sender.id,
+    //   senderId: sender.userId,
+    //   receiver,
+    // });
   }
 
   @SubscribeMessage('declineInvitation')
   declineInvitation(
-    @MessageBody() senderId: number,
+    @MessageBody() data: any,
     @ConnectedSocket() receiver: Socket | any,
   ) {
-    this.removePendingRequest(receiver.userId, senderId);
+    let { senderSocketId, senderId } = data;
+    console.log({ senderSocketId, senderId });
+    if (!this.removePendingRequest(receiver.userId, senderSocketId)) {
+      console.log('wazbi');
+      return { err: true, msg: 'the invitation is no longer available' };
+    }
   }
 
   removePendingRequest(recieverId: number, senderId: number) {
+    if (!this.pendingRequests[recieverId]) return true;
     let oldSize = this.pendingRequests[recieverId].length;
+    console.log({ recieverId });
     this.pendingRequests[recieverId] = this.pendingRequests[recieverId].filter(
       (sender) => sender != senderId,
     );
@@ -241,18 +299,18 @@ export class GameGateway {
     @ConnectedSocket() receiver: Socket | any,
   ) {
     let { senderId, senderSocketId } = data;
-    console.log({ data });
-    if (this.getUserStatus(receiver.userId) == 'Offline')
+    // console.log({ data });
+    if (this.getUserStatus(receiver.userId) == 'In Game')
       return {
         err: true,
-        msg: "this sender isnt online, can't accept invitation, sorry",
+        msg: "this sender in already in game or offline, you can't accept invitation, sorry",
       };
 
     // remove senderId from pending requests
     if (!this.removePendingRequest(receiver.userId, senderSocketId))
       return { err: true, msg: 'the invitation is no longer available' };
     if (this.pendingRequests[receiver.userId].length == 0)
-      this.pendingRequests.delete(receiver.userId);
+      delete this.pendingRequests[receiver.userId];
     // create game
     const roomId = this.createGame(
       receiver.userId,
@@ -275,7 +333,7 @@ export class GameGateway {
     map: number,
   ) {
     const roomId = uuidv4();
-    console.log({ roomId });
+    // console.log({ roomId });
     this.liveGames.push({
       roomId,
       player1: player1ID,
@@ -349,11 +407,13 @@ export class GameGateway {
       ff = 1;
     } else if (currentPlayerRoom.player2 == player.userId) ff = 2;
     else return 'wtf';
-    // TODO SAVE IN DATABASE
+    this.liveGames[roomIndex].ff = ff;
     this.saveGame(currentPlayerRoom);
     // Inform everyone that game ends
     this.server.to(roomId).emit('gameOver', ff);
     this.removeGame(roomId);
+    this.setUserStatus(currentPlayerRoom.player1, 'Online');
+    this.setUserStatus(currentPlayerRoom.player2, 'Online');
   }
 
   removeGame(roomId: string) {
@@ -369,24 +429,17 @@ export class GameGateway {
     @MessageBody() data: any,
     @ConnectedSocket() player: Socket | any,
   ) {
-    // console.table(this.liveGames);
     return this.liveGames;
   }
 
   async handleDisconnect(player: Socket | any, ...args: any[]) {
-    this.server
-      .to('activeUsers')
-      .emit('userStatus', { userId: player.userId, status: 'Offline' });
-    // this.logger.log(`client leaved queue: ${client.id}`);
-    console.log(`client disconnected: ${player.id}`);
+    this.setUserStatus(player.userId, 'Offline');
     let userStatus = this.getUserStatus(player.userId);
     // console.table({ userStatus });
     // if player was in queue?
     // leavequeue
     if (userStatus == 'In Queue') {
-      this.players = this.players.filter(
-        (playerinQueue) => playerinQueue.userId != player.userId,
-      );
+      this.removePlayer(player.userId);
     } else if (userStatus == 'In Game') {
       console.log(`was in game: ${player.id}`);
       // if player was in game
@@ -403,6 +456,7 @@ export class GameGateway {
           ff = 1;
         } else if (currentPlayerRoom.player2 == player.userId) ff = 2;
         await this.server.to(currentPlayerRoom.roomId).emit('gameOver', ff);
+
         this.saveGame(currentPlayerRoom);
         this.removeGame(currentPlayerRoom.roomId);
       }
@@ -410,7 +464,19 @@ export class GameGateway {
     }
     // else
     // do nting
+    // delete this.users[player.userId];
+    console.log(
+      '----------------------------------------------------------------',
+    );
+    console.table(this.users);
+    // this.users.splice(this.users.indexOf(this.users[player.userId]), 1);
+    // this.users = this.users.filter((user) => user.status != 'Offline');
     delete this.users[player.userId];
+    console.log(
+      '----------------------------------------------------------------',
+    );
+    console.table(this.users);
+    console.log('client disconnected', player.userId);
     // console.table(this.users);
   }
 
@@ -419,35 +485,37 @@ export class GameGateway {
     this.gameService.createGame({
       user1Id: game.player1,
       user2Id: game.player2,
-      first_user_score: game.score1,
-      second_user_score: game.score2,
+      first_user_score: game.score2,
+      second_user_score: game.score1,
       flag: game.ff,
       map: game.map,
     });
   }
+
   @SubscribeMessage('getUserStatus')
   getUserStatusById(
     @MessageBody() id: any,
     @ConnectedSocket() player: Socket | any,
   ) {
-    player.join('activeUsers');
     return this.getUserStatus(id);
   }
 
   async handleConnection(client: any, ...args: any[]) {
     const user = await this.authService.getUserFromSocket(client);
-    console.log({ k: 'D' });
     if (!user) {
       client.disconnect();
+      console.error('IMPOSTER ');
       return;
     }
-    console.log({ k: 'b' });
     client.userId = user.id;
-    this.server.to(client.id).emit('hehe');
+    console.log('client connected', client.userId);
+    client.join('activeUsers');
     this.users[user.id] = {
-      status: 'online',
+      status: 'Online',
       socketId: client.id,
     };
-    // console.table(this.users);
+    console.table(this.users);
+    this.setUserStatus(client.userId, 'Online');
+    this.server.to(client.id).emit('hehe');
   }
 }

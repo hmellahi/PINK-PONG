@@ -49,6 +49,7 @@ const actions = {
         membersCount: i * 3,
         isLocked: i % 2 == 0,
       });
+    console.log({ publicChannels: store.state.User.publicChannels });
   },
 
   // currentUser():any {
@@ -64,7 +65,7 @@ const actions = {
       message,
       channelId,
       showTooltip: false,
-      sender:"test", // tODO REMOVE
+      sender: "test", // tODO REMOVE
       // sender: rootState.User.user.login,
       // sender: currentUser.login,
       createdAt: moment().format("mm:ss"), // TODO CHANGE?

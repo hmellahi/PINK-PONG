@@ -30,7 +30,7 @@ import { Channel } from "../../types/Channel";
 })
 export default class Chat extends Vue {
   async mounted() {
-    await this.$store.dispatch("Chat/connectToChatSocket", this.$cookies);
+    await this.$store.dispatch("Chat/connectToChatSocket", this.$cookies);  
   }
   get channels(): any {
     return this.$store.state.Chat.publicChannels;

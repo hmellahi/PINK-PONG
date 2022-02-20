@@ -6,13 +6,9 @@ import ChannelEntity from './entities/channel.entity';
 import { ChatService } from './chat.service';
 import { ChatController } from './chat.controller';
 
-
 @Module({
-    imports: [
-        AuthModule,
-        TypeOrmModule.forFeature([ChannelEntity])
-    ],
-    controllers : [ChatController],
-    providers: [ChatService, ChatGateway]
+  imports: [AuthModule, TypeOrmModule.forFeature([ChannelEntity])],
+  controllers: [ChatController],
+  providers: [ChatService, ChatGateway],
 })
-export class ChatModule { }
+export class ChatModule {}

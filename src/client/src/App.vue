@@ -20,7 +20,7 @@
             <button
               class="btn btn-danger"
               style="background: #f44336"
-              @click="declineRequest"
+              @click="declineRequest(props.item.data)"
             >
               Decline
             </button>
@@ -72,7 +72,8 @@ export default class App extends Vue {
 
   async mounted() {
     this.updateIsLoginPage();
-    await this.$store.dispatch("User/connectToGameSocket", this.$cookies);
+    console.clear();
+    // await this.$store.dispatch("User/connectToGameSocket", this.$cookies);
   }
 
   updateIsLoginPage() {
@@ -88,7 +89,13 @@ export default class App extends Vue {
       senderId,
     });
   }
-  declineRequest() {}
+  declineRequest(data: any) {
+    let { senderSocketId, senderId } = data;
+    this.$store.dispatch("User/declineInvitation", {
+      senderId,
+      senderSocketId,
+    });
+  }
 }
 </script>
 

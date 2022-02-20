@@ -88,8 +88,7 @@ export default class MessageBox extends Vue {
   }
   InviteToPlay() {
     this.$store.state.User.gameSocket.emit("inviteToPlay", {
-      // reciever: this.message.user_id, TODO CHANGE
-      receiver: 75,
+      reciever: this.$props.message.user_id, //TODO CHANGE
       senderName: this.currentUser.login ? this.currentUser.login : "someone",
     });
   }
