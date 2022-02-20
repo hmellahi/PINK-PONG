@@ -29,6 +29,7 @@ const listenToNotifications = (gameSocket: Socket) => {
     Vue.notify({
       duration: -1,
       type: "info",
+      // ignoreDuplicates: true,
       title: `${senderName} want to play with you !`,
       data: {
         senderSocketId: senderSocketId,
