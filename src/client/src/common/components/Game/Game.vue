@@ -39,7 +39,7 @@ import P5, {
 import Paddle from "@/common/Game/Objects/Paddle";
 import Score from "@/common/Game/Objects/Score";
 
-const MAX_SCORE = 5;
+const MAX_SCORE = 2;
 const COUNTDOWN = 3;
 
 @Component<Game>({
@@ -48,6 +48,9 @@ const COUNTDOWN = 3;
     // prompt("hey")
 
     // console.log("beforeRouteLeave", to.path, from.path);
+    // this.isMusicOn = false;
+    // this.isSoundOn = false;
+    this.Clairo.pause();
     await this.leaveGame();
     next();
   },
@@ -286,6 +289,7 @@ export default class Game extends Vue {
     window.addEventListener("resize", this.resize);
     this.init();
     this.roomId = this.$route.query.id;
+    // var s = '../../../../public/assets/sounds/wallHitSound.wav';
     this.wallHitSound = new Audio(sound);
     this.scoreSound = new Audio(sound2);
     this.marioCoin = new Audio(sound3);
@@ -300,14 +304,14 @@ export default class Game extends Vue {
     this.listenToGameEvents();
     //  if(typeof(Worker) !== "undefined") {
     if (localStorage[this.currentUser.id + "#settings#0"]) {
-      this.isMusicOn = localStorage[this.currentUser.id + "#settings#0"];
+      this.isMusicOn = localStorage[this.currentUser.id + "#settings#0"] === "true";
     }
     if (localStorage[this.currentUser.id + "#settings#1"]) {
-      this.isSoundOn = localStorage[this.currentUser.id + "#settings#1"];
+      this.isSoundOn = localStorage[this.currentUser.id + "#settings#1"] === "true";
     }
     console.log({ isSoundOn: this.isSoundOn, isMusicOn: this.isMusicOn });
     // here do ur shit...
-    if (!this.isMusicOn){
+    if (this.isMusicOn){
       // this.marioCoin.play();
       this.Clairo.play();
     }
@@ -542,16 +546,7 @@ export default class Game extends Vue {
 
   draw(sketch: P5Sketch) {
     if (this.isGameOver) return;
-    if (
-      this.scores[0].value >= MAX_SCORE ||
-      this.scores[1].value >= MAX_SCORE
-    ) {
-      this.isGameOver = true;
-      this.scores.map((score) => score.draw(sketch));
-      // this.showGameOver(sketch);
-      this.over(0);
-      return;
-    }
+
     this.sendNewBallPostion();
     sketch.background(this.backColor);
     // sketch.clear();
@@ -564,12 +559,22 @@ export default class Game extends Vue {
     this.paddle.update();
     this.paddle2.draw(sketch);
     this.paddle2.update();
+    if (
+      this.scores[0].value >= MAX_SCORE ||
+      this.scores[1].value >= MAX_SCORE
+    ) {
+      this.isGameOver = true;
+      this.scores.map((score) => score.draw(sketch));
+      // this.showGameOver(sketch);
+      this.over(0);
+      return;
+    }
     let player: Paddle =
       this.ball.x < GameConstants.canvas.width / 2 ? this.paddle2 : this.paddle;
     if (this.ball.hits(player)) {
       this.ball.reverse(player, player == this.paddle);
       // send
-      if (!this.isSoundOn )
+      if (this.isSoundOn )
       {
       console.log("play sound");
       // this.wallHitSound.play();
@@ -581,9 +586,10 @@ export default class Game extends Vue {
     }
     let ballHitsBorder = this.ball.checkBorders();
     if (ballHitsBorder) {
-         if (!this.isSoundOn )
+         if (this.isSoundOn )
       {
       this.scoreSound.play();
+      console.log("play2 sound");
       }
       this.ball.reset();
       this.paddle.reset();

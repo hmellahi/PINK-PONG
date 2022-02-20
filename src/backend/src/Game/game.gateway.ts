@@ -18,7 +18,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { join } from 'node:path/win32';
 import { GameService } from './game.service';
 
-let MAX_SCORE = 5;
+let MAX_SCORE = 2;
 
 let ROOM_NOT_FOUND = 'room Not Found';
 let ALREADY_IN_QUEUE = 'u cant join queue, because you are already in queue';
@@ -482,6 +482,7 @@ export class GameGateway {
 
   saveGame(game: Game): void {
     console.log({ game });
+    try{
     this.gameService.createGame({
       user1Id: game.player1,
       user2Id: game.player2,
@@ -490,6 +491,10 @@ export class GameGateway {
       flag: game.ff,
       map: game.map,
     });
+  }
+  catch(e){
+    
+  }
   }
 
   @SubscribeMessage('getUserStatus')
