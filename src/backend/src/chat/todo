@@ -1,6 +1,10 @@
-create channel
-join to a channel
-get channel
+create channel [done]
+join to a channel [done]
+add member [done]
+leave a channel
+
 update channel
+
+get channel
 create message
 get all messages for a channel

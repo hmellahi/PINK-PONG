@@ -42,11 +42,14 @@ export class AuthController
     {
         const {user} = request;
         let existedUser = await this.userService.getByEmail(user.email);
+        let redirectiUrl = this.configService.get("TWO_FACTOR_LOGIN_PAGE");
 
         if (!existedUser)
+        {
             existedUser = await this.authService.register(user);
+            redirectiUrl = this.configService.get("SETTING_URL");
+        }
         const cookies: string[] = [this.authService.getAccessJwtCookie(existedUser.id)];
-        let redirectiUrl = this.configService.get("TWO_FACTOR_LOGIN_PAGE");
         if (!existedUser.two_factor_auth_enabled)
         {
             const refresh = this.authService.getRefreshJwtCookie(existedUser.id);

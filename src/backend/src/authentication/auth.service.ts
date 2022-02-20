@@ -60,7 +60,7 @@ export class AuthService
 
     }
 
-    private async verifyPassword(hashedPassword:string, plainTextPasword:string)
+    public async verifyPassword(hashedPassword:string, plainTextPasword:string)
     {
         const isMatching = bcrypt.compareSync(plainTextPasword,
             hashedPassword);
