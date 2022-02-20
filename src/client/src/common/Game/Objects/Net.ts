@@ -37,6 +37,9 @@ export default class Net {
     sketch.strokeWeight(ratio);
     sketch.noFill();
     sketch.rect(x - ratio / 2, 0, ratio / 2, this.height);
+  }  
+  map3(sketch: P5Sketch) {
+
   }
 
   map2(sketch: P5Sketch) {
@@ -63,8 +66,11 @@ export default class Net {
   draw(sketch: P5Sketch) {
     if (this.map == 1) {
       this.map1(sketch);
-    } else {
+    } else if (this.map == 2) {
       this.map2(sketch);
+    }
+    else{
+      this.map3(sketch);
     }
   }
 }

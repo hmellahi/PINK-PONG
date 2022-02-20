@@ -556,9 +556,13 @@ var sound8 = 'assets/sounds/alex-productions-epic-cinematic-gaming-cyberpunk-res
     if (this.isGameOver) return;
 
     this.sendNewBallPostion();
+    if (this.map != 3){
     sketch.background(this.backColor);
-    // sketch.clear();
-    // sketch.background(220, 30); => the third map
+    }
+    else{
+    sketch.clear();
+    sketch.background(220, 30); //=> the third map
+    }
     if (this.gameData.map != 1) this.drawOerlay(sketch);
     this.net.draw(sketch);
 
