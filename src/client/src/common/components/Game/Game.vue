@@ -36,8 +36,10 @@ const COUNTDOWN = 3;
     // console.log("beforeRouteLeave", to.path, from.path);
     // this.isMusicOn = false;
     // this.isSoundOn = false;
-    this.Clairo.pause();
-    await this.leaveGame();
+    try {
+      await this.leaveGame();
+      this.Clairo.pause();
+    } catch (e) {}
     next();
   },
 })
@@ -286,6 +288,7 @@ export default class Game extends Vue {
     var sound8 =
       "assets/sounds/alex-productions-epic-cinematic-gaming-cyberpunk-reset.mp3";
 
+    this.Clairo = await new Audio(sound8);
     this.wallHitSound = await new Audio(sound);
     this.scoreSound = await new Audio(sound2);
     this.marioCoin = await new Audio(sound3);
@@ -566,6 +569,9 @@ export default class Game extends Vue {
       this.isGameOver = true;
       this.scores.map((score) => score.draw(sketch));
       // this.showGameOver(sketch);
+      try {
+        this.Clairo.pause();
+      } catch (e) {}
       this.over(0);
       return;
     }

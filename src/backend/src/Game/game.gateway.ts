@@ -34,7 +34,6 @@ export class GameGateway {
   @WebSocketServer() server: Server;
 
   getUserStatus(userId: number) {
-    console.table(this.users);
     return this.users[userId] ? this.users[userId].status : 'Offline';
   }
 
@@ -94,7 +93,6 @@ export class GameGateway {
 
     // console.log(`client joined queue: ${player.id}`);
     if (!player.userId) return { err: true, msg: 'u cant join queue' };
-    console.table(this.players);
     if (
       this.players.find(
         (playersInQueue) => playersInQueue.userId === player.userId,
@@ -231,7 +229,10 @@ export class GameGateway {
     if (sender.userId == receiver)
       return { err: true, msg: 'u cant invite ur self hehe' };
     if (this.getUserStatus(receiver) != 'Online')
-      return { err: true, msg: 'this user is already in game, or offline sorry' };
+      return {
+        err: true,
+        msg: 'this user is already in game, or offline sorry',
+      };
     if (this.getUserStatus(sender.userId) == 'In Game')
       return {
         err: true,
@@ -246,7 +247,7 @@ export class GameGateway {
     //     err: true,
     //     msg: 'you already sent this user a request',
     //   };
-    this.pendingRequests[receiver] = [];
+    if (!this.pendingRequests[receiver]) this.pendingRequests[receiver] = [];
     this.pendingRequests[receiver].push(sender.id);
     // console.log('heeeyo1');
     if (this.getUserId(receiver) == -1) return;
@@ -301,6 +302,12 @@ export class GameGateway {
   ) {
     let { senderId, senderSocketId } = data;
     // console.log({ data });
+    if (this.getUserStatus(senderId) == 'In Game') {
+      return {
+        err: true,
+        msg: "you are already in game, you can't accept invitation, sorry",
+      };
+    }
     if (this.getUserStatus(receiver.userId) == 'In Game')
       return {
         err: true,
@@ -312,13 +319,15 @@ export class GameGateway {
       return { err: true, msg: 'the invitation is no longer available' };
     if (this.pendingRequests[receiver.userId].length == 0)
       delete this.pendingRequests[receiver.userId];
+    this.setUserStatus(receiver.userId, 'In Game');
+    this.setUserStatus(senderId, 'In Game');
     // create game
     const roomId = this.createGame(
       receiver.userId,
       senderId,
       receiver.id,
       senderSocketId,
-      1,
+      2,
     );
     this.server
       .to(receiver.id)
@@ -464,33 +473,28 @@ export class GameGateway {
     console.log(
       '----------------------------------------------------------------',
     );
-    console.table(this.users);
     // this.users.splice(this.users.indexOf(this.users[player.userId]), 1);
     // this.users = this.users.filter((user) => user.status != 'Offline');
     delete this.users[player.userId];
     console.log(
       '----------------------------------------------------------------',
     );
-    console.table(this.users);
     console.log('client disconnected', player.userId);
     // console.table(this.users);
   }
 
   saveGame(game: Game): void {
     console.log({ game });
-    try{
-    this.gameService.createGame({
-      user1Id: game.player1,
-      user2Id: game.player2,
-      first_user_score: game.score2,
-      second_user_score: game.score1,
-      flag: game.ff,
-      map: game.map,
-    });
-  }
-  catch(e){
-    
-  }
+    try {
+      this.gameService.createGame({
+        user1Id: game.player1,
+        user2Id: game.player2,
+        first_user_score: game.score2,
+        second_user_score: game.score1,
+        flag: game.ff,
+        map: game.map,
+      });
+    } catch (e) {}
   }
 
   @SubscribeMessage('getUserStatus')
@@ -515,7 +519,6 @@ export class GameGateway {
       status: 'Online',
       socketId: client.id,
     };
-    console.table(this.users);
     this.setUserStatus(client.userId, 'Online');
     this.server.to(client.id).emit('hehe');
   }

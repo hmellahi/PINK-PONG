@@ -95,14 +95,14 @@ export default class listChannels extends Vue {
       alert(this.currentChannel.id);
       this.$store.dispatch("Chat/joinChannel", {
         channelId: this.currentChannel.id,
-        // password: this.password,
+        password: this.password,
       });
     } catch (errors) {
       this.errors = errors;
       return;
     }
     this.$router.replace({
-      path: "/chat/channel/" + this.currentChannel.name,
+      path: "/chat/channel/" + this.currentChannel.id,
     });
   }
   openPopup(channel: Channel): void {
