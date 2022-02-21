@@ -82,9 +82,9 @@ export default class Profile extends Vue {
   isMyProfile: boolean = false;
   invited_count: Number = 0;
   mounted() {
-    this.updateUserRender()
+    this.updateUserRender();
   }
-  updateUserRender(){
+  updateUserRender() {
     this.checkUser();
     this.fetchMatches();
     this.$store.state.User.gameSocket.on(
@@ -173,7 +173,7 @@ export default class Profile extends Vue {
     if (this.invited_count == 1)
       this.$notify({
         duration: 1000,
-        ignoreDuplicates:true,
+        ignoreDuplicates: true,
         type: "danger",
         title: "You Invite this player , Wch bghitih yl3eb bzz",
       });
@@ -194,8 +194,8 @@ export default class Profile extends Vue {
     );
     this.invited_count = 1;
   }
-  created(){
-    console.log("im logged again in created")
+  created() {
+    console.log("im logged again in created");
   }
 }
 </script>
@@ -214,7 +214,7 @@ export default class Profile extends Vue {
 .leader_box {
   justify-content: space-evenly !important;
 }
-.overlay{
-  height: 20rem!important;
+.overlay {
+  height: 20rem !important;
 }
 </style>

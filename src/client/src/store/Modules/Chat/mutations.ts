@@ -26,9 +26,7 @@ const mutations = {
     state.dms.push(channel);
   },
   ADD_CHANNELS(state: any, channels: any) {
-    console.log({ AB: channels });
     channels.map((channel: Channel) => {
-      console.log({ AB: channel.type });
       if (!channel) return;
       if (channel.type == "private") {
         state.privateChannels.push(channel);
@@ -41,11 +39,27 @@ const mutations = {
       }
     });
   },
-  REMOVE_FROM_CHANNELS(state: any, channelId: any) {},
   ADD_MSG(state: any, msg: Message) {
     // let newMessagesList = state.get_channel_msgs(state, channelId).push(msg);
     // state.allMessages.set(channelId, newMessagesList);
     state.allMessages.push(msg);
+  },
+  REMOVE_CHANNEL(state: any, channelId: any) {
+    state.publicChannels = state.publicChannels.filter(
+      (channel: Channel) => channel.id != channelId
+    );
+    state.privateChannels = state.privateChannels.filter(
+      (channel: Channel) => channel.id != channelId
+    );
+    state.dms = state.dms.filter((channel: Channel) => channel.id != channelId);
+  },
+  CLEAR_PUBLIC_CHANNELS(state: any, type: string) {
+    // remove all channels depending on type
+    if (type == "public") {
+      state.publicChannels = [];
+    } else if (type == "private") {
+      state.privateChannels = [];
+    }
   },
 };
 
