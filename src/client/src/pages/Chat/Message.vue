@@ -2,7 +2,8 @@
   <div>
     <Popup v-model="show_popup">
       <div v-if="!isDM">
-        <div v-if="true" class="mb-2">
+        <div v-if="message.isAdmin" class="mb-2">
+          <!-- TODO CHECK IF CURR USER IS ADMIN. -->
           <span
             ><input
               class="checkbox_admin"
@@ -18,22 +19,20 @@
           >Profile</Button
         >
         <Button class="m-0" :onClick="InviteToPlay">Invite To Play</Button>
-        <Button class="m-0" :link="'/profile/' + message.sender">Ban</Button>
+        <Button class="m-0" :onClick="ban">Ban</Button>
         <div class="mute-message">
-          <!-- <InputField
-            placeholder=""
+          <select
             v-model="muteDuration"
             class="m-2 ml-3 px-2"
             style="width: 5rem"
-          /> -->
-          <select v-model="muteDuration" class="m-2 ml-3 px-2" style="width: 5rem">
+          >
             <option value="15">15 min</option>
             <option value="60">1 hr</option>
             <option value="180">3 hr</option>
             <option value="480">8 hr</option>
             <option value="1440">24 hr</option>
           </select>
-          <Button class="m-0" :link="'/profile/' + message.sender">Mute</Button>
+          <Button class="m-0" :onClick="mute">Mute</Button>
         </div>
       </div>
     </Popup>
@@ -80,6 +79,27 @@ export default class MessageBox extends Vue {
     //   },
     // ],
   };
+  addAdmin() {
+    console.log(this.$props.message.user_id);
+    this.$store.dispatch("Chat/addAdmin", {
+      userId: this.$props.message.user_id,
+      channelId: this.$route.params.name,
+    });
+  }
+  ban() {
+    this.$store.dispatch("Chat/banFromChannel", {
+      userId: this.$props.message.user_id,
+      channelId: this.$route.params.name,
+    });
+  }
+  mute() {
+    alert(this.muteDuration);
+    this.$store.dispatch("Chat/muteFromChannel", {
+      userId: this.$props.message.user_id,
+      channelId: this.$route.params.name,
+      muteDuration: this.muteDuration,
+    });
+  }
   mounted() {}
   showMsgTooltip() {
     this.show_popup = !this.show_popup;

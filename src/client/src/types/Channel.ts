@@ -1,5 +1,6 @@
 export interface Channel {
   type: string;
+  id?: string;
   name: string;
   isLocked?: Boolean;
   membersCount?: Number;

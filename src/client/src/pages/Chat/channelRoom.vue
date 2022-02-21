@@ -6,7 +6,10 @@
       :onClick="goBackward"
       >Back</Button
     >
-    <Button class="mb-3 col-md-2 right-btn" style="right: 19%" :link="'#'"
+    <Button
+      class="mb-3 col-md-2 right-btn"
+      style="right: 19%"
+      :onClick="leaveRoom"
       >Leave</Button
     >
     <Button
@@ -76,6 +79,15 @@ export default class channelRoom extends Vue {
     // console.table(this.$store);
     return this.$store.getters["Chat/getChannelMsgs"](this.$route.params.name);
   }
+
+  get currentChannelId() {
+    return this.$route.params.name;
+  }
+  leaveRoom() {
+    this.$store.dispatch("Chat/leaveChannel", {
+      channelId: this.currentChannelId,
+    });
+  }
   mounted() {}
   resetTooltips() {
     for (var i = 0; i < this.messages.length; i++)
@@ -109,7 +121,12 @@ export default class channelRoom extends Vue {
     this.show_popup = true;
   }
   SendInvite() {
-    console.log("added succefuly");
+    // console.log(this.$props.message.user_id);
+    this.$store.dispatch("Chat/addMember", {
+      channelId: this.$route.params.name,
+      login: this.inviter,
+    });
+    this.show_popup = false;
   }
 }
 </script>

@@ -28,6 +28,7 @@
           class="text-left p-3 my-4"
           autocomplete="on"
         ></InputField>
+        {{ errors }}
       </form>
       <Button :onClick="joinChannel" class="px-5">Join</Button>
     </Popup>
@@ -56,6 +57,7 @@ export default class listChannels extends Vue {
   currentChannel: Channel;
   password = "";
   show = false;
+  errors = "";
   async created() {
     this.currentChannel = {
       name: "",
@@ -63,6 +65,9 @@ export default class listChannels extends Vue {
       isLocked: false,
       type: "public",
     };
+    if (!this.currentRouteName || this.currentRouteName == "/chat")
+      await this.$store.dispatch("Chat/fetchChannels");
+    else await this.$store.dispatch("Chat/fetchMyChannels");
   }
 
   get currentRouteName() {
@@ -86,14 +91,19 @@ export default class listChannels extends Vue {
     return this.$store.state.Chat.privateChannels;
   }
   joinChannel(): void {
-    // console.log("pass", this.currentChannel);
-    // TODO VERIVY
-    this.$router
-      .replace({
-        path: "/chat/channel/" + this.currentChannel.name,
-      })
-    // .catch();
-    // window.location.replace("/chat/DirectMessages");
+    try {
+      alert(this.currentChannel.id);
+      this.$store.dispatch("Chat/joinChannel", {
+        channelId: this.currentChannel.id,
+        // password: this.password,
+      });
+    } catch (errors) {
+      this.errors = errors;
+      return;
+    }
+    this.$router.replace({
+      path: "/chat/channel/" + this.currentChannel.name,
+    });
   }
   openPopup(channel: Channel): void {
     // console.log("isLocked : " + channel.isLocked);
