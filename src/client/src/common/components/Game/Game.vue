@@ -25,7 +25,7 @@ import P5, {
 import Paddle from "@/common/Game/Objects/Paddle";
 import Score from "@/common/Game/Objects/Score";
 
-const MAX_SCORE = 2;
+const MAX_SCORE = 5;
 const COUNTDOWN = 3;
 
 @Component<Game>({
@@ -289,7 +289,6 @@ export default class Game extends Vue {
     this.wallHitSound = await new Audio(sound);
     this.scoreSound = await new Audio(sound2);
     this.marioCoin = await new Audio(sound3);
-    this.Clairo = await new Audio(sound8);
     this.ballBounce = await new Audio(sound5);
     this.ballHit = await new Audio(sound7);
 
@@ -360,7 +359,7 @@ export default class Game extends Vue {
       this.socket.emit(
         "joinGame",
         { roomId: this.roomId },
-        async ({msg, err}: any) => {
+        async ({ msg, err }: any) => {
           if (err) {
             this.$notify({
               duration: -1,

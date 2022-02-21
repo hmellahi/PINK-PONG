@@ -55,6 +55,37 @@ const actions = {
     } catch (error) {}
   },
 
+  async joinChannel({ commit }: ActionContext<any, any>, data: any) {
+    try {
+      let resp = await api.post("chat/joinChannel", data);
+      // commit("ADD_CHANNELS", data.data); TODO ADD TO MY CHANNELS LIST
+      console.log({ data }, { resp });
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  async leaveChannel({ commit }: ActionContext<any, any>, data: any) {
+    try {
+      let resp = await api.post("chat/leaveChannel", data);
+      // commit("ADD_CHANNELS", data.data); TODO REMOVE FROM MY CHANNELS LIST
+      console.log({ data }, { resp });
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  async addMember({ commit }: ActionContext<any, any>, data: any) {
+    try {
+      let resp = await api.post("chat/addMember", data);
+      // ex :{"login": "htagrour1","channelId": 5}
+      // commit("ADD_CHANNELS", data.data);
+      console.log({ data }, { resp });
+    } catch (error) {
+      throw error;
+    }
+  },
+
   async fetchMyChannels({ commit }: ActionContext<any, any>) {
     try {
       let data = await api.get("chat/myChannels");
@@ -87,13 +118,6 @@ const actions = {
     // console.log({ store: rootState.User.user });
     // state.chatSocket.emit("message", { msg, channelId }); // TODO
   },
-  // JOIN/LEAVE/CREATE/EDIT/FETCH
-  // mute/ban/invite
-  // join
-
-  // FETCH/create
-  // join/leave/invite
-  // admin
 
   async createChannel({ commit }: ActionContext<UserState, any>, channel: any) {
     try {
@@ -102,6 +126,32 @@ const actions = {
       console.log({ a: data });
       if (channel.type == "public") commit("ADD_PUBLIC_CHANNEL", channel);
       commit("ADD_CHANNELS", [channel]);
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  async addAdmin({ commit }: ActionContext<any, any>, data: any) {
+    try {
+      let resp = await api.post("/chat/addAdmin", data);
+      console.log({ data }, { resp });
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  async muteFromChannel({ commit }: ActionContext<any, any>, data: any) {
+    try {
+      let resp = await api.post("/chat/muteFromChannel", data);
+      console.log({ data }, { resp });
+    } catch (error) {
+      throw error;
+    }
+  },
+  async banFromChannel({ commit }: ActionContext<any, any>, data: any) {
+    try {
+      let resp = await api.post("/chat/banFromChannel", data);
+      console.log({ data }, { resp });
     } catch (error) {
       throw error;
     }

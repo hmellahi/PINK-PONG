@@ -47,8 +47,8 @@ export default class {
     //
 
     let { x, y, radius } = this;
-    // sketch.fill(255, 255, 255);
-    sketch.fill("red");
+    sketch.fill(255, 255, 255);
+    // sketch.fill("red");
     sketch.noStroke();
     // sketch.ellipse(x + radius, y - radius, radius * 2, radius * 2);
     sketch.ellipse(x, y, radius * 2, radius * 2);
