@@ -42,6 +42,5 @@ export class ChatGateway {
 
   @SubscribeMessage('message')
   handleEvent(@MessageBody() data: MessageDto) {
-    console.log(data);
   }
 }
