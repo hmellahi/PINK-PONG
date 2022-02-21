@@ -231,7 +231,10 @@ export class GameGateway {
     if (sender.userId == receiver)
       return { err: true, msg: 'u cant invite ur self hehe' };
     if (this.getUserStatus(receiver) != 'Online')
-      return { err: true, msg: 'this user is already in game, or offline sorry' };
+      return {
+        err: true,
+        msg: 'this user is already in game, or offline sorry',
+      };
     if (this.getUserStatus(sender.userId) == 'In Game')
       return {
         err: true,
@@ -246,7 +249,7 @@ export class GameGateway {
     //     err: true,
     //     msg: 'you already sent this user a request',
     //   };
-    this.pendingRequests[receiver] = [];
+    if (!this.pendingRequests[receiver]) this.pendingRequests[receiver] = [];
     this.pendingRequests[receiver].push(sender.id);
     // console.log('heeeyo1');
     if (this.getUserId(receiver) == -1) return;
@@ -301,6 +304,12 @@ export class GameGateway {
   ) {
     let { senderId, senderSocketId } = data;
     // console.log({ data });
+    if (this.getUserStatus(senderId) == 'In Game') {
+      return {
+        err: true,
+        msg: "you are already in game, you can't accept invitation, sorry",
+      };
+    }
     if (this.getUserStatus(receiver.userId) == 'In Game')
       return {
         err: true,
@@ -312,13 +321,15 @@ export class GameGateway {
       return { err: true, msg: 'the invitation is no longer available' };
     if (this.pendingRequests[receiver.userId].length == 0)
       delete this.pendingRequests[receiver.userId];
+    this.setUserStatus(receiver.userId, 'In Game');
+    this.setUserStatus(senderId, 'In Game');
     // create game
     const roomId = this.createGame(
       receiver.userId,
       senderId,
       receiver.id,
       senderSocketId,
-      1,
+      2,
     );
     this.server
       .to(receiver.id)
@@ -478,19 +489,16 @@ export class GameGateway {
 
   saveGame(game: Game): void {
     console.log({ game });
-    try{
-    this.gameService.createGame({
-      user1Id: game.player1,
-      user2Id: game.player2,
-      first_user_score: game.score2,
-      second_user_score: game.score1,
-      flag: game.ff,
-      map: game.map,
-    });
-  }
-  catch(e){
-    
-  }
+    try {
+      this.gameService.createGame({
+        user1Id: game.player1,
+        user2Id: game.player2,
+        first_user_score: game.score2,
+        second_user_score: game.score1,
+        flag: game.ff,
+        map: game.map,
+      });
+    } catch (e) {}
   }
 
   @SubscribeMessage('getUserStatus')
