@@ -2393,3 +2393,12 @@ body.light hr.separator {
     margin-bottom: 1rem;
   }
 }
+
+@media(max-width:1197px){
+  .side .title {
+    font-size: 0.9rem;
+  }
+  /* .leader_box{
+    flex-wrap: wrap;
+  } */
+}

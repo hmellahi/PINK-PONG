@@ -2,9 +2,9 @@
   <router-link v-if="link != null" :to="link" class="btn btn-friends btn_title">
     <slot></slot>
   </router-link>
-  <a v-else href="#" class="btn btn-friends btn_title" @click="onClick">
+  <button v-else class="btn btn-friends btn_title" @click="onClick">
     <slot></slot>
-  </a>
+  </button>
 </template>
 
 <script>

@@ -85,4 +85,12 @@ export default class editChannel extends Vue {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.overlay{
+    height: 24rem!important;
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    justify-content: center;
+}
+</style>

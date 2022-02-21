@@ -18,8 +18,7 @@
           <div class="content_play">
             <h6>{{ showMapName(match.map) }}</h6>
             <div class="play_time">
-              <span>{{ match.duration }} </span>
-              <span>{{ match.duration }} </span>
+              <!-- <span>{{ match.duration }} </span> -->
               <span>{{ show_date(match.create_date) }}</span>
             </div>
           </div>
@@ -73,7 +72,7 @@ export default class MatchHistory extends Vue {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .history {
   height: 21rem;
   overflow: scroll;
@@ -82,4 +81,5 @@ export default class MatchHistory extends Vue {
     // flex: 0 0 calc(30%);
   }
 }
+
 </style>

@@ -110,7 +110,7 @@ export default class SideBar extends Vue {
   .title {
     font-size:1.5rem;
   }
-  a {
+  a, button {
     border: 3px solid rgb(83, 19, 126);
     background-color: transparent !important;
     color: white;

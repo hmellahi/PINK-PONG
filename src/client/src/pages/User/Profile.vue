@@ -197,4 +197,7 @@ export default class Profile extends Vue {
 .leader_box {
   justify-content: space-evenly !important;
 }
+.overlay{
+  height: 20rem!important;
+}
 </style>
