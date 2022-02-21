@@ -84,8 +84,9 @@ export default class channelRoom extends Vue {
     return this.$route.params.name;
   }
   leaveRoom() {
+    alert(this.currentChannelId)
     this.$store.dispatch("Chat/leaveChannel", {
-      channelId: this.currentChannelId,
+      channelId: Number(this.currentChannelId ),
     });
   }
   mounted() {}

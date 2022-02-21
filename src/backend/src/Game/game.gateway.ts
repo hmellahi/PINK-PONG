@@ -34,7 +34,6 @@ export class GameGateway {
   @WebSocketServer() server: Server;
 
   getUserStatus(userId: number) {
-    console.table(this.users);
     return this.users[userId] ? this.users[userId].status : 'Offline';
   }
 
@@ -94,7 +93,6 @@ export class GameGateway {
 
     // console.log(`client joined queue: ${player.id}`);
     if (!player.userId) return { err: true, msg: 'u cant join queue' };
-    console.table(this.players);
     if (
       this.players.find(
         (playersInQueue) => playersInQueue.userId === player.userId,
@@ -475,14 +473,12 @@ export class GameGateway {
     console.log(
       '----------------------------------------------------------------',
     );
-    console.table(this.users);
     // this.users.splice(this.users.indexOf(this.users[player.userId]), 1);
     // this.users = this.users.filter((user) => user.status != 'Offline');
     delete this.users[player.userId];
     console.log(
       '----------------------------------------------------------------',
     );
-    console.table(this.users);
     console.log('client disconnected', player.userId);
     // console.table(this.users);
   }
@@ -523,7 +519,6 @@ export class GameGateway {
       status: 'Online',
       socketId: client.id,
     };
-    console.table(this.users);
     this.setUserStatus(client.userId, 'Online');
     this.server.to(client.id).emit('hehe');
   }

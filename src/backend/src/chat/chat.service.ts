@@ -104,7 +104,6 @@ export class ChatService {
 
         if (!channel || !this.isMember(channel, member))
             throw new HttpException("Channel not found or User not A member", HttpStatus.BAD_REQUEST);
-        
         await this.channelRepository
                                 .createQueryBuilder()
                                 .relation('members')
