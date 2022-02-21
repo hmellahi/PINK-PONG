@@ -6,88 +6,46 @@
       :onClick="goBackward"
       >Back</Button
     >
-    <div class="profile_header">
-      <div class="profile_cover"></div>
-      <div class="profile_header_info">
-        <div class="profile_description">
-          <div class="user_avatar">
-            <div>
-              <div class="progress_user">
-                <div class="precent"><img :src="user.avatar_url" /></div>
-                <div class="circle"></div>
-                <div class="range">
-                  <input
-                    type="hidden"
-                    min="0"
-                    max="100"
-                    value="50"
-                    id="range"
-                  />
-                  <div class="filled"></div>
-                </div>
-              </div>
-            </div>
-            <p class="user_name">{{ user.login }}</p>
-            <div class="user_status" v-if="user.status">
-              <p class="user_status_text">{{ user.status }}</p>
-            </div>
-            <div class="user_buttons">
-              <Button
-                v-if="!isMyProfile && !user.isFriend"
-                :onClick="sendFriendReq"
-                ><i class="fas fa-check"></i> Add Friend</Button
-              >
-              <Button v-if="!isMyProfile" :onClick="inviteToPlay"
-                ><i class="fa fa-table-tennis"></i> InviteToPlay</Button
-              >
-            </div>
-            <p v-if="message" class="success_msg">{{ message }}</p>
-            <div class="user-stats user_stat_left">
-              <div class="user-stat">
-                <p class="user-stat-title">{{ user.wins + user.losses }}</p>
-                <p class="user-stat-text">Games</p>
-              </div>
-              <div class="user-stat">
-                <p class="user-stat-title">{{ achievmentsList.length }}</p>
-                <p class="user-stat-text">Achievements</p>
-              </div>
-            </div>
-            <div class="user-stats user_stat_right">
-              <div class="user-stat">
-                <p class="user-stat-title">{{ user.wins }}</p>
-                <p class="user-stat-text">Victories</p>
-              </div>
-              <div class="user-stat">
-                <p class="user-stat-title">{{ user.losses }}</p>
-                <p class="user-stat-text">losses</p>
-              </div>
-            </div>
-          </div>
-        </div>
+    <div class="infos infos_profile px-5 text-center mb-4">
+      <div class="avatar_profile">
+        <img class="mx-3" :src="user.avatar_url" alt="" />
+        <p class="user-name p-0 text-center my-auto">{{ user.login }}</p>
+        {{ user.status }}
+        <Button
+          class="w-100 m-0 mb-3 f1"
+          v-if="!isMyProfile && !user.isFriend"
+          :onClick="sendFriendReq"
+          >Send Friend Request</Button
+        >
+        <Button
+          class="w-100 m-0 mb-0 f1"
+          v-if="!isMyProfile"
+          :onClick="inviteToPlay"
+          >InviteToPlay</Button
+        >
+        <p v-if="message" class="success_msg">{{ message }}</p>
       </div>
-    </div>
-    <div class="row">
-      <div class="col-md-12">
-        <div class="widget-box">
-          <p class="widget-box-title widget_friends">Achievements</p>
-          <div class="widget-box-content">
-            <div
-              class="badges"
-              v-if="achievmentsList && achievmentsList.length"
-            >
-              <div
-                class="badge achievment_badge"
-                v-for="achievment of achievmentsList"
-                :key="achievment.id"
-              >
-                <img :src="achievment.image" width="46px" alt="badge" />
-                <div class="tooltip_achievment">
-                  <span>{{ achievment.title }}</span>
-                </div>
-              </div>
-            </div>
-            <div class="badges" v-else>There is no Achievements yet</div>
-          </div>
+      <!-- <Button class="w-100 m-0 mb-0 f1" :onClick="sendFriendReq"
+            >Send Friend Request</Button
+          > -->
+      <div class="row mt-2 states">
+        <div class="col-md-6">
+          <div class="col-md-12">Games</div>
+        </div>
+        <div class="col-md-6">
+          <div class="col-md-12 ml-0">{{ user.wins + user.losses }}</div>
+        </div>
+        <div class="col-md-6 mt-2">
+          <div class="col-md-12 ml-0">Win</div>
+        </div>
+        <div class="col-md-6 mt-2">
+          <div class="col-md-12 ml-0">{{ user.wins }}</div>
+        </div>
+        <div class="col-md-6 mt-2">
+          <div class="col-md-12 ml-0">Lost</div>
+        </div>
+        <div class="col-md-6 mt-2">
+          <div class="col-md-12 ml-0">{{ user.losses }}</div>
         </div>
       </div>
     </div>
@@ -101,6 +59,7 @@
         </div>
       </div>
     </Overlay>
+    <!-- <h1>{{user}}</h1> -->
   </div>
 </template>
 <script lang="ts">
@@ -122,14 +81,12 @@ export default class Profile extends Vue {
   message = "";
   isMyProfile: boolean = false;
   invited_count: Number = 0;
-  achievmentsList: any = [];
   mounted() {
     this.updateUserRender();
   }
-  async updateUserRender() {
-    await this.checkUser();
+  updateUserRender() {
+    this.checkUser();
     this.fetchMatches();
-    this.fetchAchievments();
     this.$store.state.User.gameSocket.on(
       "userStatus",
       ({ userId, status }: any) => {
@@ -155,16 +112,7 @@ export default class Profile extends Vue {
       console.log(e);
     }
   }
-  get achievments() {
-    return this.$store.getters["User/getAchievments"];
-  }
 
-  fetchAchievments() {
-    this.achievments.map((achievment: any) => {
-      if (achievment.checker(this.user) == true)
-        this.achievmentsList.push(achievment);
-    });
-  }
   async getUserStatus(id: number) {
     let statuss = "Offline";
     // if (this.userCurrent.id === id) {
@@ -268,8 +216,5 @@ export default class Profile extends Vue {
 }
 .overlay {
   height: 20rem !important;
-}
-.tooltip {
-  background: #2a467e8a;
 }
 </style>

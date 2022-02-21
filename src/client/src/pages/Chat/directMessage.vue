@@ -109,11 +109,11 @@ export default class channelRoom extends Vue {
   font-size: 1.3rem !important;
 }
 input {
-  background-color: #53137e;
+  background-color: #e8b7ff87;
   border: 0;
 }
 input:hover {
-  background-color: #53137e !important;
+  background-color: #b183cd8f !important;
   border: 0;
 }
 .overlay {

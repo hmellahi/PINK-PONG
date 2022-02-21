@@ -84,9 +84,9 @@ export default class channelRoom extends Vue {
     return this.$route.params.name;
   }
   leaveRoom() {
-    alert(this.currentChannelId)
+    alert(this.currentChannelId);
     this.$store.dispatch("Chat/leaveChannel", {
-      channelId: Number(this.currentChannelId ),
+      channelId: Number(this.currentChannelId),
     });
   }
   mounted() {}
@@ -137,11 +137,11 @@ export default class channelRoom extends Vue {
   font-size: 1.3rem !important;
 }
 input {
-  background-color: #53137e;
+  background-color: #2a467e8a;
   border: 0;
 }
 input:hover {
-  background-color: #53137e !important;
+  background-color: #2a467e8a !important;
   border: 0;
 }
 .overlay {

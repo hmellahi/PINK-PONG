@@ -213,7 +213,7 @@ body.light hr.separator {
   }
 
   body.light .header ul.icon-menu li.icon-box i {
-    color: #1f0644;
+    color: #b183cd;
   }
 
   body.light .header ul.icon-menu li.icon-box.active,
@@ -449,7 +449,7 @@ body.light hr.separator {
   }
 
   .header ul.icon-menu li.icon-box i {
-    color: #1f0644;
+    color: #b183cd;
     font-size: 19px;
     transition: 0.3s;
   }
@@ -1769,7 +1769,7 @@ body.light hr.separator {
   overflow-y: auto;
   height: 35em;
   position: relative;
-  border: 3px solid #53137e;
+  border: 3px solid #2a467e8a;
 
   /* overflow-x: hidden;  */
 }
@@ -1790,7 +1790,7 @@ body.light hr.separator {
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  background: #1f0644;
+  background: #b183cd;
 }
 
 /* Handle on hover */
@@ -1902,8 +1902,8 @@ body.light hr.separator {
 .time_finding_match {
   font-size: 3.5em;
   font-weight: 700;
-  border: 1px solid #1f0644;
-  background: #53137e;
+  border: 1px solid #b183cd;
+  background: #2a467e8a;
   width: 200px;
   margin: auto;
   border-radius: 15px;
@@ -1918,12 +1918,12 @@ body.light hr.separator {
 }
 
 .btn-friends {
-  background-color: #fff !important;
-  color: #53137e;
+  background-color: #e8b7ff87 !important;
+  color: #ffffff;
   font-weight: 700;
   padding: 0.2em 0.5em;
   margin: 0em 1em;
-  /* box-shadow: 1px 4px 5px 0px #1f0644; */
+  /* box-shadow: 1px 4px 5px 0px #b183cd; */
 }
 
 .friends_lists {
@@ -1940,7 +1940,7 @@ body.light hr.separator {
   align-items: center;
   flex-wrap: wrap;
   margin: 1rem 0;
-  background-color: #53137e !important;
+  background-color: #2a467e8a !important;
   border-radius: 15px;
   padding: 1em 0em;
 }
@@ -2016,7 +2016,7 @@ body.light hr.separator {
   height: 60px;
   border-radius: 50%;
   box-shadow: inset 0px 0px 4px 2px #c864f8;
-  background: #1f0644;
+  background: #b183cd;
   padding: 10px;
   margin-right: 20px;
 }
@@ -2064,7 +2064,7 @@ body.light hr.separator {
   height: 40px;
   border-radius: 50%;
   box-shadow: inset 0px 0px 4px 2px #c864f8;
-  background: #1f0644;
+  background: #b183cd;
   padding: 10px;
   margin-right: 10px;
 }
@@ -2187,7 +2187,7 @@ body.light hr.separator {
   height: 100px;
 }
 .room {
-  background-color: #53137e;
+  background-color: #2a467e8a;
   height: 20rem;
   border-radius: 10px;
   overflow: auto;
@@ -2290,12 +2290,12 @@ body.light hr.separator {
   }
 
   .btn-friends {
-    background-color: #fff !important;
-    color: #53137e;
+    background-color: #e8b7ff87 !important;
+    color: #ffffff;
     font-weight: 700;
     padding: 0.3em 1em;
     margin: 0em 0.2em;
-    box-shadow: 1px 4px 5px 0px #1f0644;
+    box-shadow: 1px 4px 5px 0px #b183cd;
     font-size: 10px;
   }
 
@@ -2346,6 +2346,7 @@ body.light hr.separator {
   .side span {
     position: relative;
     top: 0;
+    color: #fff;
   }
   .side {
     display: flex;

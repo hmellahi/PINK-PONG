@@ -7,16 +7,18 @@ export interface FriendsState {
 export interface UserState {
   isAuthenticated: boolean;
   user: User;
-  gameSocket:any
+  gameSocket: any;
+  achievments: any;
 }
 
 export interface User {
   login: string;
   avatar_url: string;
-  status:string;
+  status: string;
   matches: any[];
-  wins: Number;
-  loses: Number;
-  two_factor_auth_enabled:Boolean;
+  wins: number;
+  loses: number;
+  losses: number;
+  two_factor_auth_enabled: Boolean;
 }
 export type friendShipStatus = "friends" | "blockedUsers";
