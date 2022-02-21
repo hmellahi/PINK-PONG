@@ -47,6 +47,7 @@ export function AxiosPlugin<AxiosPlugOptions>(
   // do stuff with options
   Vue.prototype.$http = axios;
 }
+
 export class AxiosPluginOptions {}
 import { AxiosStatic } from "axios";
 declare module "vue/types/vue" {
