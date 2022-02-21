@@ -93,6 +93,7 @@ export class GameGateway {
     let { map } = data;
 
     // console.log(`client joined queue: ${player.id}`);
+    if (!player.userId) return { err: true, msg: 'u cant join queue' };
     console.table(this.players);
     if (
       this.players.find(
@@ -356,11 +357,6 @@ export class GameGateway {
   @SubscribeMessage('joinGame')
   joinGame(@MessageBody() data: any, @ConnectedSocket() player: Socket | any) {
     const { roomId } = data;
-
-    // TODO CHECK USER STATUS
-    // if (this.getUserStatus()){
-
-    // }
     const currentGameState: Game = this.liveGames.find(
       (game) => game.roomId === roomId,
     );

@@ -22,7 +22,6 @@
         <span>Private channel</span>
       </div>
       <h4>{{ errors }}</h4>
-      <!-- <InputField :args="propsToPass"></InputField> -->
       <Button :onClick="createChannel" class="mt-4">Create</Button>
     </form>
   </div>
@@ -39,18 +38,27 @@ import Checkbox from "@/common/components/UI/Checkbox.vue";
   components: { InputField, Button, Checkbox },
 })
 export default class createChannel extends Vue {
-  channel: Channel = { name: "", type: "" };
+  channel: Channel = {
+    name: "",
+    type: "public",
+    isLocked: false,
+    password: "",
+  };
   errors = "";
-  createChannel() {
-    // console.log(this.channel.name);
-    // console.log(this.channel.password);
-    // let { name, password } = this.channel;
-    // TODO CHECK IF CHANNEL NAME IS UNIQUE??
+  async createChannel() {
+    let { name, password } = this.channel;
     // if (!isValidInput(name) || !isValidInput(password)) {
-    //   this.errors = "name and password must be more then 8 characters";
+    //   this.errors = "name and password must not be empty";
     //   return;
     // }
-    this.$router.push("/chat");
+    if (this.channel.isLocked) this.channel.type = "private";
+    else if (password != "") this.channel.isLocked = true;
+    try {
+      await this.$store.dispatch("Chat/createChannel", this.channel);
+      this.$router.push("/chat");
+    } catch (e) {
+      this.errors = e;
+    }
   }
   updateFormDate() {
     console.log("sda");

@@ -30,7 +30,9 @@ import { Channel } from "../../types/Channel";
 })
 export default class Chat extends Vue {
   async mounted() {
-    await this.$store.dispatch("Chat/connectToChatSocket", this.$cookies);  
+    await this.$store.dispatch("Chat/connectToChatSocket", this.$cookies);
+    await this.$store.dispatch("Chat/fetchChannels");
+    await this.$store.dispatch("Chat/fetchMyChannels");
   }
   get channels(): any {
     return this.$store.state.Chat.publicChannels;
@@ -40,7 +42,7 @@ export default class Chat extends Vue {
 
 <style scoped>
 .overlay {
-  height: 21rem;
-  overflow: scroll;
+  height: 24rem!important;
+  /* overflow: scroll; */
 }
 </style>

@@ -13,15 +13,7 @@ const { VUE_APP_API_URL: API_URL, VUE_APP_SERVER_URL: SERVER_URL } =
 
 const listenToChannelEvents = (commit: any, connection: Socket) => {
   connection.on("connection", (channels) => {
-    channels.map((channel: Channel) => {
-      if (channel.type == "private") {
-        commit("ADD_PRIVATE_CHANNEL", channel);
-      } else if (channel.type == "public") {
-        commit("ADD_PUBLIC_CHANNEL", channel);
-      } else if (channel.type == "dm") {
-        commit("ADD_DM", channel);
-      }
-    });
+    commit("ADD_CHANNELS", channels);
   });
 
   connection.on("message", (msg: Message) => {
@@ -30,7 +22,10 @@ const listenToChannelEvents = (commit: any, connection: Socket) => {
 };
 
 const actions = {
-  connectToChatSocket({ commit }: ActionContext<UserState, any>, cookies: any) {
+  async connectToChatSocket(
+    { commit }: ActionContext<UserState, any>,
+    cookies: any
+  ) {
     const Authentication = cookies.get("Authentication");
     let connection = io(`${SERVER_URL}/chat`, {
       transportOptions: {
@@ -43,13 +38,32 @@ const actions = {
     });
     commit("SET_CHATSOCKET", connection);
     listenToChannelEvents(commit, connection);
-    for (let i = 0; i < 10; i++)
-      commit("ADD_PUBLIC_CHANNEL", {
-        name: "WHO FOR 1V1",
-        membersCount: i * 3,
-        isLocked: i % 2 == 0,
+    // for (let i = 0; i < 10; i++)
+    //   commit("ADD_PUBLIC_CHANNEL", {
+    //     name: "WHO FOR 1V1",
+    //     membersCount: i * 3,
+    //     isLocked: i % 2 == 0,
+    //   });
+    // console.log({ publicChannels: store.state.User.publicChannels });
+  },
+
+  async fetchChannels({ commit }: ActionContext<any, any>) {
+    try {
+      let data = await api.get("chat/channels");
+      console.log({ a: data });
+      commit("ADD_CHANNELS", data.data);
+    } catch (error) {}
+  },
+
+  async fetchMyChannels({ commit }: ActionContext<any, any>) {
+    try {
+      let data = await api.get("chat/myChannels");
+      console.log({ private: data });
+      data.data.map((channel: Channel) => {
+        if (!channel) return;
+        commit("ADD_PRIVATE_CHANNEL", channel);
       });
-    console.log({ publicChannels: store.state.User.publicChannels });
+    } catch (error) {}
   },
 
   // currentUser():any {
@@ -73,9 +87,25 @@ const actions = {
     // console.log({ store: rootState.User.user });
     // state.chatSocket.emit("message", { msg, channelId }); // TODO
   },
-  // JOIN/LEAVE/CREATE/EDIT
+  // JOIN/LEAVE/CREATE/EDIT/FETCH
   // mute/ban/invite
   // join
+
+  // FETCH/create
+  // join/leave/invite
+  // admin
+
+  async createChannel({ commit }: ActionContext<UserState, any>, channel: any) {
+    try {
+      console.log({ channel });
+      let data = await api.post("chat/createChannel", channel);
+      console.log({ a: data });
+      if (channel.type == "public") commit("ADD_PUBLIC_CHANNEL", channel);
+      commit("ADD_CHANNELS", [channel]);
+    } catch (error) {
+      throw error;
+    }
+  },
 };
 
 export default actions;

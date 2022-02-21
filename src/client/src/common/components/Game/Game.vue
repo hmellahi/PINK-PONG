@@ -10,7 +10,6 @@
 </template>
 
 <script lang="ts">
-
 import { GameConstants } from "../../Game/constants";
 import Ball from "../../Game/Objects/Ball";
 // import require from "http";
@@ -276,14 +275,16 @@ export default class Game extends Vue {
     window.addEventListener("resize", this.resize);
     this.init();
     this.roomId = this.$route.query.id;
-var sound = '/assets/sounds/wallHitSound.wav';
-var sound2 = '/assets/sounds/scoreSound.wav';
-var sound3 = '/assets/sounds/mario_coin.mp3';
-var sound4 = '/assets/sounds/Clairo.mp3';
-var sound5 = 'assets/sounds/ball-bounce.mp3';
-var sound6 = 'assets/sounds/golf-ball-hit.wav';
-var sound7 = 'assets/sounds/TunePocket-Ping-Pong-Ball-Bouce-Hit-Preview.mp3';
-var sound8 = 'assets/sounds/alex-productions-epic-cinematic-gaming-cyberpunk-reset.mp3';
+    var sound = "/assets/sounds/wallHitSound.wav";
+    var sound2 = "/assets/sounds/scoreSound.wav";
+    var sound3 = "/assets/sounds/mario_coin.mp3";
+    var sound4 = "/assets/sounds/Clairo.mp3";
+    var sound5 = "assets/sounds/ball-bounce.mp3";
+    var sound6 = "assets/sounds/golf-ball-hit.wav";
+    var sound7 =
+      "assets/sounds/TunePocket-Ping-Pong-Ball-Bouce-Hit-Preview.mp3";
+    var sound8 =
+      "assets/sounds/alex-productions-epic-cinematic-gaming-cyberpunk-reset.mp3";
 
     this.wallHitSound = await new Audio(sound);
     this.scoreSound = await new Audio(sound2);
@@ -292,24 +293,22 @@ var sound8 = 'assets/sounds/alex-productions-epic-cinematic-gaming-cyberpunk-res
     this.ballBounce = await new Audio(sound5);
     this.ballHit = await new Audio(sound7);
 
-
-// this.Clairo.play();
+    // this.Clairo.play();
     // this.Clairo = new Audio("sounds/Clairo - Sofia-L9l8zCOwEII.mp3");
     // this.marioCoin.play();
     this.listenToGameEvents();
     //  if(typeof(Worker) !== "undefined") {
     if (localStorage[this.currentUser.id + "#settings#0"]) {
-      this.isMusicOn = localStorage[this.currentUser.id + "#settings#0"] === "true";
+      this.isMusicOn =
+        localStorage[this.currentUser.id + "#settings#0"] === "true";
     }
     if (localStorage[this.currentUser.id + "#settings#1"]) {
-      this.isSoundOn = localStorage[this.currentUser.id + "#settings#1"] === "true";
+      this.isSoundOn =
+        localStorage[this.currentUser.id + "#settings#1"] === "true";
     }
     console.log({ isSoundOn: this.isSoundOn, isMusicOn: this.isMusicOn });
     // here do ur shit...
-    if (this.isMusicOn){
-      // this.marioCoin.play();
-      this.Clairo.play();
-    }
+    if (this.isMusicOn) this.Clairo.play();
   }
   async fetchUser(id: Number) {
     try {
@@ -361,9 +360,7 @@ var sound8 = 'assets/sounds/alex-productions-epic-cinematic-gaming-cyberpunk-res
       this.socket.emit(
         "joinGame",
         { roomId: this.roomId },
-        async ({ err }: any) => {
-          // console.log("msg", { msg });
-
+        async ({msg, err}: any) => {
           if (err) {
             this.$notify({
               duration: -1,
@@ -375,8 +372,7 @@ var sound8 = 'assets/sounds/alex-productions-epic-cinematic-gaming-cyberpunk-res
           }
           let { gameData, currentGameState } = msg;
           this.gameData = gameData;
-          this.net.map = this.gameData.map;
-          console.log({ isplayer1: this.gameData });
+          if (this.gameData.map) this.net.map = this.gameData.map;
 
           // if (!this.gameData.isPlayer1) {
           //   let tmp: Paddle = this.paddle;
@@ -395,6 +391,7 @@ var sound8 = 'assets/sounds/alex-productions-epic-cinematic-gaming-cyberpunk-res
           this.player2 = player2.data;
           if (!this.gameData.isSpectator) {
             this.isLoading = false;
+            console.log({ gamdata: this.gameData });
             return;
           }
           // score
@@ -413,6 +410,7 @@ var sound8 = 'assets/sounds/alex-productions-epic-cinematic-gaming-cyberpunk-res
           this.paddle.velocity = paddles[0].velocity;
 
           this.isLoading = false;
+          console.log("aa", { msg });
         }
       );
     });
@@ -548,12 +546,11 @@ var sound8 = 'assets/sounds/alex-productions-epic-cinematic-gaming-cyberpunk-res
     if (this.isGameOver) return;
 
     this.sendNewBallPostion();
-    if (this.map != 3){
-    sketch.background(this.backColor);
-    }
-    else{
-    sketch.clear();
-    sketch.background(220, 30); //=> the third map
+    if (this.map != 3) {
+      sketch.background(this.backColor);
+    } else {
+      sketch.clear();
+      sketch.background(220, 30); //=> the third map
     }
     if (this.gameData.map != 1) this.drawOerlay(sketch);
     this.net.draw(sketch);
@@ -578,22 +575,20 @@ var sound8 = 'assets/sounds/alex-productions-epic-cinematic-gaming-cyberpunk-res
     if (this.ball.hits(player)) {
       this.ball.reverse(player, player == this.paddle);
       // send
-      if (this.isSoundOn )
-      {
-      console.log("play sound");
-      // this.wallHitSound.play();
-      // this.marioCoin.play();
-      // this.wallHitSound.play();
-    this.ballBounce.play();
-    // this.ballHit.play();
+      if (this.isSoundOn) {
+        console.log("play sound");
+        // this.wallHitSound.play();
+        // this.marioCoin.play();
+        // this.wallHitSound.play();
+        this.ballBounce.play();
+        // this.ballHit.play();
       }
     }
     let ballHitsBorder = this.ball.checkBorders();
     if (ballHitsBorder) {
-         if (this.isSoundOn )
-      {
-      this.scoreSound.play();
-      console.log("play2 sound");
+      if (this.isSoundOn) {
+        this.scoreSound.play();
+        console.log("play2 sound");
       }
       this.ball.reset();
       this.paddle.reset();
@@ -609,7 +604,7 @@ var sound8 = 'assets/sounds/alex-productions-epic-cinematic-gaming-cyberpunk-res
         // this.showGameOver(sketch);
         this.over(0);
         console.log("GAME OVER", this.scores);
-        
+
         return;
       }
       // this.isGameOver = true; // change to true
