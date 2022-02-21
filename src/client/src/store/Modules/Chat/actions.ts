@@ -67,6 +67,7 @@ const actions = {
 
   async leaveChannel({ commit }: ActionContext<any, any>, data: any) {
     try {
+      // alert(data)
       let resp = await api.post("chat/leaveChannel", data);
       // commit("ADD_CHANNELS", data.data); TODO REMOVE FROM MY CHANNELS LIST
       console.log({ data }, { resp });
