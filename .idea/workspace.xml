@@ -2,19 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="942bb14e-3812-4007-b567-463159c5b049" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/src/backend/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/backend/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/backend/src/Game/Interfaces/Game.interface.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/backend/src/Game/Interfaces/Game.interface.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/backend/src/Game/game.gateway.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/backend/src/Game/game.gateway.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/backend/src/Game/game.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/backend/src/Game/game.module.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/backend/src/authentication/auth.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/backend/src/authentication/auth.module.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/backend/yarn.lock" beforeDir="false" afterPath="$PROJECT_DIR$/src/backend/yarn.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/client/public/game_worker.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/client/src/App.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/client/src/App.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/client/src/common/components/Game/Game.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/client/src/common/components/Game/Game.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/client/src/middlewares/checkAuth.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/client/src/middlewares/checkAuth.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/client/src/pages/Chat/Message.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/client/src/pages/Chat/Message.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/client/src/store/Modules/User/actions.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/client/src/store/Modules/User/actions.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/client/src/types/Channel.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/client/src/types/Channel.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -28,6 +17,7 @@
     <option name="stateVersion" value="1" />
   </component>
   <component name="ProjectId" id="25Hi1QmuiRUYnVWFBfdTbhUTiwS" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -51,6 +41,7 @@
       <updated>1645190202370</updated>
       <workItem from="1645190206238" duration="506000" />
       <workItem from="1645206079580" duration="505000" />
+      <workItem from="1645465950361" duration="610000" />
     </task>
     <servers />
   </component>

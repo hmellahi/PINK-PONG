@@ -58,7 +58,7 @@ export default class createChannel extends Vue {
       this.$router.push("/chat");
     } catch (e) {
       this.errors = e;
-    }
+    }                                                          
   }
   updateFormDate() {
     console.log("sda");
