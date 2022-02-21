@@ -52,6 +52,7 @@ export default class FindMatch extends Vue {
             type: "danger",
             title: data.err,
           });
+          this.$router.push({ path: "/" });
         }
       );
     });

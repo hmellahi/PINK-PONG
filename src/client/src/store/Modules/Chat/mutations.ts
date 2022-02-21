@@ -1,6 +1,6 @@
 // mutations
 
-import { Message } from "@/types/Channel";
+import { Channel, Message } from "@/types/Channel";
 import { FriendsState, User, UserState } from "@/types/user";
 
 const mutations = {
@@ -25,6 +25,23 @@ const mutations = {
   ADD_DM(state: any, channel: any) {
     state.dms.push(channel);
   },
+  ADD_CHANNELS(state: any, channels: any) {
+    console.log({ AB: channels });
+    channels.map((channel: Channel) => {
+      console.log({ AB: channel.type });
+      if (!channel) return;
+      if (channel.type == "private") {
+        state.privateChannels.push(channel);
+        // commit("ADD_PRIVATE_CHANNEL", channel);
+      } else if (channel.type == "public") {
+        state.publicChannels.push(channel);
+      } else {
+        state.dms.push(channel);
+        // commit("ADD_DM", channel);
+      }
+    });
+  },
+  REMOVE_FROM_CHANNELS(state: any, channelId: any) {},
   ADD_MSG(state: any, msg: Message) {
     // let newMessagesList = state.get_channel_msgs(state, channelId).push(msg);
     // state.allMessages.set(channelId, newMessagesList);

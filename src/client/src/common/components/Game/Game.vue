@@ -10,12 +10,6 @@
 </template>
 
 <script lang="ts">
-import sound from '../../../../public/assets/sounds/wallHitSound.wav'
-import sound2 from '../../../../public/assets/sounds/scoreSound.wav'
-import sound3 from '../../../../public/assets/sounds/mario_coin.mp3'
-// import sound1 from '../../../../public/assets/sounds/wallHitSound.wav'
-import sound4 from '../../../../public/assets/sounds/Clairo.mp3'
-
 import { GameConstants } from "../../Game/constants";
 import Ball from "../../Game/Objects/Ball";
 // import require from "http";
@@ -31,7 +25,7 @@ import P5, {
 import Paddle from "@/common/Game/Objects/Paddle";
 import Score from "@/common/Game/Objects/Score";
 
-const MAX_SCORE = 1;
+const MAX_SCORE = 2;
 const COUNTDOWN = 3;
 
 @Component<Game>({
@@ -40,6 +34,9 @@ const COUNTDOWN = 3;
     // prompt("hey")
 
     // console.log("beforeRouteLeave", to.path, from.path);
+    // this.isMusicOn = false;
+    // this.isSoundOn = false;
+    this.Clairo.pause();
     await this.leaveGame();
     next();
   },
@@ -102,10 +99,13 @@ export default class Game extends Vue {
   gameData: any = {};
   isLoading: boolean = true;
   hitSound: any;
-  wallHitSound:any;
-  scoreSound:any;
+  wallHitSound: any;
+  scoreSound: any;
   marioCoin: any;
   Clairo: any;
+  ballBounce: any;
+  ballHit: any;
+
   init() {
     // console.log("setup");
     // var game = document.getElementById("game");
@@ -269,35 +269,46 @@ export default class Game extends Vue {
     this.scores = [this.score, this.score2];
   }
 
-  mounted() {
+  async mounted() {
     window.addEventListener("keydown", this.keydown);
     window.addEventListener("keyup", this.keyup);
     window.addEventListener("resize", this.resize);
     this.init();
     this.roomId = this.$route.query.id;
-    // this.hitSound = new Audio("sounds/hitSound.wav");
-    // this.wallHitSound = new Audio("sounds/wallHitSound.wav");
-    this.wallHitSound = new Audio(sound);
-  
-    this.scoreSound = new Audio(sound2);
-    this.marioCoin = new Audio(sound3);
-    this.Clairo = new Audio(sound4);
-// this.Clairo.play();
+    var sound = "/assets/sounds/wallHitSound.wav";
+    var sound2 = "/assets/sounds/scoreSound.wav";
+    var sound3 = "/assets/sounds/mario_coin.mp3";
+    var sound4 = "/assets/sounds/Clairo.mp3";
+    var sound5 = "assets/sounds/ball-bounce.mp3";
+    var sound6 = "assets/sounds/golf-ball-hit.wav";
+    var sound7 =
+      "assets/sounds/TunePocket-Ping-Pong-Ball-Bouce-Hit-Preview.mp3";
+    var sound8 =
+      "assets/sounds/alex-productions-epic-cinematic-gaming-cyberpunk-reset.mp3";
+
+    this.wallHitSound = await new Audio(sound);
+    this.scoreSound = await new Audio(sound2);
+    this.marioCoin = await new Audio(sound3);
+    this.Clairo = await new Audio(sound8);
+    this.ballBounce = await new Audio(sound5);
+    this.ballHit = await new Audio(sound7);
+
+    // this.Clairo.play();
     // this.Clairo = new Audio("sounds/Clairo - Sofia-L9l8zCOwEII.mp3");
-// this.marioCoin.play();
+    // this.marioCoin.play();
     this.listenToGameEvents();
     //  if(typeof(Worker) !== "undefined") {
     if (localStorage[this.currentUser.id + "#settings#0"]) {
-      this.isMusicOn = localStorage[this.currentUser.id + "#settings#0"];
+      this.isMusicOn =
+        localStorage[this.currentUser.id + "#settings#0"] === "true";
     }
     if (localStorage[this.currentUser.id + "#settings#1"]) {
-      this.isSoundOn = localStorage[this.currentUser.id + "#settings#1"];
+      this.isSoundOn =
+        localStorage[this.currentUser.id + "#settings#1"] === "true";
     }
     console.log({ isSoundOn: this.isSoundOn, isMusicOn: this.isMusicOn });
     // here do ur shit...
-    if (this.isMusicOn){
-      this.marioCoin.play();
-    }
+    if (this.isMusicOn) this.Clairo.play();
   }
   async fetchUser(id: Number) {
     try {
@@ -349,17 +360,19 @@ export default class Game extends Vue {
       this.socket.emit(
         "joinGame",
         { roomId: this.roomId },
-        async ({ msg, err }: any) => {
-          // console.log("msg", { msg });
-
+        async ({msg, err}: any) => {
           if (err) {
+            this.$notify({
+              duration: -1,
+              type: "danger",
+              title: err,
+            });
             this.$router.push({ path: "/" });
             return;
           }
           let { gameData, currentGameState } = msg;
           this.gameData = gameData;
-          this.net.map = this.gameData.map;
-          console.log({ isplayer1: this.gameData });
+          if (this.gameData.map) this.net.map = this.gameData.map;
 
           // if (!this.gameData.isPlayer1) {
           //   let tmp: Paddle = this.paddle;
@@ -378,6 +391,7 @@ export default class Game extends Vue {
           this.player2 = player2.data;
           if (!this.gameData.isSpectator) {
             this.isLoading = false;
+            console.log({ gamdata: this.gameData });
             return;
           }
           // score
@@ -396,6 +410,7 @@ export default class Game extends Vue {
           this.paddle.velocity = paddles[0].velocity;
 
           this.isLoading = false;
+          console.log("aa", { msg });
         }
       );
     });
@@ -462,10 +477,10 @@ export default class Game extends Vue {
     this.countdown.draw(sketch);
   }
   drawOerlay(sketch: P5Sketch) {
-    // if (!sketch) return;
-    // sketch.fill(83, 19, 126, 127);
-    // sketch.noStroke();
-    // sketch.rect(0, 0, GameConstants.canvas.width, GameConstants.canvas.height);
+    if (!sketch) return;
+    sketch.fill(83, 19, 126, 127);
+    sketch.noStroke();
+    sketch.rect(0, 0, GameConstants.canvas.width, GameConstants.canvas.height);
   }
   showGameOver(sketch: P5Sketch) {
     this.drawOerlay(sketch);
@@ -529,6 +544,22 @@ export default class Game extends Vue {
 
   draw(sketch: P5Sketch) {
     if (this.isGameOver) return;
+
+    this.sendNewBallPostion();
+    if (this.map != 3) {
+      sketch.background(this.backColor);
+    } else {
+      sketch.clear();
+      sketch.background(220, 30); //=> the third map
+    }
+    if (this.gameData.map != 1) this.drawOerlay(sketch);
+    this.net.draw(sketch);
+
+    this.background.draw(sketch);
+    this.paddle.draw(sketch);
+    this.paddle.update();
+    this.paddle2.draw(sketch);
+    this.paddle2.update();
     if (
       this.scores[0].value >= MAX_SCORE ||
       this.scores[1].value >= MAX_SCORE
@@ -539,31 +570,26 @@ export default class Game extends Vue {
       this.over(0);
       return;
     }
-    this.sendNewBallPostion();
-    sketch.background(this.backColor);
-    // sketch.clear();
-    // sketch.background(220, 30); => the third map
-    if (this.gameData.map != 1) this.drawOerlay(sketch);
-    this.net.draw(sketch);
-
-    this.background.draw(sketch);
-    this.paddle.draw(sketch);
-    this.paddle.update();
-    this.paddle2.draw(sketch);
-    this.paddle2.update();
     let player: Paddle =
       this.ball.x < GameConstants.canvas.width / 2 ? this.paddle2 : this.paddle;
     if (this.ball.hits(player)) {
       this.ball.reverse(player, player == this.paddle);
       // send
-      console.log("play sound");
-      // this.wallHitSound.play();
-      // this.marioCoin.play();
-      this.wallHitSound.play();
+      if (this.isSoundOn) {
+        console.log("play sound");
+        // this.wallHitSound.play();
+        // this.marioCoin.play();
+        // this.wallHitSound.play();
+        this.ballBounce.play();
+        // this.ballHit.play();
+      }
     }
     let ballHitsBorder = this.ball.checkBorders();
     if (ballHitsBorder) {
-      this.scoreSound.play();
+      if (this.isSoundOn) {
+        this.scoreSound.play();
+        console.log("play2 sound");
+      }
       this.ball.reset();
       this.paddle.reset();
       if (this.gameData.isPlayer1) this.sendNewPaddleVelocity(this.paddle);
@@ -572,11 +598,13 @@ export default class Game extends Vue {
         this.scores[0].value >= MAX_SCORE ||
         this.scores[1].value >= MAX_SCORE
       ) {
+        this.Clairo.pause();
         this.isGameOver = true;
         this.scores.map((score) => score.draw(sketch));
         // this.showGameOver(sketch);
         this.over(0);
         console.log("GAME OVER", this.scores);
+
         return;
       }
       // this.isGameOver = true; // change to true

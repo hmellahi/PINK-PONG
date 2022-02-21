@@ -18,7 +18,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { join } from 'node:path/win32';
 import { GameService } from './game.service';
 
-let MAX_SCORE = 1;
+let MAX_SCORE = 2;
 
 let ROOM_NOT_FOUND = 'room Not Found';
 let ALREADY_IN_QUEUE = 'u cant join queue, because you are already in queue';
@@ -93,6 +93,7 @@ export class GameGateway {
     let { map } = data;
 
     // console.log(`client joined queue: ${player.id}`);
+    if (!player.userId) return { err: true, msg: 'u cant join queue' };
     console.table(this.players);
     if (
       this.players.find(
@@ -229,8 +230,8 @@ export class GameGateway {
 
     if (sender.userId == receiver)
       return { err: true, msg: 'u cant invite ur self hehe' };
-    if (this.getUserStatus(receiver) == 'In Game')
-      return { err: true, msg: 'this user is already in game, sorry' };
+    if (this.getUserStatus(receiver) != 'Online')
+      return { err: true, msg: 'this user is already in game, or offline sorry' };
     if (this.getUserStatus(sender.userId) == 'In Game')
       return {
         err: true,
@@ -356,11 +357,6 @@ export class GameGateway {
   @SubscribeMessage('joinGame')
   joinGame(@MessageBody() data: any, @ConnectedSocket() player: Socket | any) {
     const { roomId } = data;
-
-    // TODO CHECK USER STATUS
-    // if (this.getUserStatus()){
-
-    // }
     const currentGameState: Game = this.liveGames.find(
       (game) => game.roomId === roomId,
     );
@@ -482,6 +478,7 @@ export class GameGateway {
 
   saveGame(game: Game): void {
     console.log({ game });
+    try{
     this.gameService.createGame({
       user1Id: game.player1,
       user2Id: game.player2,
@@ -490,6 +487,10 @@ export class GameGateway {
       flag: game.ff,
       map: game.map,
     });
+  }
+  catch(e){
+    
+  }
   }
 
   @SubscribeMessage('getUserStatus')

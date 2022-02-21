@@ -4,7 +4,7 @@
       <div class="leader_box px-5 col-md-9">
         <div class="Channel_content">
           <h3 class="d-inline">{{ channel.name }}</h3>
-          <span>({{ channel.membersCount }} Members)</span>
+          <span>({{ channel.members && channel.members.length }} Members)</span>
         </div>
         <img
           v-if="channel.isLocked"
@@ -56,13 +56,7 @@ export default class listChannels extends Vue {
   currentChannel: Channel;
   password = "";
   show = false;
-  created() {
-    // for (let i = 0; i < 10; i++)
-    //   this.channels.push({
-    //     name: "WHO FOR 1V1",
-    //     membersCount: i * 3,
-    //     isLocked: i % 2 == 0,Ï
-    //   });
+  async created() {
     this.currentChannel = {
       name: "",
       membersCount: 0,
