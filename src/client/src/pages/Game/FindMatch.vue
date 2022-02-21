@@ -48,7 +48,7 @@ export default class FindMatch extends Vue {
         (data: any) => {
           // console.log({ data });
           this.$notify({
-            duration: -1,
+            duration: 1000,
             type: "danger",
             title: data.err,
           });

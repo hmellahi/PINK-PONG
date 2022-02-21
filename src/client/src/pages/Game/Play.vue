@@ -21,7 +21,7 @@
       <div class="col-sm-12 col-md-4">
         <div :class="boxMapClass('3')">
           <a href="#" @click="updateMap('3')">
-            <img src="/assets/img/map3.jpeg"
+            <img src="/assets/img/map3.jpg"
           /></a>
           <h3>Classic</h3>
         </div>

@@ -70,15 +70,23 @@ import Button from "@/common/components/UI/Button.vue";
 
 @Component<Profile>({
   components: { MatchHistory, Button },
+  watch: {
+    $route(to, from) {
+      this.updateUserRender();
+    },
+  },
 })
 export default class Profile extends Vue {
   user: any = [];
   message = "";
   isMyProfile: boolean = false;
+  invited_count: Number = 0;
   mounted() {
+    this.updateUserRender()
+  }
+  updateUserRender(){
     this.checkUser();
     this.fetchMatches();
-    console.log(this.user);
     this.$store.state.User.gameSocket.on(
       "userStatus",
       ({ userId, status }: any) => {
@@ -162,7 +170,13 @@ export default class Profile extends Vue {
   }
 
   inviteToPlay() {
-    console.log({ u: this.user });
+    if (this.invited_count == 1)
+      this.$notify({
+        duration: 1000,
+        ignoreDuplicates:true,
+        type: "danger",
+        title: "You Invite this player , Wch bghitih yl3eb bzz",
+      });
     this.$store.state.User.gameSocket.emit(
       "inviteToPlay",
       {
@@ -170,15 +184,18 @@ export default class Profile extends Vue {
         senderName: this.userCurrent.login ? this.userCurrent.login : "someone",
       },
       (data: any) => {
-        console.log({data})
         if (data.err)
           this.$notify({
-            duration: -1,
+            duration: 1000,
             type: "danger",
             title: data.msg,
           });
       }
     );
+    this.invited_count = 1;
+  }
+  created(){
+    console.log("im logged again in created")
   }
 }
 </script>

@@ -2271,6 +2271,10 @@ body.light hr.separator {
 .leaderBoards .leader_box {
   height: 4rem;
 }
+.link_profile{
+  color: #fff!important;
+  text-decoration: none!important;
+}
 @media (max-width: 768px) {
   .change_name_input {
     padding: 1em 0em 1em 1em;

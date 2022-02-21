@@ -362,7 +362,7 @@ export default class Game extends Vue {
         async ({ msg, err }: any) => {
           if (err) {
             this.$notify({
-              duration: -1,
+              duration: 1000,
               type: "danger",
               title: err,
             });

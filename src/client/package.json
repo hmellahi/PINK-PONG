@@ -6,7 +6,8 @@
     "serve": "export NODE_OPTIONS=--openssl-legacy-provider && vue-cli-service serve",
     "start": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "test:unit": "vue-cli-service test:unit"
+    "test:unit": "vue-cli-service test:unit",
+    "postinstall": "patch-package"
   },
   "dependencies": {
     "@soldeplata/popper-vue": "^1.0.4",
