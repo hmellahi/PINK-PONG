@@ -51,6 +51,7 @@ const actions = {
     try {
       let data = await api.get("chat/channels");
       console.log({ a: data });
+      commit("CLEAR_PUBLIC_CHANNELS", "public");
       commit("ADD_CHANNELS", data.data);
     } catch (error) {}
   },
@@ -59,7 +60,6 @@ const actions = {
     try {
       let resp = await api.post("chat/joinChannel", data);
       // commit("ADD_CHANNELS", data.data); TODO ADD TO MY CHANNELS LIST
-      console.log({ data }, { resp });
     } catch (error) {
       throw error;
     }
@@ -70,6 +70,7 @@ const actions = {
       // alert(data)
       let resp = await api.post("chat/leaveChannel", data);
       // commit("ADD_CHANNELS", data.data); TODO REMOVE FROM MY CHANNELS LIST
+      commit("REMOVE_CHANNEL", data.channelId);
       console.log({ data }, { resp });
     } catch (error) {
       throw error;
@@ -91,6 +92,7 @@ const actions = {
     try {
       let data = await api.get("chat/myChannels");
       console.log({ private: data });
+      commit("CLEAR_PUBLIC_CHANNELS", "private");
       data.data.map((channel: Channel) => {
         if (!channel) return;
         commit("ADD_PRIVATE_CHANNEL", channel);

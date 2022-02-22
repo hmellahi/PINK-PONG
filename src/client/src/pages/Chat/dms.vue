@@ -77,7 +77,7 @@ export default class DMS extends Vue {
   width: 10px;
 }
 .leader_box {
-  background-color: #53137e !important;
+  background-color: #2a467e8a !important;
 }
 img {
   width: 4rem;

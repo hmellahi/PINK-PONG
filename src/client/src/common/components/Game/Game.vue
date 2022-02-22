@@ -1,8 +1,8 @@
 <template>
   <div id="game" ref="game" class="h-100">
     <div v-if="!isLoading">
-      <img :src="player2.avatar_url" alt="" class="player_left" />
-      <img :src="player1.avatar_url" alt="" class="player_right" />
+      <!-- <img :src="player2.avatar_url" alt="" class="player_left" />
+      <img :src="player1.avatar_url" alt="" class="player_right" /> -->
       <P5 v-on="{ setup }" />
     </div>
     <div v-else>Loading....</div>
@@ -365,7 +365,7 @@ export default class Game extends Vue {
         async ({ msg, err }: any) => {
           if (err) {
             this.$notify({
-              duration: -1,
+              duration: 1000,
               type: "danger",
               title: err,
             });

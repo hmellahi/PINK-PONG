@@ -2,7 +2,7 @@
   <div class="msg position-relative">
     <span class="date">[{{ message.createdAt }}]</span>
     <span v-if="!isDM">
-    <img src="/assets/svg/medal.svg" v-if="message.isAdmin" alt="" />
+      <img src="/assets/svg/medal.svg" v-if="message.isAdmin" alt="" />
     </span>
     <PopperVue
       :show="message.showTooltip"
@@ -12,7 +12,6 @@
         placement: 'top',
       }"
     >
-     
       <template #popper>
         <div
           id="tooltip"
@@ -22,13 +21,22 @@
         >
           <div id="arrow" data-popper-arrow></div>
           <div v-if="!isDM">
-          <div v-if="true" class="mb-2">
-            <span><input class="checkbox_admin" type="checkbox" :value="message.isAdmin" /> Administrator</span>
-          </div>
+            <div v-if="true" class="mb-2">
+              <span
+                ><input
+                  class="checkbox_admin"
+                  type="checkbox"
+                  :value="message.isAdmin"
+                />
+                Administrator</span
+              >
+            </div>
           </div>
           <div class="row p-0">
             <div class="col-md-4">
-              <Button class="m-0" :link="'/profile/' + message.sender">Profile</Button>
+              <Button class="m-0" :link="'/profile/' + message.sender"
+                >Profile</Button
+              >
             </div>
             <div class="col-md-7 pr-0">
               <Button class="m-0" :onClick="InviteToPlay"
@@ -45,7 +53,7 @@
                 <Button class="m-0" :link="'/profile/' + message.sender"
                   >Mute</Button
                 >
-              </div>  
+              </div>
               <!-- <Button class="m-0 d-inline" :link="'/profile/' + message.sender"
                 >15s</Button
               > -->
@@ -112,12 +120,12 @@ export default class MessageBox extends Vue {
     };
   }
 
-  InviteToPlay(){
+  InviteToPlay() {
     this.$notify({
       duration: -1,
       // closeOnClick: true,
-      type: 'info',
-      title: 'Someone want to play with you !',
+      type: "info",
+      title: "Someone want to play with you !",
     });
   }
 }
@@ -140,10 +148,10 @@ export default class MessageBox extends Vue {
     background: #b183cd;
     border: 1px solid white;
     border-radius: 10px;
-    z-index:999999;
+    z-index: 999999;
     // background-color: red;
     // margin-left: 19%;
-    margin-bottom: .6rem;
+    margin-bottom: 0.6rem;
     span {
       font-size: 1.3rem;
       font-weight: bold;
@@ -186,8 +194,8 @@ export default class MessageBox extends Vue {
 //   border-bottom: 1px solid white;
 // }
 
-#my-tooltip > span{
-  z-index:99999999;
+#my-tooltip > span {
+  z-index: 99999999;
 }
 // #my-tooltip span[data-popper-placement="top"] #arrow {
 //   bottom: -0.3rem;

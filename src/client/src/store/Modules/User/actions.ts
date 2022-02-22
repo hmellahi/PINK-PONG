@@ -36,7 +36,7 @@ const listenToNotifications = (gameSocket: Socket) => {
     Vue.notify({
       duration: -1,
       type: "info",
-      // ignoreDuplicates: true,
+      ignoreDuplicates: true,
       title: `${senderName} want to play with you !`,
       data: {
         senderSocketId: senderSocketId,
@@ -89,7 +89,7 @@ const actions = {
         if (err) {
           // show toast with error message (ila jat 3la khatrk)
           Vue.notify({
-            duration: -1,
+            duration: 1000,
             type: "danger",
             title: msg,
           });
@@ -112,7 +112,7 @@ const actions = {
         if (err) {
           // show toast with error message (ila jat 3la khatrk)
           Vue.notify({
-            duration: -1,
+            duration: 1000,
             type: "danger",
             title: msg,
           });

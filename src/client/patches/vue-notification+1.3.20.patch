@@ -1,0 +1,12 @@
+diff --git a/node_modules/vue-notification/index.d.ts b/node_modules/vue-notification/index.d.ts
+index 5453b4d..3d6eb75 100644
+--- a/node_modules/vue-notification/index.d.ts
++++ b/node_modules/vue-notification/index.d.ts
+@@ -9,6 +9,7 @@ export interface NotificationOptions {
+     speed?: number;
+     data?: object;
+     clean?: boolean;
++    ignoreDuplicates?: boolean;
+ }
+ 
+ declare module 'vue/types/vue' {

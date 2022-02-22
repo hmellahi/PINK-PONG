@@ -27,7 +27,9 @@ body {
   height: 100%;
   width: 100%;
   background-color: #111;
-  background-image: url("/assets/img/header.jfif");
+  background-image: url("/assets/img/4127298.jpg");
+  background-size: cover;
+  box-shadow: inset 0 0 0 2000px rgb(27 35 76 / 59%);
 }
 
 .input-text {
@@ -213,7 +215,7 @@ body.light hr.separator {
   }
 
   body.light .header ul.icon-menu li.icon-box i {
-    color: #1f0644;
+    color: #b183cd;
   }
 
   body.light .header ul.icon-menu li.icon-box.active,
@@ -374,7 +376,7 @@ body.light hr.separator {
   margin: 0 auto;
   width: 100%;
   position: relative;
-  padding: 80px 0;
+  padding: 45px 0;
 }
 
 .title-section h1 {
@@ -449,7 +451,7 @@ body.light hr.separator {
   }
 
   .header ul.icon-menu li.icon-box i {
-    color: #1f0644;
+    color: #b183cd;
     font-size: 19px;
     transition: 0.3s;
   }
@@ -1761,7 +1763,7 @@ body.light hr.separator {
 
 .dashboard_main {
   padding: 2rem;
-  box-shadow: inset 0px 0px 5px 1px #7a0baf73;
+  box-shadow: inset 0px 0px 5px 1px #2a467e8a;
   border-radius: 10px;
   margin: 0 auto;
   margin-bottom: 3em;
@@ -1769,7 +1771,7 @@ body.light hr.separator {
   overflow-y: auto;
   height: 35em;
   position: relative;
-  border: 3px solid #53137e;
+  border: 3px solid #2a467e8a;
 
   /* overflow-x: hidden;  */
 }
@@ -1790,7 +1792,7 @@ body.light hr.separator {
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  background: #1f0644;
+  background: #b183cd;
 }
 
 /* Handle on hover */
@@ -1902,8 +1904,8 @@ body.light hr.separator {
 .time_finding_match {
   font-size: 3.5em;
   font-weight: 700;
-  border: 1px solid #1f0644;
-  background: #53137e;
+  border: 1px solid #b183cd;
+  background: #2a467e8a;
   width: 200px;
   margin: auto;
   border-radius: 15px;
@@ -1918,12 +1920,12 @@ body.light hr.separator {
 }
 
 .btn-friends {
-  background-color: #fff !important;
-  color: #53137e;
+  background-color: #e8b7ff87 !important;
+  color: #ffffff;
   font-weight: 700;
   padding: 0.2em 0.5em;
   margin: 0em 1em;
-  /* box-shadow: 1px 4px 5px 0px #1f0644; */
+  /* box-shadow: 1px 4px 5px 0px #b183cd; */
 }
 
 .friends_lists {
@@ -1940,7 +1942,7 @@ body.light hr.separator {
   align-items: center;
   flex-wrap: wrap;
   margin: 1rem 0;
-  background-color: #53137e !important;
+  background-color: #2a467e8a !important;
   border-radius: 15px;
   padding: 1em 0em;
 }
@@ -2016,7 +2018,7 @@ body.light hr.separator {
   height: 60px;
   border-radius: 50%;
   box-shadow: inset 0px 0px 4px 2px #c864f8;
-  background: #1f0644;
+  background: #b183cd;
   padding: 10px;
   margin-right: 20px;
 }
@@ -2064,7 +2066,7 @@ body.light hr.separator {
   height: 40px;
   border-radius: 50%;
   box-shadow: inset 0px 0px 4px 2px #c864f8;
-  background: #1f0644;
+  background: #b183cd;
   padding: 10px;
   margin-right: 10px;
 }
@@ -2187,7 +2189,7 @@ body.light hr.separator {
   height: 100px;
 }
 .room {
-  background-color: #53137e;
+  background-color: #2a467e8a;
   height: 20rem;
   border-radius: 10px;
   overflow: auto;
@@ -2271,6 +2273,225 @@ body.light hr.separator {
 .leaderBoards .leader_box {
   height: 4rem;
 }
+.link_profile {
+  color: #fff !important;
+  text-decoration: none !important;
+}
+.profile_header {
+  border-radius: 12px;
+}
+.profile_header .profile_cover {
+  background: url(/assets/img/bg_profile.jpg) center center / cover no-repeat;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+  height: 120px;
+}
+.profile_header_info {
+  padding-bottom: 32px;
+  position: relative;
+  box-shadow: 3px 5px 20px 0 rgb(94 92 154 / 12%);
+  background: rgba(0, 0, 0, 0.3);
+}
+.profile_description {
+  padding-top: 52px;
+  position: relative;
+}
+.profile_description .user_avatar img {
+  border-radius: 50%;
+  width: 100px;
+  border: 4px solid #b183cd7a;
+  padding: 8px;
+}
+.user_avatar .user_name {
+  font-size: 1.2rem;
+  font-weight: 700;
+  text-align: center;
+  color: #ffffff;
+  line-height: 1em;
+  margin-top: 1.4em;
+  margin-bottom: 0.3em;
+}
+.user_status {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-pack: center;
+  justify-content: center;
+}
+.user_status_text {
+  padding: 5px 16px;
+  border-radius: 200px;
+  background-color: #b183cd;
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1em;
+}
+.user-stats {
+  position: absolute;
+  top: 35px;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-pack: center;
+  justify-content: center;
+}
+.user-stats .user-stat {
+  width: 100%;
+  position: relative;
+  margin: 0px 3em;
+}
+.user-stat .user-stat-title,
+.user-stat .user-stat-text {
+  font-weight: 700;
+  text-transform: uppercase;
+  text-align: center;
+  font-size: 1.375rem;
+}
+.user-stat .user-stat-title,
+.user-stat .user-stat-text {
+  font-weight: 700;
+  text-transform: uppercase;
+  text-align: center;
+  margin-top: 10px;
+  font-size: 1rem;
+  color: #fff;
+}
+.user_stat_left {
+  left: 0;
+}
+.user_stat_right {
+  right: 0;
+}
+
+/************** progress_user ********/
+.progress_user {
+  width: 100px;
+  height: 100px;
+  position: absolute;
+  top: 0px;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #8d47af;
+  border-radius: 50%;
+}
+
+.widget-box {
+  padding: 32px 28px;
+  border-radius: 12px;
+  background-color: rgba(0, 0, 0, 0.3);
+  box-shadow: 3px 5px 20px 0 rgb(94 92 154 / 12%);
+  position: relative;
+  margin-top: 2em;
+  margin-bottom: 2em;
+  text-align: left;
+}
+.widget-box .widget-box-title {
+  font-size: 1rem;
+  font-weight: 700;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 0.6em;
+}
+.widget-box .widget-box-content {
+  margin-top: 20px;
+}
+.filupp > input[type="file"] {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+.filupp {
+  position: relative;
+  background: #f6f6fb;
+  display: block;
+  padding: 11.5px;
+  font-size: 13px;
+  width: 100%;
+  height: 3em;
+  color: #4c32c6;
+  cursor: pointer;
+  border: 1px solid #5434e640;
+  margin-top: 8px;
+}
+
+.filupp:before {
+  content: "";
+  position: absolute;
+  top: 1.8em;
+  right: 0.75em;
+  width: 1.5em;
+  height: 0.45em;
+  border: 3px solid #4c32c6;
+  border-top: 0;
+  text-align: center;
+}
+
+.filupp:after {
+  content: "➜";
+  -webkit-transform: rotate(-90deg);
+  -moz-transform: rotate(-90deg);
+  -ms-transform: rotate(-90deg);
+  -o-transform: rotate(-90deg);
+  transform: rotate(-90deg);
+  position: absolute;
+  top: 1em;
+  right: 1em;
+  font-size: 1em;
+  color: #4c32c6;
+  line-height: 0;
+}
+
+.filupp-file-name {
+  width: 75%;
+  display: inline-block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  word-wrap: normal;
+}
+.form-group {
+  margin: 1em 0;
+}
+.badges {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-content: center;
+}
+.badge {
+  padding: 1rem;
+}
+.tooltip_achievment {
+  visibility: hidden;
+  font-size: 13px;
+  width: 120px;
+  background-color: white;
+  color: #723f8b;
+  text-align: center;
+  border-radius: 6px;
+  padding: 0.5rem;
+  position: absolute;
+  z-index: 1;
+}
+.achievment_badge:hover .tooltip_achievment {
+  visibility: visible;
+}
+.widget_friends {
+  display: flex;
+  justify-content: space-between;
+  align-content: center;
+  align-items: flex-end;
+}
+.user_buttons {
+  display: flex;
+  align-content: center;
+  justify-content: center;
+}
 @media (max-width: 768px) {
   .change_name_input {
     padding: 1em 0em 1em 1em;
@@ -2290,12 +2511,12 @@ body.light hr.separator {
   }
 
   .btn-friends {
-    background-color: #fff !important;
-    color: #53137e;
+    background-color: #e8b7ff87 !important;
+    color: #ffffff;
     font-weight: 700;
     padding: 0.3em 1em;
     margin: 0em 0.2em;
-    box-shadow: 1px 4px 5px 0px #1f0644;
+    box-shadow: 1px 4px 5px 0px #b183cd;
     font-size: 10px;
   }
 
@@ -2346,6 +2567,7 @@ body.light hr.separator {
   .side span {
     position: relative;
     top: 0;
+    color: #fff !important;
   }
   .side {
     display: flex;
@@ -2394,7 +2616,7 @@ body.light hr.separator {
   }
 }
 
-@media(max-width:1197px){
+@media (max-width: 1197px) {
   .side .title {
     font-size: 0.9rem;
   }

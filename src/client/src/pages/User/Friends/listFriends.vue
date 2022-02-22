@@ -3,14 +3,14 @@
     <div v-if="friends && friends.length">
       <div class="friend_list" v-for="friend of friends">
         <!-- <Friend/> -->
-        <div class="friend-info">
+        <router-link class="friend-info link_profile" :to="`/profile/${friend.user.login}`" >
           <img :src="friend.user.avatar_url" />
           <!-- <img src="/assets/img/2.jpg" alt="" /> -->
           <div class="content">
             <h6>{{ friend.user.login }}</h6>
             <span>{{ friend.status_user }}</span>
           </div>
-        </div>
+        </router-link>
         <div class="friend_actions">
           <div @click="sendMessage(friend)" class="friend_action">
             <!-- <DMSSVG /> -->
