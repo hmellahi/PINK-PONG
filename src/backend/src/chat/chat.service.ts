@@ -169,7 +169,7 @@ export class ChatService {
                 .of({id: data.channelId})
                 .add(newAdmin);
     }
-    
+
     private isMember(members: UserEntity[], userToFind: UserEntity)
     {
         return members.find(user => user.id === userToFind.id);
@@ -204,7 +204,7 @@ export class ChatService {
                                     {relations:['members', 'admins']});
         if (!channel || !this.isMember(channel.members, member))
             throw new HttpException("channel not found or user is not member", HttpStatus.NOT_FOUND);
-        return (await this.messgaeRepository
+        const messages = (await this.messgaeRepository
                         .find(
                             {
                                 where: {owner: member, channel: channel},
@@ -212,8 +212,7 @@ export class ChatService {
                                 order: {create_date: "ASC"}
                             })
                 )
-                .map(({owner, ...res})=>({  isAdmin: this.isAdmin(channel.admins, owner),
-                                            message: {...res, owner: filteredUser(owner)}
-                                        }));
+                .map(({owner, ...res})=>({...res, owner: filteredUser(owner)}));
+        return {isAdmin: this.isAdmin(channel.admins, member), messages: messages}
     }
 }
