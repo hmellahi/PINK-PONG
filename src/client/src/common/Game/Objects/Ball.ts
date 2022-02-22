@@ -100,8 +100,8 @@ export default class {
     // console.log(`ball VeloX ${this.velocityX} and VeloY ${this.velocityY}`);
 
     // console.log("I am hitted");
-    // console.log(`player ${player.x}, ${player.y}`);
-    // console.log(`bll ${this.x}, ${this.y}`);
+    console.log(`player ${player.x}, ${player.y}`);
+    console.log(`bll ${this.x}, ${this.y}`);
 
     let collidePoint = this.y - (player.y + player.height / 2);
     collidePoint = collidePoint / (player.height / 2);
