@@ -15,9 +15,7 @@ const state = () => ({
 const getters = {
   getChannelMsgs: (state: any) => (channelId: string) => {
     console.table(state.allMessages);
-    return state.allMessages.filter(
-      (msg: Message) => msg.channelId === channelId
-    );
+    return state.allMessages;
   },
 };
 

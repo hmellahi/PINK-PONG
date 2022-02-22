@@ -61,6 +61,12 @@ const mutations = {
       state.privateChannels = [];
     }
   },
+  ADD_MESSAGES(state: any, messages: Message[]) {
+    if (!messages) return;
+    messages.map((msg: Message) => {
+      state.allMessages.push(msg);
+    });
+  },
 };
 
 export default mutations;

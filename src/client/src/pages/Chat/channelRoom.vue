@@ -81,7 +81,11 @@ export default class channelRoom extends Vue {
   inviter = "";
   get messages(): Message[] {
     // console.table(this.$store);
-    return this.$store.getters["Chat/getChannelMsgs"](this.$route.params.name);
+    let messages = this.$store.getters["Chat/getChannelMsgs"](
+      this.$route.params.name
+    );
+    // console.log({messages: messages[0].owner});
+    return messages;
   }
 
   get currentChannelId() {
@@ -91,12 +95,12 @@ export default class channelRoom extends Vue {
   async fetchChannel(channelId: String) {
     // this.$store.dispatch("Chat/fetchChannel", channelId);
     try {
-      let data = await this.$http.get("chat/channel/" + channelId);
+      await this.$store.dispatch("Chat/fetchMessages", { channelId });
     } catch (e) {
       this.$notify({
         duration: 1000,
         type: "danger",
-        title: "room doesnt exist or you aren allowed to join this room ;)", // TODO CHANGE ERROR
+        title: e.message, // TODO CHANGE ERROR
       });
     }
     // this.messages = ;
@@ -107,7 +111,6 @@ export default class channelRoom extends Vue {
   }
   async leaveRoom() {
     try {
-      // alert( Number(this.currentChannelId));
       await this.$store.dispatch("Chat/leaveChannel", {
         channelId: Number(this.currentChannelId),
       });
@@ -117,23 +120,27 @@ export default class channelRoom extends Vue {
       // TODO SHOW ALERT
     }
   }
-  mounted() {}
+  async mounted() {
+    await this.$store.dispatch("Chat/connectToChatSocket", this.$cookies);
+    this.fetchChannel(this.$route.params.name);
+  }
   resetTooltips() {
     for (var i = 0; i < this.messages.length; i++)
       this.messages[i].showTooltip = false;
   }
   async sendMessage() {
+    if (this.msg.trim().length <= 0) return;
     try {
       await this.$store.dispatch("Chat/sendMessage", {
-        channelId: this.$route.params.name,
-        message: this.msg,
+        channelId: Number(this.$route.params.name),
+        msg: this.msg,
       });
       this.msg = "";
     } catch (e) {
       this.$notify({
         duration: 1000,
         type: "danger",
-        title: "something went wrong", // TODO CHANGE ERROR
+        title: e, // TODO CHANGE ERROR
       });
     }
   }

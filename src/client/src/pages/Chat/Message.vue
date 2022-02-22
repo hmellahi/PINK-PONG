@@ -15,7 +15,7 @@
         </div>
       </div>
       <div class="btn-messages">
-        <Button class="m-0" :link="'/profile/' + message.sender"
+        <Button class="m-0" :link="'/profile/' + message.owner.login"
           >Profile</Button
         >
         <Button class="m-0" :onClick="InviteToPlay">Invite To Play</Button>
@@ -37,12 +37,12 @@
       </div>
     </Popup>
     <div class="msg position-relative">
-      <span class="date">[{{ message.createdAt }}]</span>
+      <span class="date">[{{ message.create_date }}]</span>
       <span v-if="!isDM">
         <img src="/assets/svg/medal.svg" v-if="message.isAdmin" alt="" />
       </span>
-      <span class="sender" @click="showMsgTooltip"> {{ message.sender }}:</span>
-      <span class="content"> {{ message.message }}</span>
+      <span class="sender" @click="showMsgTooltip"> {{ message.owner.login }}:</span>
+      <span class="content"> {{ message.msg }}</span>
     </div>
   </div>
 </template>
@@ -54,6 +54,7 @@ import Checkbox from "@/common/components/UI/Checkbox.vue";
 import InputField from "@/common/components/UI/InputField.vue";
 import { Message } from "@/types/Channel";
 import Popup from "@/common/components/UI/Popup.vue";
+import moment from "moment";
 
 @Component({
   props: {
@@ -100,7 +101,11 @@ export default class MessageBox extends Vue {
       muteDuration: this.muteDuration,
     });
   }
-  mounted() {}
+  mounted() {
+    this.$props.message.create_date = moment(
+      this.$props.message.create_date
+    ).format("mm:ss");
+  }
   showMsgTooltip() {
     this.show_popup = !this.show_popup;
   }

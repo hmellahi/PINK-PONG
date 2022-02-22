@@ -6,6 +6,7 @@ import store from "@/store";
 import { io, Socket } from "socket.io-client";
 import { ActionContext } from "vuex";
 import { Channel, Message } from "@/types/Channel";
+import Vue from "vue";
 import moment from "moment";
 
 const { VUE_APP_API_URL: API_URL, VUE_APP_SERVER_URL: SERVER_URL } =
@@ -16,8 +17,15 @@ const listenToChannelEvents = (commit: any, connection: Socket) => {
     commit("ADD_CHANNELS", channels);
   });
 
-  connection.on("message", (msg: Message) => {
-    commit("ADD_MSG", msg);
+  connection.on("message", async (msg: Message) => {
+    console.log({ msg });
+    let currentUser = await store.getters["User/getCurrentUser"];
+    commit("ADD_MSG", {
+      msg,
+      showTooltip: false,
+      owner: currentUser,
+      create_date: moment().format("mm:ss"),
+    });
   });
 };
 
@@ -67,7 +75,6 @@ const actions = {
 
   async leaveChannel({ commit }: ActionContext<any, any>, data: any) {
     try {
-      // alert(data)
       let resp = await api.post("chat/leaveChannel", data);
       // commit("ADD_CHANNELS", data.data); TODO REMOVE FROM MY CHANNELS LIST
       commit("REMOVE_CHANNEL", data.channelId);
@@ -83,6 +90,31 @@ const actions = {
       // ex :{"login": "htagrour1","channelId": 5}
       // commit("ADD_CHANNELS", data.data);
       console.log({ data }, { resp });
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  async fetchMessages({ state, commit }: ActionContext<any, any>, data: any) {
+    try {
+      // let data = await api.get("chat/myChannels");
+      // console.log({ private: data });
+      // commit("CLEAR_PUBLIC_CHANNELS", "private");
+      // data.data.map((channel: Channel) => {
+      //   if (!channel) return;
+      //   commit("ADD_PRIVATE_CHANNEL", channel);
+      // });
+      state.chatSocket.emit("allMessages", data, ({ err, msg }: any) => {
+        if (err) {
+          Vue.notify({
+            duration: 1000,
+            type: "danger",
+            title: msg,
+          });
+          router.go(-1);
+        }
+        commit("ADD_MESSAGES", msg);
+      });
     } catch (error) {
       throw error;
     }
@@ -106,20 +138,31 @@ const actions = {
 
   async sendMessage(
     { commit, state, rootState }: ActionContext<any, any>,
-    { message, channelId }: any
+    { msg, channelId }: any
   ) {
     let currentUser = await store.getters["User/getCurrentUser"];
     commit("ADD_MSG", {
-      message,
-      channelId,
+      msg,
       showTooltip: false,
-      sender: "test", // tODO REMOVE
-      // sender: rootState.User.user.login,
-      // sender: currentUser.login,
-      createdAt: moment().format("mm:ss"), // TODO CHANGE?
+      owner: currentUser,
+      create_date: moment().format("mm:ss"), // TODO CHANGE?
     });
+    // console.log({
+    //   msg,
+    //   showTooltip: false,
+    //   owner: currentUser,
+    //   create_date: moment().format("mm:ss"),
+    // });
     // console.log({ store: rootState.User.user });
-    // state.chatSocket.emit("message", { msg, channelId }); // TODO
+    state.chatSocket.emit(
+      "message",
+      { msg, channelId },
+      ({ err, msg }: any) => {
+        if (err) {
+          throw err;
+        }
+      }
+    ); // TODO
   },
 
   async createChannel({ commit }: ActionContext<UserState, any>, channel: any) {

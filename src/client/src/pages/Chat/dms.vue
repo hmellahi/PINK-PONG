@@ -3,7 +3,7 @@
     <div class="row" v-for="conversation in dms">
       <router-link
         :to="'directMessage/' + conversation.name"
-        class="leader_box px-5 col-md-9 mx-4"
+        class="leader_box px-5 col-md-11 mx-4"
       >
         <div class="col-md-3 avatar-box">
           <img :src="conversation.avatar" alt="" class="my-auto" />
@@ -11,7 +11,7 @@
         <div class="col-md-9">
           <div class="Channel_content">
             <div class="conv-name">{{ conversation.name }}</div>
-            <span class="conv-msg"> {{ short(conversation.last_msg) }}</span>
+            <!-- <span class="conv-msg"> {{ short(conversation.last_msg) }}</span> -->
           </div>
           <img
             v-if="conversation.isLocked"
@@ -21,12 +21,10 @@
           />
         </div>
       </router-link>
-      <div
-        class="btn col-md-2 mx-auto leader_box"
-        @click="deleteConversation(conversation)"
-      >
-        <img src="/assets/svg/bin.svg" alt="" class="mx-auto" />
-      </div>
+      <!-- <div class="btn col-md-2 mx-auto leader_box" @click="enter(conversation)">
+        <h2  class="m-auto">Enter</h2>
+        <!-- <img src="/assets/svg/bin.svg" alt="" class="mx-auto" /> -->
+      </div> -->
     </div>
   </div>
 </template>
@@ -91,6 +89,9 @@ img {
 }
 a {
   text-decoration: none !important;
+}
+.enter {
+  font-size: 4rem;
 }
 .overlay {
   height: 21rem;
