@@ -6,6 +6,7 @@ import { async } from "rxjs";
 import BlockListEntity from "src/user/entities/blockedUserList.entity";
 import UserEntity from "src/user/entities/user.entity"
 import { UserService } from "src/user/user.service";
+import { filteredUser } from "src/user/utils/user.utils";
 import {Repository } from "typeorm";
 import FriendshipEntity from "./entities/friendship.entity";
 import { Friendship_Status , FriendshipStatus} from "./Interfaces/friendship.interface";
@@ -79,48 +80,48 @@ export class FriendshipService
         return true;
     }
 
-    public async getFriendshipRequests(userId: number)
+
+    public async getFriendshipRequests(user: UserEntity)
     {
-        const friendshipRequests = await this.friendshipRepository
-                                    .createQueryBuilder("f")
-                                    .innerJoin("f.sender", "s", "f.receiverId = :recevierId AND f.status = :status",
-                                                        { recevierId: userId , status: "pending"})
-                                    .addSelect(["s.id","s.login", "s.avatar_url"])
-                                    .orderBy("f.create_date", "DESC")
-                                    .getMany()
+        const friendshipRequests = (await this.friendshipRepository
+                                        .find(
+                                            {
+                                                where: {receiver: user, status: "pending"},
+                                                order: {create_date: "DESC"},
+                                                relations: ["sender"]
+                                            }
+                                        ))
+                                        .map(({sender, ...res}) => ({...res, sender: filteredUser(sender)}));
         return friendshipRequests;
     }
 
 
     public async getFriendships(user: UserEntity)
     {
-        let friendships = [];
-        const asReceiver = await Promise.all((await this.friendshipRepository
-                                        .createQueryBuilder("f")
-                                        .innerJoin("f.sender", "s", "f.receiverId = :recevierId AND f.status = :status",
-                                                    { recevierId: user.id , status: "accepted"})
-                                        .addSelect(["s.id","s.login", "s.avatar_url"])
-                                        .orderBy("f.create_date", "DESC")
-                                        .getMany())
-                                        .map(async ({sender, ...res}) =>
-                                        {
-                                            if (!await this.userService.isBlockedUser(user, sender))
-                                                friendships.push({...res, user: sender})
-                                        }))
+        const friendships = []
+        await Promise.all(
+                (await this.friendshipRepository
+                        .find(
+                            {
+                                where:  [
+                                            {receiver: user, status: "accepted"},
+                                            {sender: user, status: "accepted"},
 
-
-        const asSender = await Promise.all((await this.friendshipRepository
-                                        .createQueryBuilder("f")
-                                        .innerJoin("f.receiver", "r", "f.senderId = :senderId AND f.status = :status",
-                                                    { senderId: user.id , status: "accepted"})
-                                        .addSelect(["r.id","r.login", "r.avatar_url"])
-                                        .orderBy("f.create_date", "DESC")
-                                        .getMany())
-                                        .map(async ({receiver, ...res}) =>
-                                        {
-                                            if (!await this.userService.isBlockedUser(user, receiver))
-                                                friendships.push({...res, user: receiver})
-                                        }))
+                                        ],
+                                order: {create_date: "DESC"},
+                                relations: ["sender", "receiver"]
+                            }
+                        ))
+                        .map(async ({sender, receiver, ...res}) =>
+                        {
+                            if (sender.id === user.id &&
+                                !await this.userService.isBlockedUser(user, receiver))
+                                friendships.push({...res, user: filteredUser(receiver)})
+                            if (receiver.id === user.id &&
+                                !await this.userService.isBlockedUser(user, sender))
+                                    friendships.push({...res, user: filteredUser(sender)})
+                        })
+        )
         
         return friendships;
     }

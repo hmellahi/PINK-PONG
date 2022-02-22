@@ -21,7 +21,7 @@ export class FriendshipController
     async friendshipRequests(@Req() request: RequestWithUser)
     {
         const {user} = request;
-        return this.friendshipService.getFriendshipRequests(user.id);
+        return this.friendshipService.getFriendshipRequests(user);
     }
 
     @Get("friendships")
@@ -49,7 +49,7 @@ export class FriendshipController
 
         if (requestExist)
             throw new HttpException("You alerady send request to this user", HttpStatus.BAD_REQUEST)
-        this.friendshipService.createFriendship(user, receiverUser);    
+        await this.friendshipService.createFriendship(user, receiverUser);    
     }
 
     @Post("acceptFriendRequest")
