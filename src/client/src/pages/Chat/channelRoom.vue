@@ -13,10 +13,12 @@
       >Leave</Button
     >
     <Button
+      v-if="isAdmin(currentUser.id)"
       class="mb-3 col-md-2 right-btn"
       :link="'/chat/edit/' + $route.params.name"
       >Edit</Button
     >
+    <!-- TODO check if admin -->
     <Button class="mb-3 col-md-2" :onClick="InviteToPrivate">Invite</Button>
     <!-- <Overlay class="p-3"> -->
     <Popup v-model="show_popup">
@@ -51,6 +53,7 @@
           :handler="sendMessage"
           style="font-size: 1.2rem"
         />
+        <!-- <span class="error-ms" style="font-size: 1.3rem">errors</span> -->
       </div>
       <div class="col-md-3">
         <Button class="m-0 send-btn" :onClick="sendMessage">Send</Button>
@@ -74,6 +77,7 @@ export default class channelRoom extends Vue {
   msg = "";
   // messages: Message[] = [];
   show_popup = false;
+  currentChannel: any;
   inviter = "";
   get messages(): Message[] {
     // console.table(this.$store);
@@ -83,11 +87,35 @@ export default class channelRoom extends Vue {
   get currentChannelId() {
     return this.$route.params.name;
   }
-  leaveRoom() {
-    alert(this.currentChannelId)
-    this.$store.dispatch("Chat/leaveChannel", {
-      channelId: Number(this.currentChannelId ),
-    });
+
+  async fetchChannel(channelId: String) {
+    // this.$store.dispatch("Chat/fetchChannel", channelId);
+    try {
+      let data = await this.$http.get("chat/channel/" + channelId);
+    } catch (e) {
+      this.$notify({
+        duration: 1000,
+        type: "danger",
+        title: "room doesnt exist or you aren allowed to join this room ;)", // TODO CHANGE ERROR
+      });
+    }
+    // this.messages = ;
+  }
+  isAdmin(userId: any) {
+    return true;
+    return this.currentChannel.admins.some((admin: any) => admin.id == userId);
+  }
+  async leaveRoom() {
+    try {
+      // alert( Number(this.currentChannelId));
+      await this.$store.dispatch("Chat/leaveChannel", {
+        channelId: Number(this.currentChannelId),
+      });
+      this.goBackward();
+    } catch (e) {
+      console.log(e);
+      // TODO SHOW ALERT
+    }
   }
   mounted() {}
   resetTooltips() {
@@ -95,11 +123,19 @@ export default class channelRoom extends Vue {
       this.messages[i].showTooltip = false;
   }
   async sendMessage() {
-    await this.$store.dispatch("Chat/sendMessage", {
-      channelId: this.$route.params.name,
-      message: this.msg,
-    });
-    this.msg = "";
+    try {
+      await this.$store.dispatch("Chat/sendMessage", {
+        channelId: this.$route.params.name,
+        message: this.msg,
+      });
+      this.msg = "";
+    } catch (e) {
+      this.$notify({
+        duration: 1000,
+        type: "danger",
+        title: "something went wrong", // TODO CHANGE ERROR
+      });
+    }
   }
   goBackward() {
     this.$router.go(-1);
@@ -121,10 +157,13 @@ export default class channelRoom extends Vue {
   InviteToPrivate() {
     this.show_popup = true;
   }
+  get currentUser() {
+    return this.$store.getters["User/getCurrentUser"];
+  }
   SendInvite() {
     // console.log(this.$props.message.user_id);
     this.$store.dispatch("Chat/addMember", {
-      channelId: this.$route.params.name,
+      channelId: Number(this.$route.params.name),
       login: this.inviter,
     });
     this.show_popup = false;
@@ -137,11 +176,11 @@ export default class channelRoom extends Vue {
   font-size: 1.3rem !important;
 }
 input {
-  background-color: #53137e;
+  background-color: #2a467e8a;
   border: 0;
 }
 input:hover {
-  background-color: #53137e !important;
+  background-color: #2a467e8a !important;
   border: 0;
 }
 .overlay {
@@ -181,5 +220,8 @@ input:focus {
 }
 .inner {
   background: #ffffff;
+}
+.error-msg {
+  color: red;
 }
 </style>

@@ -1,8 +1,8 @@
 <template>
-<div>
-  <!-- <header class="header"> -->
-  <!-- Fixed Navigation Starts -->
-  <!-- <ul class="icon-menu d-none d-lg-block">
+  <div>
+    <!-- <header class="header"> -->
+    <!-- Fixed Navigation Starts -->
+    <!-- <ul class="icon-menu d-none d-lg-block">
       <li v-for="link in links" :class="iconClass(link.path)">
         <i :class="link.icon"></i>
         <router-link :to="link.path">
@@ -10,25 +10,34 @@
         </router-link>
       </li>
     </ul> -->
-  <div class="ml-2 side">
-    <Button
-      class="w-100 mb-3 ml-4 text-left px-3 position-relative"
-      v-for="(link, i) in links"
-      :link="link.path"
-      :class="iconClass(link.path)"
-      :key="i"
-    >
-      <span><i :class="link.icon"></i>
-      <h2 class="d-inline ml-2 title">{{ link.name.toUpperCase() }}</h2></span>
-    </Button>
-    <Button :onClick="logout" class="w-100 mb-3 ml-4 text-left px-3 position-relative">
-      <span><i class="fas fa-sign-out-alt"></i>
-      <h2 class="d-inline ml-2 title">LOGOUT</h2></span>
-    </Button>
-  </div>
-  <!-- Fixed Navigation Ends -->
-  <!-- Mobile Menu Starts -->
-  <!-- <nav role="navigation" class="d-block d-lg-none">
+    <div class="ml-2 side">
+      <Button
+        class="w-100 mb-3 ml-4 text-left px-3 position-relative"
+        v-for="(link, i) in links"
+        :link="link.path"
+        :class="iconClass(link.path)"
+        :key="i"
+      >
+        <span
+          ><i :class="link.icon"></i>
+          <h2 class="d-inline ml-2 title">
+            {{ link.name.toUpperCase() }}
+          </h2></span
+        >
+      </Button>
+      <Button
+        :onClick="logout"
+        class="w-100 mb-3 ml-4 text-left px-3 position-relative"
+      >
+        <span
+          ><i class="fas fa-sign-out-alt"></i>
+          <h2 class="d-inline ml-2 title">LOGOUT</h2></span
+        >
+      </Button>
+    </div>
+    <!-- Fixed Navigation Ends -->
+    <!-- Mobile Menu Starts -->
+    <!-- <nav role="navigation" class="d-block d-lg-none">
       <div id="menuToggle">
         <input type="checkbox" />
         <span></span>
@@ -43,8 +52,8 @@
         </ul>
       </div>
     </nav> -->
-    </div>
-    <!-- Mobile Menu Ends -->
+  </div>
+  <!-- Mobile Menu Ends -->
   <!-- </header>  -->
 </template>
 
@@ -81,17 +90,17 @@ export default class SideBar extends Vue {
   iconClass(path: string) {
     let currentRoute = this.$router.currentRoute.path;
     let className = "icon-box";
-    className += currentRoute.includes(path) && path != "/" ? " active" : "" ;
+    className += currentRoute.includes(path) && path != "/" ? " active" : "";
     return className;
   }
-  async logout(){
-     try {
-       let data = await this.$http({
-        method: 'get',
-        url:'auth/logout',
-      })
-      this.$router.push('/login')
-    }catch(e){
+  async logout() {
+    try {
+      let data = await this.$http({
+        method: "get",
+        url: "auth/logout",
+      });
+      this.$router.push("/login");
+    } catch (e) {
       // console.log({e})
       return;
     }
@@ -102,19 +111,21 @@ export default class SideBar extends Vue {
 <style lang="scss">
 .side {
   margin-right: 9%;
-  span{
-    position:absolute;
-    top:20%;
+  span {
+    position: absolute;
+    top: 20%;
+    color: #fff;
     //  vertical-align: middle
   }
   .title {
-    font-size:1.5rem;
+    font-size: 1.5rem;
   }
-  a, button {
-    border: 3px solid rgb(83, 19, 126);
+  a,
+  button {
+    border: 3px solid #2a467e8a;
     background-color: transparent !important;
     color: white;
-    box-shadow: inset 0px 0px 5px 1px #7a0baf73;
+    box-shadow: inset 0px 0px 5px 1px #2a467e8a;
 
     font-weight: bold;
     border-radius: 10px;
@@ -123,9 +134,8 @@ export default class SideBar extends Vue {
       // background-color: white !important;
     }
   }
-  h2{
-    font-size:1.4rem;
-
+  h2 {
+    font-size: 1.4rem;
   }
 }
 .active {

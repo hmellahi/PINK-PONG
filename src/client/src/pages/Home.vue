@@ -82,7 +82,6 @@ export default class App extends Vue {
 
     this.$router.push({ path: "/play" });
   }
-
 }
 </script>
 
@@ -104,7 +103,7 @@ export default class App extends Vue {
 .avatar_edit {
   cursor: pointer;
   background: #fff;
-  color: #1f0644;
+  color: #b183cd;
   width: 35px;
   height: 35px;
   position: relative;

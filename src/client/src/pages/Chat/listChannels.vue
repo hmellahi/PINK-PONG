@@ -7,17 +7,20 @@
           <span>({{ channel.members && channel.members.length }} Members)</span>
         </div>
         <img
-          v-if="channel.isLocked"
+          v-if="channel.isLocked && !isMyChannelPage"
           src="/assets/svg/lock.svg"
           alt=""
           class="icon"
         />
       </div>
-      <div class="btn col-md-2 ml-auto leader_box">
+      <div class="btn col-md-2 ml-auto leader_box" v-if="!isMyChannelPage">
         <h2 class="m-auto" role="button" @click="openPopup(channel)">Join</h2>
       </div>
+      <div class="btn col-md-2 ml-auto leader_box" v-else>
+        <h2 class="m-auto" role="button" @click="enter(channel)">Enter</h2>
+      </div>
     </div>
-    <Popup v-model="show">
+    <Popup v-model="show" v-if="currentChannel">
       <h2>{{ currentChannel.name }}</h2>
       <form>
         <InputField
@@ -25,10 +28,10 @@
           placeholder="Enter Password"
           type="password"
           v-model="password"
-          class="text-left p-3 my-4"
+          class="text-left p-3 my-3"
           autocomplete="on"
         ></InputField>
-        {{ errors }}
+        <span class="mb-4 error-message">{{ errors }}</span>
       </form>
       <Button :onClick="joinChannel" class="px-5">Join</Button>
     </Popup>
@@ -54,18 +57,18 @@ import { Channel } from "../../types/Channel";
 })
 export default class listChannels extends Vue {
   // channels: Channel[];
-  currentChannel: Channel;
+  currentChannel: any = {};
   password = "";
   show = false;
   errors = "";
-  async created() {
+  async mounted() {
     this.currentChannel = {
       name: "",
       membersCount: 0,
       isLocked: false,
       type: "public",
     };
-    if (!this.currentRouteName || this.currentRouteName == "/chat")
+    if (this.$route.path == "/chat")
       await this.$store.dispatch("Chat/fetchChannels");
     else await this.$store.dispatch("Chat/fetchMyChannels");
   }
@@ -74,38 +77,35 @@ export default class listChannels extends Vue {
     // console.log(this.$route)
     return this.$route.path;
   }
-  // get currentChannel() {
-  //   return this.channels[0]
-  //     ? this.channels[0]
-  //     : { name: "", membersCount: 0, isLocked: false };
-  // }Ï
-  // set currentChannel(value) {
-  //   this.currentChannel = value;
-  // }
-  // closePopup() {
-  //   this.showPopup = false;
-  // }
-  get channels() {
+  get isMyChannelPage() {
     if (!this.currentRouteName || this.currentRouteName == "/chat")
-      return this.$store.state.Chat.publicChannels;
+      return false;
+    return true;
+  }
+  enter(channel: Channel) {
+    this.$router.push({
+      path: "/chat/channel/" + channel.id,
+    });
+  }
+  get channels() {
+    if (!this.isMyChannelPage) return this.$store.state.Chat.publicChannels;
     return this.$store.state.Chat.privateChannels;
   }
-  joinChannel(): void {
+  async joinChannel() {
     try {
-      alert(this.currentChannel.id);
-      this.$store.dispatch("Chat/joinChannel", {
+      await this.$store.dispatch("Chat/joinChannel", {
         channelId: this.currentChannel.id,
         password: this.password,
       });
+      this.$router.push({
+        path: "/chat/channel/" + this.currentChannel.id,
+      });
     } catch (errors) {
-      this.errors = errors;
+      this.errors = errors.response.data.message;
       return;
     }
-    this.$router.replace({
-      path: "/chat/channel/" + this.currentChannel.id,
-    });
   }
-  openPopup(channel: Channel): void {
+  openPopup(channel: Channel) {
     // console.log("isLocked : " + channel.isLocked);
     this.currentChannel = channel;
     if (!channel.isLocked) return this.joinChannel();
@@ -121,5 +121,9 @@ export default class listChannels extends Vue {
   /* width: 100%; */
   height: 100%;
   position: relative;
+}
+.error-message {
+  color: red;
+  font-size: 1.2rem;
 }
 </style>
