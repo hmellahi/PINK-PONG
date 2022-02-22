@@ -6,10 +6,11 @@ import ChannelEntity from './entities/channel.entity';
 import { ChatService } from './chat.service';
 import { ChatController } from './chat.controller';
 import { UserModule } from 'src/user/user.module';
+import MessageEntity from './entities/message.entity';
 
 @Module({
   imports: [AuthModule,
-    TypeOrmModule.forFeature([ChannelEntity]),
+    TypeOrmModule.forFeature([ChannelEntity, MessageEntity]),
     UserModule
   ],
   controllers: [ChatController],
