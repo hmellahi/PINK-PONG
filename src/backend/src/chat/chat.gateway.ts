@@ -1,4 +1,5 @@
 import {
+  ConnectedSocket,
   MessageBody,
   SubscribeMessage,
   WebSocketGateway,
@@ -6,8 +7,9 @@ import {
 } from '@nestjs/websockets';
 import { Socket, Server } from 'socket.io';
 import { AuthService } from 'src/authentication/auth.service';
+import { MessageInstance } from 'twilio/lib/rest/api/v2010/account/message';
 import { ChatService } from './chat.service';
-import { MessageDto } from './dtos/message.dto';
+import { GetMessagesDto, MessageDto } from './dtos/message.dto';
 
 @WebSocketGateway({
   namespace: 'chat',
@@ -22,25 +24,65 @@ export class ChatGateway {
   constructor(
     private authService: AuthService,
     private chatService: ChatService,
-  ) {}
+  ) { }
 
-  async handleConnection(client: any) {
+  async handleConnection(client: any | Socket) {
     const authentication = await this.authService.getUserFromSocket(client);
     if (!authentication) {
       client.disconnect();
       return;
     }
-    // join client to all his rooms
-    client.userId = authentication.id;
+
+    client.user = authentication;
     console.log(`chat client connected: ${client.id}`);
-    this.server.emit('channels', await this.chatService.getChannels(authentication));
+
+    // join client to all his rooms
+    try {
+      let myChannels = await this.chatService.getMyChannels(authentication);
+      console.log(myChannels[0].id);
+      myChannels.forEach(function (channel) {
+        client.join(channel.id.toString());
+      });
+    } catch (e) {
+      return { err: true, msg: e.message };
+    }
   }
 
   handleDisconnect(client: any) {
     console.log(`chat client disconnected: ${client.id}`);
   }
 
+  @SubscribeMessage('allMessages')
+  async getAllMessages(client: Socket | any, data: GetMessagesDto) {
+    if (!client.user)
+      return { err: true, msg: "socket not found!" };
+
+    try {
+      // get all messages for specific room
+      let messages = await this.chatService.getAllMessages(client.user, data);
+
+      // join user to room
+      client.join(data.channelId.toString());
+
+      return messages;
+    } catch (e) {
+      return { err: true, msg: e.message };
+    }
+  }
+
   @SubscribeMessage('message')
-  handleEvent(@MessageBody() data: MessageDto) {
+  async messageBroadcast(client: Socket | any, data: MessageDto) {
+    if (!client.user)
+      return { err: true, msg: "socket not found!" };
+
+    try {
+      // save on database
+      await this.chatService.createMessage(client.user, data);
+
+      // send message to specific room
+      client.to(data.channelId.toString()).emit("message", data.msg);
+    } catch (e) {
+      return { err: true, msg: e.message };
+    }
   }
 }
