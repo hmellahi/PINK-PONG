@@ -3,6 +3,7 @@ import { JwtAuthGuard } from "src/authentication/Guards/jwtAccess.guard";
 import { RequestWithUser } from "src/authentication/Interfaces/requestWithUser.interface";
 import { ChatService } from "./chat.service";
 import { AddAdminDto, AddMemberDto, CreateChannelDto, JoinChannelDto, LeaveChannelDto, UpdateChannelPassword, } from "./dtos/channel.dto";
+import { GetMessagesDto, MessageDto } from "./dtos/message.dto";
 
 @UseGuards(JwtAuthGuard)
 
@@ -17,7 +18,7 @@ export class ChatController {
     {
         const {user} = request;
         data.owner = user;
-        await this.chatService.createChannel(data);
+        return await this.chatService.createChannel(data);
     }
 
     @Get("channels")
@@ -83,6 +84,22 @@ export class ChatController {
     {
         const {user} = request;
         await this.chatService.addAdmin(user, data);
+    }
+
+    /****
+     * just for testing
+     ****/
+    @Post("createMessage")
+    @HttpCode(200)
+    async createMessages(@Req() request: RequestWithUser, @Body() msg: MessageDto)
+    {
+        await this.chatService.createMessage(request.user, msg);
+    }
+
+    @Get("getAllMessages")
+    async getAllMessages(@Req() request: RequestWithUser,@Body() data: GetMessagesDto)
+    {
+        return await this.chatService.getAllMessages(request.user, data);
     }
 
 }
