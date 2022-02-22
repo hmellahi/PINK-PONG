@@ -18,7 +18,7 @@ export class ChatController {
     {
         const {user} = request;
         data.owner = user;
-        await this.chatService.createChannel(data);
+        return await this.chatService.createChannel(data);
     }
 
     @Get("channels")
