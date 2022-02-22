@@ -3,6 +3,7 @@ import Friendship from "src/friend/entities/friendship.entity";
 import  BlockList from "./blockedUserList.entity";
 import Game from "src/Game/entities/game.entity";
 import Channel from "src/chat/entities/channel.entity";
+import Message from "src/chat/entities/message.entity";
 
 @Entity()
 export default class  User
@@ -71,5 +72,8 @@ export default class  User
 
     @OneToMany(()=> Channel, channel => channel.owner)
     owendChannels: Channel[];
+
+    @OneToMany(()=> Message, message => message.owner)
+    messages: Message[];
 
 }

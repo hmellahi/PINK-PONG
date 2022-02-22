@@ -27,6 +27,7 @@ export class JoinChannelDto
     @IsNumber()
     channelId: number;
 
+    @IsString()
     password?: string;
 
     user?: UserEntity;

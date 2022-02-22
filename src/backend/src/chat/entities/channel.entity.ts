@@ -1,7 +1,8 @@
-import { Exclude } from "class-transformer";
 import User from "src/user/entities/user.entity";
+import Message from "./message.entity";
 import { Column, Entity, JoinTable, ManyToMany,
          ManyToOne,
+         OneToMany,
          PrimaryGeneratedColumn
         }
         from "typeorm";
@@ -25,6 +26,9 @@ export default class Channel
 
     @ManyToOne(()=> User, user => user.owendChannels, {onDelete: "SET NULL"})
     owner: User;
+
+    @OneToMany(()=> Message, message => message.channel)
+    messages: Message[];
 
     @Column({nullable: false})
     type: string;
