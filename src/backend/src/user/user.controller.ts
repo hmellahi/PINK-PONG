@@ -1,13 +1,16 @@
 import { BadRequestException, Body, Controller, Get, HttpCode, HttpException, HttpStatus, Param, Post, Query, Req, Res, UploadedFile, UseGuards, UseInterceptors } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { FileInterceptor } from "@nestjs/platform-express";
+import { plainToClass } from "class-transformer";
 import { request } from "express";
 import { diskStorage } from "multer";
 import { join } from "path";
 import { JwtAuthGuard } from "src/authentication/Guards/jwtAccess.guard";
 import { RequestWithUser } from "src/authentication/Interfaces/requestWithUser.interface";
+import User from "./entities/user.entity";
 import { UserService } from "./user.service";
-import { editFileName, imageFileFilter } from "./utils/user.utils";
+import { editFileName, filteredUser , imageFileFilter } from "./utils/user.utils";
+
 
 @UseGuards(JwtAuthGuard)
 @Controller("users")
@@ -67,7 +70,7 @@ export class  UserController
     async myProfile(@Req() request: RequestWithUser)
     {
         const {user} = request;
-        return user;
+        return filteredUser (user) ;
     }
 
     @Get("profile/:login")
@@ -79,7 +82,7 @@ export class  UserController
         const fetchedUser = await this.userService.getByLogin(user,login);
         if (!fetchedUser)
             throw new HttpException("user not exist", HttpStatus.NOT_FOUND);
-        return fetchedUser;
+        return filteredUser (fetchedUser);
     }
 
     @Get("")
@@ -87,7 +90,8 @@ export class  UserController
     {
         if (!id || isNaN(Number(id)))
             throw new BadRequestException;
-        return await this.userService.getById(id);
+        const user = await this.userService.getById(id);
+        return filteredUser (user); ;
     }
 
     @Post("blockUser")
@@ -119,7 +123,7 @@ export class  UserController
     {
         const {user} = request;
 
-        return await this.userService.getBlockedList(user.id);
+        return await this.userService.getBlockedList(user);
     }
 
     @Get("usersByGames")

@@ -6,6 +6,7 @@ import UserEntity from './entities/user.entity';
 import * as bcrypt from "bcrypt";
 import BlockListEntity from './entities/blockedUserList.entity';
 import { FriendshipService } from 'src/friend/friendship.service';
+import { filteredUser } from './utils/user.utils';
 
 @Injectable()
 export class UserService {
@@ -117,16 +118,18 @@ export class UserService {
         return true;
     }
 
-    async getBlockedList(userId: number)
+    async getBlockedList(user: UserEntity)
     {
         return (await this.blockListRepository
-                            .createQueryBuilder("l")
-                            .innerJoin("l.blocked", "b", "l.blockerId = :blockerId",
-                                        { blockerId: userId})
-                            .addSelect(["b.id","b.login", "b.avatar_url"])
-                            .orderBy("l.create_date", "DESC")
-                            .getMany())
-                            .map(({blocked,...res}) => { return ({...res, user: blocked})});
+                            .find
+                            (
+                                {
+                                    where: {blocker: user},
+                                    order: {create_date: "DESC"},
+                                    relations: ['blocked']
+                                }
+                            ))
+                            .map(({blocked,...res}) => { return ({...res, user: filteredUser(blocked)})});
     }
 
     async isBlockedUser(blocker: UserEntity, blocked: UserEntity)
@@ -142,7 +145,7 @@ export class UserService {
                     wins: "DESC"
                 }
             }
-        )).map(({currentRefreshToken, ...res})=> ({...res, currentRefreshToken:undefined}))
+        )).map((user)=> (filteredUser(user)))
     }
 
     async increaseWins(user: UserEntity)
