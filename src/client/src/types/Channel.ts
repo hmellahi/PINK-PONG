@@ -19,6 +19,7 @@ export interface Message {
   createdAt?: Date | string;
   sender: string;
   showTooltip?: Boolean;
+  owner:any
 }
 
 export interface directMessage {

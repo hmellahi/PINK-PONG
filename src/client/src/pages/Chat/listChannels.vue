@@ -17,7 +17,9 @@
         <h2 class="m-auto" role="button" @click="openPopup(channel)">Join</h2>
       </div>
       <div class="btn col-md-2 ml-auto leader_box" v-else>
-        <h2 class="m-auto" role="button" @click="enter(channel)">Enter</h2>
+        <h2 class="m-auto" role="button" @click="enter(channel)">
+          Enter
+        </h2>
       </div>
     </div>
     <Popup v-model="show" v-if="currentChannel">

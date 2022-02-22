@@ -24,7 +24,7 @@ export class ChatGateway {
   constructor(
     private authService: AuthService,
     private chatService: ChatService,
-  ) { }
+  ) {}
 
   async handleConnection(client: any | Socket) {
     const authentication = await this.authService.getUserFromSocket(client);
@@ -54,8 +54,7 @@ export class ChatGateway {
 
   @SubscribeMessage('allMessages')
   async getAllMessages(client: Socket | any, data: GetMessagesDto) {
-    if (!client.user)
-      return { err: true, msg: "socket not found!" };
+    if (!client.user) return { err: true, msg: 'socket not found!' };
 
     try {
       // get all messages for specific room
@@ -64,7 +63,7 @@ export class ChatGateway {
       // join user to room
       client.join(data.channelId.toString());
 
-      return messages;
+      return { err: false, msg: messages };
     } catch (e) {
       return { err: true, msg: e.message };
     }
@@ -72,15 +71,14 @@ export class ChatGateway {
 
   @SubscribeMessage('message')
   async messageBroadcast(client: Socket | any, data: MessageDto) {
-    if (!client.user)
-      return { err: true, msg: "socket not found!" };
+    if (!client.user) return { err: true, msg: 'socket not found!' };
 
     try {
       // save on database
       await this.chatService.createMessage(client.user, data);
 
       // send message to specific room
-      client.to(data.channelId.toString()).emit("message", data.msg);
+      client.to(data.channelId.toString()).emit('message', data.msg);
     } catch (e) {
       return { err: true, msg: e.message };
     }
