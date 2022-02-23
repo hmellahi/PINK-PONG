@@ -55,17 +55,13 @@ export class ChatGateway {
 
   @SubscribeMessage('allMessages')
   async getAllMessages(client: Socket | any, data: GetMessagesDto) {
-    const authentication = await this.authService.getUserFromSocket(client);
-    if (!authentication) {
-      return { err: true, msg: 'socket not found!' };
-    }
     if (!client.user) return { err: true, msg: 'socket not found!' };
 
     try {
       // get all messages for specific room
       let messages = await this.chatService.getAllMessages(client.user, data);
-      // console.log(data.channelId);
-      // console.log(messages);
+
+      console.log(messages);
 
       // join user to room
       client.join(data.channelId.toString());
@@ -87,7 +83,7 @@ export class ChatGateway {
       // send message to specific room
       client
         .to(data.channelId.toString())
-        .emit('message', { err: false, msg: data.msg, owner: client.user });
+        .emit('message', { err: false, msg: data.msg, owner: client.user, channelId: data.channelId});
     } catch (e) {
       return { err: true, msg: e.message };
     }
