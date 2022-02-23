@@ -2563,6 +2563,9 @@ body.light hr.separator {
   .leader_box .left {
     margin-top: 1rem;
   }
+  .leader_box .left .active {
+   background: transparent !important;
+  }
   .main {
     top: 5rem;
   }
