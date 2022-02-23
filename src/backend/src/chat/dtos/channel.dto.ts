@@ -1,75 +1,84 @@
-import { IsBoolean, IsNotEmpty, IsNumber, IsString } from "class-validator";
-import UserEntity from "src/user/entities/user.entity";
+import { IsBoolean, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import UserEntity from 'src/user/entities/user.entity';
 
-export class CreateChannelDto
-{
-    @IsNotEmpty()
-    @IsString()
-    type: string;
+export class CreateChannelDto {
+  @IsNotEmpty()
+  @IsString()
+  type: string;
 
-    @IsNotEmpty()
-    @IsString()
-    name: string;
+  @IsNotEmpty()
+  @IsString()
+  name: string;
 
-    @IsNotEmpty()
-    @IsBoolean()
-    isLocked: boolean;
+  @IsNotEmpty()
+  @IsBoolean()
+  isLocked: boolean;
 
-    password?: string;
+  password?: string;
 
-    owner?: UserEntity;
+  owner?: UserEntity;
 }
 
+export class JoinChannelDto {
+  @IsNotEmpty()
+  @IsNumber()
+  channelId: number;
 
-export class JoinChannelDto
-{
-    @IsNotEmpty()
-    @IsNumber()
-    channelId: number;
+  @IsString()
+  password?: string;
 
-    @IsString()
-    password?: string;
-
-    user?: UserEntity;
+  user?: UserEntity;
 }
 
-export class AddMemberDto
-{
-    @IsNotEmpty()
-    login: string;
+export class AddMemberDto {
+  @IsNotEmpty()
+  login: string;
 
-    @IsNotEmpty()
-    @IsNumber()
-    channelId: number;
+  @IsNotEmpty()
+  @IsNumber()
+  channelId: number;
 }
 
-export class LeaveChannelDto
-{
-    @IsNotEmpty()
-    @IsNumber()
-    channelId: number;
+export class LeaveChannelDto {
+  @IsNotEmpty()
+  @IsNumber()
+  channelId: number;
 }
 
-export class UpdateChannelPassword
-{
-    @IsNotEmpty()
-    @IsNumber()
-    channelId: number;
+export class UpdateChannelPassword {
+  @IsNotEmpty()
+  @IsNumber()
+  channelId: number;
 
-    @IsNotEmpty()
-    @IsBoolean()
-    isLocked: boolean;
+  @IsNotEmpty()
+  @IsBoolean()
+  isLocked: boolean;
 
-    password: string;
+  password: string;
 }
 
-export class AddAdminDto
-{
-    @IsNotEmpty()
-    @IsNumber()
-    channelId: number;
+export class AddAdminDto {
+  @IsNotEmpty()
+  @IsNumber()
+  channelId: number;
 
-    @IsNotEmpty()
-    @IsNumber()
-    userId: number;
+  @IsNotEmpty()
+  @IsNumber()
+  userId: number;
+}
+
+export class BanUserDto {
+  @IsNotEmpty()
+  @IsNumber()
+  channelId: number;
+
+  @IsNotEmpty()
+  @IsNumber()
+  userId: number;
+
+  @IsNotEmpty()
+  @IsBoolean()
+  isPermanant: Boolean;
+
+  time?: string;
 }
