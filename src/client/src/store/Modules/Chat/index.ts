@@ -9,13 +9,13 @@ const state = () => ({
   privateChannels: [],
   dms: [],
   allMessages: [],
-  isAdmin:false
+  isAdmin: false,
 });
 
 // getters
 const getters = {
   getChannelMsgs: (state: any) => (channelId: string) => {
-    return state.allMessages;
+    return state.allMessages.filter((msg: any) => msg.channelId == channelId);
   },
 };
 

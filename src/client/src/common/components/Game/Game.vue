@@ -39,6 +39,7 @@ let RAD = 80;
     // this.isSoundOn = false;
     try {
       await this.leaveGame();
+      await this.socket.removeAllListeners();
       this.Clairo.pause();
     } catch (e) {}
     next();
@@ -510,11 +511,11 @@ export default class Game extends Vue {
       this.ball.x < GameConstants.canvas.width / 2 ? this.paddle2 : this.paddle;
     if (this.ball.hits(player)) {
       this.ball.reverse(player, player == this.paddle);
-    // this.sendNewBallPostion();
-    //   this.ball.draw(sketch);
+      // this.sendNewBallPostion();
+      //   this.ball.draw(sketch);
 
-    //      if (this.gameData.isPlayer1) this.sendNewPaddleVelocity(this.paddle);
-    // else this.sendNewPaddleVelocity(this.paddle2);
+      //      if (this.gameData.isPlayer1) this.sendNewPaddleVelocity(this.paddle);
+      // else this.sendNewPaddleVelocity(this.paddle2);
       // send
       if (this.isSoundOn) {
         console.log("play sound");
@@ -559,7 +560,6 @@ export default class Game extends Vue {
     if (this.gameData.isPlayer1) this.sendNewPaddleVelocity(this.paddle);
     else this.sendNewPaddleVelocity(this.paddle2);
     this.sendNewBallPostion();
-
   }
   keydown(e: any) {
     if (this.gameData.isSpectator) return;

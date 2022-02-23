@@ -8,13 +8,14 @@ import { ActionContext } from "vuex";
 import { Channel, Message } from "@/types/Channel";
 import Vue from "vue";
 import moment, { now } from "moment";
+// import { stat } from "fs";
 
 const { VUE_APP_API_URL: API_URL, VUE_APP_SERVER_URL: SERVER_URL } =
   process.env;
 
 const listenToChannelEvents = (commit: any, connection: Socket) => {
-  connection.on("message", async ({ msg, owner }: any) => {
-    console.log("recieved a msg", { msg });
+  connection.on("message", async ({ msg, owner, channelId }: any) => {
+    console.log("recieved a msg", { channelId, msg, owner });
     let currentUser = await store.getters["User/getCurrentUser"];
 
     commit("ADD_MSG", {
@@ -22,6 +23,7 @@ const listenToChannelEvents = (commit: any, connection: Socket) => {
       showTooltip: false,
       owner,
       create_date: new Date(),
+      channelId,
     });
   });
 };
@@ -35,7 +37,7 @@ const actions = {
     //   state.chatSocket.disconnect();
     // }
     if (state.chatSocket != null) {
-      this.fetchMessages(context, state.chatSocket);
+      // this.fetchMessages(context, state.chatSocket);
       return;
     }
     let connection = io(`${SERVER_URL}/chat`, {
@@ -48,8 +50,15 @@ const actions = {
       },
     });
     commit("SET_CHATSOCKET", connection);
+    listenToChannelEvents(commit, connection);
   },
 
+  async leaveChannelSocket(
+    { commit, state }: ActionContext<any, any>,
+    data: any
+  ) {
+    state.chatRoom.emit("leaveChannel", data);
+  },
   async listenToChannelEvents({ commit, state }: ActionContext<any, any>) {
     listenToChannelEvents(commit, state.chatSocket);
   },
@@ -142,7 +151,8 @@ const actions = {
       msg,
       showTooltip: false,
       owner: currentUser,
-      create_date: moment(), // TODO CHANGE?
+      create_date: moment(),
+      channelId,
     });
     // console.log({
     //   msg,

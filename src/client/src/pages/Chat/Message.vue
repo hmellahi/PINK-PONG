@@ -97,7 +97,6 @@ export default class MessageBox extends Vue {
     });
   }
   mute() {
-    alert(this.muteDuration);
     this.$store.dispatch("Chat/muteFromChannel", {
       userId: this.$props.message.user_id,
       channelId: this.$route.params.name,
@@ -105,9 +104,9 @@ export default class MessageBox extends Vue {
     });
   }
   mounted() {
-    let newDate = moment(this.$props.message.create_date).format("mm:ss");
+    let newDate = moment(this.$props.message.create_date).format("hh::mm:ss");
     if (newDate != "Invalid date") this.$props.message.create_date = newDate;
-    console.clear();
+    // console.clear();
   }
   showMsgTooltip() {
     if (this.currentUser.id == this.$props.message.owner.id) {
