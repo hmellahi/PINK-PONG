@@ -4,14 +4,19 @@
     <div v-if="matches && matches.length">
       <div v-for="match in matches" class="leader_box match_box">
         <div class="left match_history">
+          <router-link to="/profile/mine">
           <img :src="match.first_user.avatar_url" alt="" />
+          </router-link>
           <div class="match_content">
             <h4 :class="getResult(match)">{{ getResult(match) }}</h4>
             <h3>
               {{ match.first_user_score }} : {{ match.second_user_score }}
             </h3>
           </div>
-          <img class="img_right" :src="match.second_user.avatar_url" alt="" />
+          <router-link :to="`/profile/${getOpLogin(match)}`">
+          
+          <img class="img_right" :src="match.second_user.avatar_url" alt="" >
+          </router-link>
         </div>
         <div class="match_right">
           <img :src="`/assets/img/map${match.map}.jpg`" alt="" />
@@ -56,18 +61,27 @@ export default class MatchHistory extends Vue {
     else if (map == 2) return "Speedy";
     else return "Classic";
   }
+  getOpLogin(match: any){
+    // let isMe = match.first_user.id == this.currentUser.id ? 1 : 2;
+    if (match.first_user.id == this.currentUser.id){
+      return match.second_user.login;
+    }
+    else 
+      return match.first_user.login;
+  }
   getResult(match: any) {
+    console.log("user id",match.first_user.login);
     let isMe = match.first_user.id == this.currentUser.id ? 1 : 2;
     console.log(match.flag, this.currentUser.id, match.first_user.id, match.second_user.id);
     if ((isMe == 1 && match.flag == 2) || (isMe == 2 && match.flag == 1))
-      return "victory";
-    else if (match.flag != 0) return "defeat";
+      return "Victory";
+    else if (match.flag != 0) return "Defeat";
     if (
       (match.first_user_score > match.second_user_score && isMe == 1) ||
       (match.first_user_score < match.second_user_score && isMe == 2)
     )
-      return "victory";
-    return "defeat";
+      return "Victory";
+    return "Defeat";
   }
 }
 </script>

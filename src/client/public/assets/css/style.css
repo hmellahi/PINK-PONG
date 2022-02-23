@@ -2077,12 +2077,12 @@ body.light hr.separator {
   padding: 0em 1em;
 }
 
-.match_history .match_content .victory {
+.match_history .match_content .Victory {
   color: #44cb49;
   font-size: 1rem;
 }
 
-.match_history .match_content .defeat {
+.match_history .match_content .Defeat {
   color: #e42323;
 }
 

@@ -2060,8 +2060,8 @@ body.light hr.separator {
 }
 
 .match_history img {
-  width: 40px;
-  height: 40px;
+  width: 50px;
+  height: 50px;
   border-radius: 50%;
   box-shadow: inset 0px 0px 4px 2px #c864f8;
   background: #b183cd;
