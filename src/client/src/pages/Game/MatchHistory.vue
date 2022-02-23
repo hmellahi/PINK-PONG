@@ -95,5 +95,8 @@ export default class MatchHistory extends Vue {
     // flex: 0 0 calc(30%);
   }
 }
-
+.active {
+   background: transparent !important;
+  }
+  
 </style>

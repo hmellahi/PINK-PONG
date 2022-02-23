@@ -280,4 +280,7 @@ export default class Profile extends Vue {
   height: auto;
 
 }
+.precent{
+  background: transparent !important;
+}
 </style>

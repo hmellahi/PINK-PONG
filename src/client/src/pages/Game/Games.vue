@@ -94,6 +94,7 @@ export default class MatchHistory extends Vue {
 .match_history img {
   width: 4rem;
   height: 4rem;
+  // background-color: red  !important;;
 }
 .match_history .match_content h3 {
   font-size: 1.2rem;
