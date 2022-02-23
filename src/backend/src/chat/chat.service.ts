@@ -212,7 +212,7 @@ export class ChatService {
                                 order: {create_date: "ASC"}
                             })
                 )
-                .map(({owner, ...res})=>({...res, owner: filteredUser(owner)}));
+                .map(({owner, ...res})=>({...res, owner: filteredUser(owner), channelId: channel.id}));
         return {isAdmin: this.isAdmin(channel.admins, member), messages: messages}
     }
 }

@@ -104,7 +104,7 @@ export default class MessageBox extends Vue {
     });
   }
   mounted() {
-    let newDate = moment(this.$props.message.create_date).format("mm:ss");
+    let newDate = moment(this.$props.message.create_date).format("hh::mm:ss");
     if (newDate != "Invalid date") this.$props.message.create_date = newDate;
     // console.clear();
   }
