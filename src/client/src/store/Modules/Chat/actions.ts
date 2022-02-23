@@ -6,27 +6,38 @@ import store from "@/store";
 import { io, Socket } from "socket.io-client";
 import { ActionContext } from "vuex";
 import { Channel, Message } from "@/types/Channel";
-import moment from "moment";
+import Vue from "vue";
+import moment, { now } from "moment";
 
 const { VUE_APP_API_URL: API_URL, VUE_APP_SERVER_URL: SERVER_URL } =
   process.env;
 
 const listenToChannelEvents = (commit: any, connection: Socket) => {
-  connection.on("connection", (channels) => {
-    commit("ADD_CHANNELS", channels);
-  });
+  connection.on("message", async ({ msg, owner }: any) => {
+    console.log("recieved a msg", { msg });
+    let currentUser = await store.getters["User/getCurrentUser"];
 
-  connection.on("message", (msg: Message) => {
-    commit("ADD_MSG", msg);
+    commit("ADD_MSG", {
+      msg,
+      showTooltip: false,
+      owner,
+      create_date: new Date(),
+    });
   });
 };
 
 const actions = {
-  async connectToChatSocket(
-    { commit }: ActionContext<UserState, any>,
-    cookies: any
-  ) {
+  async connectToChatSocket(context: ActionContext<any, any>, cookies: any) {
+    const { commit, state } = context;
     const Authentication = cookies.get("Authentication");
+    // if (state.chatSocket != null) {
+    //   state.chatSocket.removeAllListeners("message");
+    //   state.chatSocket.disconnect();
+    // }
+    if (state.chatSocket != null) {
+      this.fetchMessages(context, state.chatSocket);
+      return;
+    }
     let connection = io(`${SERVER_URL}/chat`, {
       transportOptions: {
         polling: {
@@ -37,14 +48,10 @@ const actions = {
       },
     });
     commit("SET_CHATSOCKET", connection);
-    listenToChannelEvents(commit, connection);
-    // for (let i = 0; i < 10; i++)
-    //   commit("ADD_PUBLIC_CHANNEL", {
-    //     name: "WHO FOR 1V1",
-    //     membersCount: i * 3,
-    //     isLocked: i % 2 == 0,
-    //   });
-    // console.log({ publicChannels: store.state.User.publicChannels });
+  },
+
+  async listenToChannelEvents({ commit, state }: ActionContext<any, any>) {
+    listenToChannelEvents(commit, state.chatSocket);
   },
 
   async fetchChannels({ commit }: ActionContext<any, any>) {
@@ -67,7 +74,6 @@ const actions = {
 
   async leaveChannel({ commit }: ActionContext<any, any>, data: any) {
     try {
-      // alert(data)
       let resp = await api.post("chat/leaveChannel", data);
       // commit("ADD_CHANNELS", data.data); TODO REMOVE FROM MY CHANNELS LIST
       commit("REMOVE_CHANNEL", data.channelId);
@@ -83,6 +89,29 @@ const actions = {
       // ex :{"login": "htagrour1","channelId": 5}
       // commit("ADD_CHANNELS", data.data);
       console.log({ data }, { resp });
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  async fetchMessages({ state, commit }: ActionContext<any, any>, data: any) {
+    try {
+      commit("CLEAR_ALL_MEASSAGES");
+      state.chatSocket.emit("allMessages", data, ({ err, msg }: any) => {
+        if (err) {
+          router.push({ path: "/chat" });
+          Vue.notify({
+            duration: 3000,
+            type: "danger",
+            title: "invalid room id or you arent a member of this room",
+          });
+          return;
+        }
+        // console.log({ allMessages : msg });
+        commit("ADD_MESSAGES", msg.messages);
+        commit("SET_IS_ADMIN", msg.isAdmin);
+      });
+      // });
     } catch (error) {
       throw error;
     }
@@ -106,20 +135,31 @@ const actions = {
 
   async sendMessage(
     { commit, state, rootState }: ActionContext<any, any>,
-    { message, channelId }: any
+    { msg, channelId }: any
   ) {
     let currentUser = await store.getters["User/getCurrentUser"];
     commit("ADD_MSG", {
-      message,
-      channelId,
+      msg,
       showTooltip: false,
-      sender: "test", // tODO REMOVE
-      // sender: rootState.User.user.login,
-      // sender: currentUser.login,
-      createdAt: moment().format("mm:ss"), // TODO CHANGE?
+      owner: currentUser,
+      create_date: moment(), // TODO CHANGE?
     });
+    // console.log({
+    //   msg,
+    //   showTooltip: false,
+    //   owner: currentUser,
+    //   create_date: moment().format("mm:ss"),
+    // });
     // console.log({ store: rootState.User.user });
-    // state.chatSocket.emit("message", { msg, channelId }); // TODO
+    state.chatSocket.emit(
+      "message",
+      { msg, channelId },
+      ({ err, msg }: any) => {
+        if (err) {
+          throw err;
+        }
+      }
+    ); // TODO
   },
 
   async createChannel({ commit }: ActionContext<UserState, any>, channel: any) {

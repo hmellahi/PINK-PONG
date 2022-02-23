@@ -4,20 +4,18 @@ import actions from "./actions";
 import mutations from "./mutations";
 
 const state = () => ({
-  chatSocket: {},
+  chatSocket: null,
   publicChannels: [],
   privateChannels: [],
   dms: [],
   allMessages: [],
+  isAdmin:false
 });
 
 // getters
 const getters = {
   getChannelMsgs: (state: any) => (channelId: string) => {
-    console.table(state.allMessages);
-    return state.allMessages.filter(
-      (msg: Message) => msg.channelId === channelId
-    );
+    return state.allMessages;
   },
 };
 

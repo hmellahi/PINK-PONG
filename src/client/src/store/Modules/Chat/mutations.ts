@@ -61,6 +61,19 @@ const mutations = {
       state.privateChannels = [];
     }
   },
+  ADD_MESSAGES(state: any, messages: Message[]) {
+    // if (!messages) return;
+    // messages.map((msg: Message) => {
+    //   state.allMessages.push(msg);
+    // });
+    state.allMessages = messages;
+  },
+  CLEAR_ALL_MEASSAGES(state: any) {
+    state.allMessages = [];
+  },
+  SET_IS_ADMIN(state: any, newVal: boolean) {
+    state.isAdmin = newVal;
+  }
 };
 
 export default mutations;

@@ -1,4 +1,5 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
+import User from '../entities/user.entity';
 // import { extname } from 'path/posix';
 
 export const imageFileFilter = (req, file, callback) => {
@@ -22,3 +23,20 @@ export const editFileName = (req, file, callback) => {
     .join('');
   callback(null, `${randomName}${fileExtName}`);
 };
+
+
+export const filteredUser = (user: User) =>
+{
+    user.email = undefined;
+    user.currentRefreshToken = undefined;
+    user.two_factor_auth_enabled = undefined;
+    user.two_factor_auth_code = undefined;
+    user.password = undefined;
+    user.create_date = undefined;
+    return user;
+}
+
+export const filteredUsers = (users: User[]): User[] =>
+{
+    return users.map(user => filteredUser(user));
+}

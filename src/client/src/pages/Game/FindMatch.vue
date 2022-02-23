@@ -18,7 +18,6 @@ import { io } from "socket.io-client";
 @Component<FindMatch>({
   components: { Button },
   async beforeRouteLeave(to, from, next) {
-    console.log("sheesh", to.path, from.path);
     // incase if you want to access `this`
     await this.leaveQueue();
     // const self = this as any;
@@ -41,7 +40,7 @@ export default class FindMatch extends Vue {
     this.socket.on("connect_failed", function (err: any) {
       console.log("Connection Failed");
     });
-    this.socket.on("hehe", () => {
+    // this.socket.on("hehe", () => {
       this.socket.emit(
         "joinQueue",
         { userId: this.currentUser.id, map },
@@ -55,17 +54,12 @@ export default class FindMatch extends Vue {
           this.$router.push({ path: "/" });
         }
       );
-    });
+    // });
   }
 
   get currentUser() {
     return this.$store.getters["User/getCurrentUser"];
   }
-
-  // beforeUnmount() {
-  //   console.log("am leaving...");
-  //   this.socket.emit("leaveQueue", { userId: 2 });
-  // }
 
   leaveQueue() {
     this.socket.emit("leaveQueue", { userId: this.currentUser.id });
@@ -90,22 +84,6 @@ export default class FindMatch extends Vue {
       }
     }, 1000);
   }
-
-  // beforeRouteEnter(to: any, from: any, next: any) {
-  //   console.log("beforeRouteEnter");
-  //   next();
-  // }
-
-  // beforeRouteUpdate(to: any, from: any, next: any) {
-  //   console.log("beforeRouteUpdate");
-  //   next();
-  // }
-
-  // beforeRouteLeave(to: any, from: any, next: any) {
-  //   console.log("beforeRouteLeave", to.path, from.path);
-  //   this.leaveQueue();
-  //   next();
-  // }
 }
 </script>
 

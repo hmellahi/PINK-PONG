@@ -46,7 +46,6 @@ export class GameGateway {
   }
 
   getUserId(userId: number) {
-    console.log({ userId });
     return this.users[userId] ? this.users[userId].socketId : -1;
   }
 
@@ -88,11 +87,16 @@ export class GameGateway {
   }
 
   @SubscribeMessage('joinQueue')
-  joinQueue(@MessageBody() data: any, @ConnectedSocket() player: Socket | any) {
+  async joinQueue(
+    @MessageBody() data: any,
+    @ConnectedSocket() player: Socket | any,
+  ) {
     let { map } = data;
 
-    // console.log(`client joined queue: ${player.id}`);
-    if (!player.userId) return { err: true, msg: 'u cant join queue' };
+    if (!player.userId) {
+      let client = await this.authService.getUserFromSocket(player);
+      player.userId = client.id;
+    }
     if (
       this.players.find(
         (playersInQueue) => playersInQueue.userId === player.userId,
@@ -101,17 +105,13 @@ export class GameGateway {
     )
       return { err: ALREADY_IN_QUEUE };
 
-    // console.log(`client heree: ${player.id}`);
     this.setUserStatus(player.userId, 'In Queue');
 
     const secondPlayer = this.players.find((player) => player.map == map);
-
-    // console.log(`client dd: ${player.id}`);
     if (!secondPlayer) {
       this.players.push({ socket: player, map, userId: player.userId });
       return;
     }
-    // console.log({ d: secondPlayer });
     let roomId;
     try {
       roomId = this.createGame(
@@ -223,7 +223,6 @@ export class GameGateway {
     @MessageBody() data: any,
     @ConnectedSocket() sender: Socket | any,
   ) {
-    console.log({ data });
     let { receiver, senderName } = data;
 
     if (sender.userId == receiver)
@@ -238,37 +237,16 @@ export class GameGateway {
         err: true,
         msg: 'you are already in game, you cant invite people',
       };
-    // console.log('heeeyo');
-    // if (
-    //   this.pendingRequests[receiver] &&
-    //   this.pendingRequests[receiver].find((senderId) => senderId == sender.id)
-    // )
-    //   return {
-    //     err: true,
-    //     msg: 'you already sent this user a request',
-    //   };
     if (!this.pendingRequests[receiver]) this.pendingRequests[receiver] = [];
     this.pendingRequests[receiver].push(sender.id);
-    // console.log('heeeyo1');
     if (this.getUserId(receiver) == -1) return;
-    // sender.to(this.getUserId(receiver)).emit('inviteToPlay', {
-    //   senderName,
-    //   senderSocketId: sender.id,
-    //   senderId: sender.userId,
     console.log({ id: this.getUserId(receiver) });
-    // });
     sender.to('activeUsers').emit('inviteToPlay', {
       senderName,
       senderSocketId: sender.id,
       senderId: sender.userId,
       receiver,
     });
-    // sender.to(this.getUserId(receiver)).emit('inviteToPlay', {
-    //   senderName,
-    //   senderSocketId: sender.id,
-    //   senderId: sender.userId,
-    //   receiver,
-    // });
   }
 
   @SubscribeMessage('declineInvitation')
@@ -301,7 +279,6 @@ export class GameGateway {
     @ConnectedSocket() receiver: Socket | any,
   ) {
     let { senderId, senderSocketId } = data;
-    // console.log({ data });
     if (this.getUserStatus(senderId) == 'In Game') {
       return {
         err: true,
@@ -343,7 +320,6 @@ export class GameGateway {
     map: number,
   ) {
     const roomId = uuidv4();
-    // console.log({ roomId });
     this.liveGames.push({
       roomId,
       player1: player1ID,
@@ -377,8 +353,6 @@ export class GameGateway {
     let isSpectator =
       player.userId != currentGameState.player1 &&
       player.userId != currentGameState.player2;
-    // console.log()
-    //console.log(player.userId, currentGameState.player1, currentGameState.player2, isSpectator);
     if (!isSpectator) {
       this.setUserStatus(player.userId, 'In Game');
     }
@@ -389,8 +363,6 @@ export class GameGateway {
       map: currentGameState.map,
       isSpectator,
     };
-    //console.log("initial score", currentGameState.score1, currentGameState.score2)
-    // console.table(this.users);
     return { msg: { gameData, currentGameState } };
   }
 
@@ -406,7 +378,6 @@ export class GameGateway {
     if (!currentPlayerRoom) return { err: ROOM_NOT_FOUND };
 
     const roomIndex = this.liveGames.indexOf(currentPlayerRoom);
-    //console.log(roomIndex);
     let ff = 0;
     if (currentPlayerRoom.player1 == player.userId) {
       ff = 1;
@@ -426,7 +397,6 @@ export class GameGateway {
     this.liveGames = this.liveGames.filter(
       (game: Game) => game.roomId != roomId,
     );
-    //console.log("after", this.liveGames, roomId)
   }
 
   @SubscribeMessage('getLiveGames')
@@ -438,7 +408,6 @@ export class GameGateway {
   }
 
   async handleDisconnect(player: Socket | any, ...args: any[]) {
-    this.setUserStatus(player.userId, 'Offline');
     let userStatus = this.getUserStatus(player.userId);
     // console.table({ userStatus });
     // if player was in queue?
@@ -446,14 +415,12 @@ export class GameGateway {
     if (userStatus == 'In Queue') {
       this.removePlayer(player.userId);
     } else if (userStatus == 'In Game') {
-      console.log(`was in game: ${player.id}`);
       // if player was in game
       // end game with lost to the player
       const currentPlayerRoom: Game = this.liveGames.find(
         (game) =>
           game.player1 === player.userId || game.player2 === player.userId,
       );
-      console.log(`was here too: ${player.id}`);
 
       if (currentPlayerRoom) {
         let ff;
@@ -465,22 +432,12 @@ export class GameGateway {
         this.saveGame(currentPlayerRoom);
         this.removeGame(currentPlayerRoom.roomId);
       }
-      console.log(`quited: ${player.id}`);
     }
     // else
     // do nting
-    // delete this.users[player.userId];
-    console.log(
-      '----------------------------------------------------------------',
-    );
-    // this.users.splice(this.users.indexOf(this.users[player.userId]), 1);
-    // this.users = this.users.filter((user) => user.status != 'Offline');
+    this.setUserStatus(player.userId, 'Offline');
     delete this.users[player.userId];
-    console.log(
-      '----------------------------------------------------------------',
-    );
     console.log('client disconnected', player.userId);
-    // console.table(this.users);
   }
 
   saveGame(game: Game): void {

@@ -22,7 +22,6 @@ const generateRandomString = () => {
 
 const listenToNotifications = (gameSocket: Socket) => {
   gameSocket.on("inviteToPlay", (data: any) => {
-    console.log({ data });
     let { senderName, receiver, senderSocketId, senderId, err, msg } = data;
     // if (err){
     //   Vue.notify({
@@ -31,7 +30,6 @@ const listenToNotifications = (gameSocket: Socket) => {
     //     title: msg,
     //   });
     // }
-    console.log({ rec: store.state.User.user.id }, { receiver });
     if (receiver != store.state.User.user.id) return;
     Vue.notify({
       duration: -1,
@@ -44,14 +42,12 @@ const listenToNotifications = (gameSocket: Socket) => {
       },
     });
   });
-  gameSocket.on("userStatus", ({ userId, status }: any) => {
-    if (store.state.User.user.id == userId && status == "Offline") {
-      console.log("wtf a zbi");
-      gameSocket.emit("userStatus", "Online");
-    }
-  });
+  // gameSocket.on("userStatus", ({ userId, status }: any) => {
+  //   if (store.state.User.user.id == userId && status == "Offline") {
+  //     gameSocket.emit("userStatus", "Online");
+  //   }
+  // });
   gameSocket.on("customGameStarted", (roomId: string) => {
-    console.log({ roomId });
     router.push(`/game?id=${roomId}`);
   });
 };
@@ -68,14 +64,12 @@ const actions = {
         email: generateRandomString() + "@zin.com",
         login: generateRandomString(),
       });
-      console.log(data);
     } catch (error) {}
     // store.commit("User/setUser", data.data);
 
     router.push("/");
   },
   logout({ commit }: ActionContext<UserState, any>) {
-    console.log("logged out");
   },
 
   sendGameInvite(
@@ -128,8 +122,15 @@ const actions = {
     state.gameSocket.emit("declineInvitation", { senderSocketId, senderId });
   },
 
-  connectToGameSocket({ commit }: ActionContext<UserState, any>, cookies: any) {
+  connectToGameSocket(
+    { commit, state }: ActionContext<UserState, any>,
+    cookies: any
+  ) {
     const Authentication = cookies.get("Authentication");
+    if (state.gameSocket != null) {
+      // this.fetchMessages(context, state.chatSocket);
+      return;
+    } //TODO: check if socket is already connected and if so return ;)
     let connection = io(`${SERVER_URL}/game`, {
       transportOptions: {
         polling: {

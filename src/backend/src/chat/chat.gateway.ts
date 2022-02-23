@@ -24,7 +24,7 @@ export class ChatGateway {
   constructor(
     private authService: AuthService,
     private chatService: ChatService,
-  ) { }
+  ) {}
 
   async handleConnection(client: any | Socket) {
     const authentication = await this.authService.getUserFromSocket(client);
@@ -46,6 +46,7 @@ export class ChatGateway {
     } catch (e) {
       return { err: true, msg: e.message };
     }
+    this.server.to(client.id).emit('ready');
   }
 
   handleDisconnect(client: any) {
@@ -54,17 +55,22 @@ export class ChatGateway {
 
   @SubscribeMessage('allMessages')
   async getAllMessages(client: Socket | any, data: GetMessagesDto) {
-    if (!client.user)
-      return { err: true, msg: "socket not found!" };
+    const authentication = await this.authService.getUserFromSocket(client);
+    if (!authentication) {
+      return { err: true, msg: 'socket not found!' };
+    }
+    if (!client.user) return { err: true, msg: 'socket not found!' };
 
     try {
       // get all messages for specific room
       let messages = await this.chatService.getAllMessages(client.user, data);
+      console.log(data.channelId);
+      console.log(messages);
 
       // join user to room
       client.join(data.channelId.toString());
 
-      return messages;
+      return { err: false, msg: messages };
     } catch (e) {
       return { err: true, msg: e.message };
     }
@@ -72,15 +78,15 @@ export class ChatGateway {
 
   @SubscribeMessage('message')
   async messageBroadcast(client: Socket | any, data: MessageDto) {
-    if (!client.user)
-      return { err: true, msg: "socket not found!" };
+    if (!client.user) return { err: true, msg: 'socket not found!' };
 
     try {
       // save on database
       await this.chatService.createMessage(client.user, data);
-
       // send message to specific room
-      client.to(data.channelId.toString()).emit("message", data.msg);
+      client
+        .to(data.channelId.toString())
+        .emit('message', { err: false, msg: data.msg, owner: client.user });
     } catch (e) {
       return { err: true, msg: e.message };
     }

@@ -7,20 +7,18 @@
       >Back</Button
     >
     <Button
-      class="mb-3 col-md-2 right-btn"
-      style="right: 19%"
-      :onClick="leaveRoom"
-      >Leave</Button
-    >
-    <Button
       v-if="isAdmin(currentUser.id)"
       class="mb-3 col-md-2 right-btn"
       :link="'/chat/edit/' + $route.params.name"
       >Edit</Button
     >
-    <!-- TODO check if admin -->
+    <Button
+      class="mb-3 col-md-2 right-btn"
+      style="right: 19%"
+      :onClick="leaveRoom"
+      >Leave</Button
+    >
     <Button class="mb-3 col-md-2" :onClick="InviteToPrivate">Invite</Button>
-    <!-- <Overlay class="p-3"> -->
     <Popup v-model="show_popup">
       <h4>Invite your friend to this channel</h4>
       <form>
@@ -40,6 +38,7 @@
         :isDM="false"
         v-for="(message, i) in messages"
         :message="message"
+        :isAdmin="isAdmin(currentUser.id)"
         :class="'id-' + i"
         :key="i"
         :openHandler="resetTooltips"
@@ -69,9 +68,13 @@ import InputField from "@/common/components/UI/InputField.vue";
 import { Message } from "@/types/Channel";
 import Popup from "@/common/components/UI/Popup.vue";
 import MessageBox from "./Message.vue";
-@Component({
+@Component<channelRoom>({
   components: { Button, InputField, MessageBox, Popup },
   props: {},
+  // async beforeRouteLeave(to, from, next) {
+  //   this.$store.state.Chat.chatSocket.disconnect();
+  //   next();
+  // },
 })
 export default class channelRoom extends Vue {
   msg = "";
@@ -81,33 +84,35 @@ export default class channelRoom extends Vue {
   inviter = "";
   get messages(): Message[] {
     // console.table(this.$store);
-    return this.$store.getters["Chat/getChannelMsgs"](this.$route.params.name);
+    let messages = this.$store.getters["Chat/getChannelMsgs"](
+      this.$route.params.name
+    );
+    // console.log({messages: messages[0].owner});
+    return messages;
   }
 
   get currentChannelId() {
     return this.$route.params.name;
   }
 
-  async fetchChannel(channelId: String) {
+  async fetchMessages(channelId: Number) {
     // this.$store.dispatch("Chat/fetchChannel", channelId);
     try {
-      let data = await this.$http.get("chat/channel/" + channelId);
+      await this.$store.dispatch("Chat/fetchMessages", { channelId });
     } catch (e) {
       this.$notify({
         duration: 1000,
         type: "danger",
-        title: "room doesnt exist or you aren allowed to join this room ;)", // TODO CHANGE ERROR
+        title: e.message, // TODO CHANGE ERROR
       });
     }
     // this.messages = ;
   }
   isAdmin(userId: any) {
-    return true;
-    return this.currentChannel.admins.some((admin: any) => admin.id == userId);
+    return this.$store.state.Chat.isAdmin;
   }
   async leaveRoom() {
     try {
-      // alert( Number(this.currentChannelId));
       await this.$store.dispatch("Chat/leaveChannel", {
         channelId: Number(this.currentChannelId),
       });
@@ -117,23 +122,33 @@ export default class channelRoom extends Vue {
       // TODO SHOW ALERT
     }
   }
-  mounted() {}
+  async mounted() {
+    // if (this.$store.state.Chat.chatSocket)
+    //   alert()
+    // console.log(this.$store.state.Chat);
+    // if (!this.$store.state.Chat.chatSocket)
+    await this.$store.dispatch("Chat/connectToChatSocket", this.$cookies);
+    await this.$store.dispatch("Chat/listenToChannelEvents");
+    alert(Number(this.$route.params.name));
+    this.fetchMessages(Number(this.$route.params.name));
+  }
   resetTooltips() {
     for (var i = 0; i < this.messages.length; i++)
       this.messages[i].showTooltip = false;
   }
   async sendMessage() {
+    if (this.msg.trim().length <= 0) return;
     try {
       await this.$store.dispatch("Chat/sendMessage", {
-        channelId: this.$route.params.name,
-        message: this.msg,
+        channelId: Number(this.$route.params.name),
+        msg: this.msg,
       });
       this.msg = "";
     } catch (e) {
       this.$notify({
         duration: 1000,
         type: "danger",
-        title: "something went wrong", // TODO CHANGE ERROR
+        title: e, // TODO CHANGE ERROR
       });
     }
   }
@@ -168,6 +183,7 @@ export default class channelRoom extends Vue {
     });
     this.show_popup = false;
   }
+  unmount() {}
 }
 </script>
 

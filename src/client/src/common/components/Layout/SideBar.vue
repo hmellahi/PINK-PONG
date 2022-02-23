@@ -61,9 +61,6 @@
 import Button from "@/common/components/UI/Button.vue";
 import { Component, Vue } from "vue-property-decorator";
 import { Link } from "@/types/Link";
-// TODO
-// friends -> navs
-// leaderboard -> navs
 @Component<SideBar>({
   watch: {
     $route(to, from) {
@@ -135,7 +132,8 @@ export default class SideBar extends Vue {
     }
   }
   h2 {
-    font-size: 1.4rem;
+    // font-family: "Merienda" !important;
+    font-size: 1rem!important;
   }
 }
 .active {

@@ -5,7 +5,7 @@ import mutations from "./mutations";
 const state = () => ({
   isAuthenticated: false, //false
   user: {},
-  gameSocket: {},
+  gameSocket: null,
   achievments: [
     {
       id: 1,

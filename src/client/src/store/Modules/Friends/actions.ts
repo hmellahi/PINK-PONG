@@ -40,14 +40,12 @@ const actions = {
   },
   async fetchRequests({ commit }: ActionContext<FriendsState, any>) {
     try {
-      // TODO make an api call
       const data = await api.get("friendship/friendshipRequests");
       commit("SET_ENTITY", ["requests", data.data]);
     } catch (e) {}
   },
   async fetchBlockedUsers({ commit }: any) {
     try {
-      // TODO make an api call
       // let blockedUsers = [{ username: "john", lastSeen: "10m ago" }];
       const data = await api.get("users/blockedList");
       console.log(data.data);
@@ -60,7 +58,6 @@ const actions = {
     commit("REMOVE_FROM", ["friends", userToBlock]);
     commit("ADD_TO_ENTITY", ["blockedUsers", userToBlock]);
     try {
-      // TODO make an api call
       // console.log(userToBlock)
       const data = await api.post("users/blockUser", {
         userId: userToBlock.user.id,
@@ -76,7 +73,6 @@ const actions = {
     commit("REMOVE_FROM", ["blockedUsers", userToUnblock]);
     commit("ADD_TO_ENTITY", ["friends", userToUnblock]);
     try {
-      // TODO make an api call
       const data = await api.post("users/unblockUser", {
         blockId: userToUnblock.id,
       });

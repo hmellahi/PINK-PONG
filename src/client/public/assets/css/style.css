@@ -1,13 +1,15 @@
 @import url("https://fonts.googleapis.com/css2?family=Coda&display=swap");
 
+@import url("https://fonts.googleapis.com/css2?family=Quicksand:wght@500&display=swap");
+
 @font-face {
-  font-family: "Merienda";
   src: local("Merienda"), url(../fonts/BeatWorddemo.ttf) format("truetype");
 }
 * {
-  font-family: "Merienda";
+  font-family: "Quicksand";
   /* font-family: "Coda"; */
 }
+
 html {
   overflow-x: hidden;
   height: 100%;
@@ -2075,12 +2077,12 @@ body.light hr.separator {
   padding: 0em 1em;
 }
 
-.match_history .match_content .victory {
+.match_history .match_content .Victory {
   color: #44cb49;
   font-size: 1rem;
 }
 
-.match_history .match_content .defeat {
+.match_history .match_content .Defeat {
   color: #e42323;
 }
 

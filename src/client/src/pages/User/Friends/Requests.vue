@@ -38,7 +38,6 @@ import AcceptSVG from "../../../../public/assets/svg/accept.svg";
 })
 export default class Requests extends Vue {
   get requests(): any[] {
-    // TODO change type
     return this.$store.state.Friends.requests;
   }
 

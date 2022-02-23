@@ -4,7 +4,7 @@
       <div class="leader_box px-5 col-md-9">
         <div class="Channel_content">
           <h3 class="d-inline">{{ channel.name }}</h3>
-          <span>({{ channel.members && channel.members.length }} Members)</span>
+          <span> ({{ channel.membersCount }} Members)</span>
         </div>
         <img
           v-if="channel.isLocked && !isMyChannelPage"

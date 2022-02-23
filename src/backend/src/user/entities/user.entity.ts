@@ -20,13 +20,13 @@ export default class  User
     @Index()
     @Column({unique: true})
     login: string;
-
+    
     @Column({nullable: true, select: false})
     password: string;
     
     @Column({unique: true})
     email: string;
-
+    
     // refresh token
     @Column({nullable: true})
     currentRefreshToken?: string;
@@ -75,5 +75,4 @@ export default class  User
 
     @OneToMany(()=> Message, message => message.owner)
     messages: Message[];
-
 }

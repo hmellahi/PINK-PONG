@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import UserEntity from 'src/user/entities/user.entity';
 import { UserService } from 'src/user/user.service';
+import { filteredUser } from 'src/user/utils/user.utils';
 import { Repository } from 'typeorm';
 import { CreateGameDto } from './dtos/createGame.dto';
 import GameEntity from './entities/game.entity';
@@ -17,6 +18,7 @@ export class GameService {
   public async createGame(data: any) {
     var game: CreateGameDto = data;
 
+    // check for flag
     game.first_user = await this.userService.getById(data.user1Id);
     game.second_user = await this.userService.getById(data.user2Id);
 
@@ -36,11 +38,16 @@ export class GameService {
   }
 
   public async getUserGames(user: UserEntity) {
-    return await this.gameRepository.find({
+    const games =  (await this.gameRepository.find({
       where: [{ first_user: user }, { second_user: user }],
       relations: ['first_user', 'second_user'],
       order: { create_date: "DESC"}
     }
-    );
+    )).map(({first_user, second_user, ...res})=>
+          (
+            {...res, first_user: filteredUser(first_user),
+              second_user: filteredUser(second_user)}
+          ));
+    return games;
   }
 }

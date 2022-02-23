@@ -73,7 +73,7 @@ export default class App extends Vue {
   async mounted() {
     this.updateIsLoginPage();
     console.clear();
-    // await this.$store.dispatch("User/connectToGameSocket", this.$cookies);
+    // await this.$store.dispatch("Chat/connectToChatSocket", this.$cookies);   
   }
 
   updateIsLoginPage() {
