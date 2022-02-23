@@ -358,64 +358,64 @@ export default class Game extends Vue {
       this.over(ff);
     });
 
-    this.socket.on("hehe", () => {
-      this.socket.emit(
-        "joinGame",
-        { roomId: this.roomId },
-        async ({ msg, err }: any) => {
-          if (err) {
-            this.$notify({
-              duration: 1000,
-              type: "danger",
-              title: err,
-            });
-            this.$router.push({ path: "/" });
-            return;
-          }
-          let { gameData, currentGameState } = msg;
-          this.gameData = gameData;
-          if (this.gameData.map) this.net.map = this.gameData.map;
-
-          // if (!this.gameData.isPlayer1) {
-          //   let tmp: Paddle = this.paddle;
-          //   this.paddle = this.paddle2;
-          //   this.paddle2 = tmp;
-          //   console.log("player1");
-          // }
-
-          const player1 = (await this.fetchUser(gameData.player1)) as
-            | any
-            | undefined;
-          const player2 = (await this.fetchUser(gameData.player2)) as
-            | any
-            | undefined;
-          this.player1 = player1.data;
-          this.player2 = player2.data;
-          if (!this.gameData.isSpectator) {
-            this.isLoading = false;
-            console.log({ gamdata: this.gameData });
-            return;
-          }
-          // score
-          this.scores[0].value = currentGameState.score1;
-          this.scores[1].value = currentGameState.score2;
-          // ball
-          let { ball, canvas, paddles } = currentGameState;
-          this.ball.x = (ball.x / canvas.width) * GameConstants.canvas.width;
-          this.ball.y = (ball.y / canvas.height) * GameConstants.canvas.height;
-          // paddles
-          this.paddle2.y =
-            (paddles[1].y / canvas.height) * GameConstants.canvas.height;
-          this.paddle2.velocity = paddles[1].velocity;
-          this.paddle.y =
-            (paddles[0].y / canvas.height) * GameConstants.canvas.height;
-          this.paddle.velocity = paddles[0].velocity;
-
-          this.isLoading = false;
-          console.log("aa", { msg });
+    // this.socket.on("hehe", () => {
+    this.socket.emit(
+      "joinGame",
+      { roomId: this.roomId },
+      async ({ msg, err }: any) => {
+        if (err) {
+          this.$notify({
+            duration: 1000,
+            type: "danger",
+            title: err,
+          });
+          this.$router.push({ path: "/" });
+          return;
         }
-      );
-    });
+        let { gameData, currentGameState } = msg;
+        this.gameData = gameData;
+        if (this.gameData.map) this.net.map = this.gameData.map;
+
+        // if (!this.gameData.isPlayer1) {
+        //   let tmp: Paddle = this.paddle;
+        //   this.paddle = this.paddle2;
+        //   this.paddle2 = tmp;
+        //   console.log("player1");
+        // }
+
+        const player1 = (await this.fetchUser(gameData.player1)) as
+          | any
+          | undefined;
+        const player2 = (await this.fetchUser(gameData.player2)) as
+          | any
+          | undefined;
+        this.player1 = player1.data;
+        this.player2 = player2.data;
+        if (!this.gameData.isSpectator) {
+          this.isLoading = false;
+          console.log({ gamdata: this.gameData });
+          return;
+        }
+        // score
+        this.scores[0].value = currentGameState.score1;
+        this.scores[1].value = currentGameState.score2;
+        // ball
+        let { ball, canvas, paddles } = currentGameState;
+        this.ball.x = (ball.x / canvas.width) * GameConstants.canvas.width;
+        this.ball.y = (ball.y / canvas.height) * GameConstants.canvas.height;
+        // paddles
+        this.paddle2.y =
+          (paddles[1].y / canvas.height) * GameConstants.canvas.height;
+        this.paddle2.velocity = paddles[1].velocity;
+        this.paddle.y =
+          (paddles[0].y / canvas.height) * GameConstants.canvas.height;
+        this.paddle.velocity = paddles[0].velocity;
+
+        this.isLoading = false;
+        console.log("aa", { msg });
+      }
+    );
+    // });
 
     this.socket.on("ballMoves", (data: any) => {
       if (this.gameData.isPlayer1) return;

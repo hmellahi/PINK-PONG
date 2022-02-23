@@ -32,7 +32,6 @@ import CloseSVG from "../../../../public/assets/svg/close.svg";
 })
 export default class blockedUsers extends Vue {
   get blockedFriends(): any[] {
-    // TODO change type
     return this.$store.state.Friends.blockedUsers;
   }
 

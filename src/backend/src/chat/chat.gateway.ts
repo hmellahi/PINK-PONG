@@ -46,6 +46,7 @@ export class ChatGateway {
     } catch (e) {
       return { err: true, msg: e.message };
     }
+    this.server.to(client.id).emit('ready');
   }
 
   handleDisconnect(client: any) {
@@ -54,6 +55,10 @@ export class ChatGateway {
 
   @SubscribeMessage('allMessages')
   async getAllMessages(client: Socket | any, data: GetMessagesDto) {
+    const authentication = await this.authService.getUserFromSocket(client);
+    if (!authentication) {
+      return { err: true, msg: 'socket not found!' };
+    }
     if (!client.user) return { err: true, msg: 'socket not found!' };
 
     try {
@@ -76,9 +81,10 @@ export class ChatGateway {
     try {
       // save on database
       await this.chatService.createMessage(client.user, data);
-
       // send message to specific room
-      client.to(data.channelId.toString()).emit('message', data.msg);
+      client
+        .to(data.channelId.toString())
+        .emit('message', { err: false, msg: data.msg, owner: client.user });
     } catch (e) {
       return { err: true, msg: e.message };
     }

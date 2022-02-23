@@ -207,7 +207,7 @@ export class ChatService {
         const messages = (await this.messgaeRepository
                         .find(
                             {
-                                where: {owner: member, channel: channel},
+                                where: {channel: channel},
                                 relations: ['owner'],
                                 order: {create_date: "ASC"}
                             })

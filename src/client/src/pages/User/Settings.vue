@@ -76,10 +76,8 @@
           v-if="user.two_factor_auth_enabled"
           >Disable</Button
         >
-        <!-- :onClick="toggle(i)" -->
       </div>
       <div class="col-12 px-0 fa_factor" v-if="showVerify">
-        <!-- TODO CHANGE -->
         <img
           :src="API_URL + '/auth/2fa/generate'"
           v-if="!user.two_factor_auth_enabled"

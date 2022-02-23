@@ -3,7 +3,6 @@
     <Popup v-model="show_popup">
       <div v-if="!isDM">
         <div v-if="message.isAdmin" class="mb-2">
-          <!-- TODO CHECK IF CURR USER IS ADMIN. -->
           <span
             ><input
               class="checkbox_admin"
@@ -19,8 +18,8 @@
           >Profile</Button
         >
         <Button class="m-0" :onClick="InviteToPlay">Invite To Play</Button>
-        <Button class="m-0" :onClick="ban">Ban</Button>
-        <div class="mute-message">
+        <Button class="m-0" :onClick="ban" v-if="isAdmin">Ban</Button>
+        <div class="mute-message" v-if="isAdmin">
           <select
             v-model="muteDuration"
             class="m-2 ml-3 px-2"
@@ -41,7 +40,9 @@
       <span v-if="!isDM">
         <img src="/assets/svg/medal.svg" v-if="message.isAdmin" alt="" />
       </span>
-      <span class="sender" @click="showMsgTooltip"> {{ message.owner.login }}:</span>
+      <span class="sender" @click="showMsgTooltip">
+        {{ message.owner.login }}:</span
+      >
       <span class="content"> {{ message.msg }}</span>
     </div>
   </div>
@@ -55,6 +56,7 @@ import InputField from "@/common/components/UI/InputField.vue";
 import { Message } from "@/types/Channel";
 import Popup from "@/common/components/UI/Popup.vue";
 import moment from "moment";
+import { User } from "../../types/user";
 
 @Component({
   props: {
@@ -63,6 +65,7 @@ import moment from "moment";
       // type: Message, //wtf why?
       required: true,
     },
+    isAdmin: Boolean,
     openHandler: Function,
   },
   components: { Popup, Button, Checkbox, InputField },
@@ -102,11 +105,14 @@ export default class MessageBox extends Vue {
     });
   }
   mounted() {
-    this.$props.message.create_date = moment(
-      this.$props.message.create_date
-    ).format("mm:ss");
+    let newDate = moment(this.$props.message.create_date).format("mm:ss");
+    if (newDate != "Invalid date") this.$props.message.create_date = newDate;
+    console.clear();
   }
   showMsgTooltip() {
+    if (this.currentUser.id == this.$props.message.owner.id) {
+      return;
+    }
     this.show_popup = !this.show_popup;
   }
 
@@ -119,10 +125,22 @@ export default class MessageBox extends Vue {
     return this.$store.getters["User/getCurrentUser"];
   }
   InviteToPlay() {
-    this.$store.state.User.gameSocket.emit("inviteToPlay", {
-      reciever: this.$props.message.user_id, //TODO CHANGE
-      senderName: this.currentUser.login ? this.currentUser.login : "someone",
-    });
+    let user: User = this.$props.message.owner;
+    this.$store.state.User.gameSocket.emit(
+      "inviteToPlay",
+      {
+        receiver: user.id,
+        senderName: this.currentUser.login ? this.currentUser.login : "someone",
+      },
+      (data: any) => {
+        if (data.err)
+          this.$notify({
+            duration: 1000,
+            type: "danger",
+            title: data.msg,
+          });
+      }
+    );
   }
 }
 </script>

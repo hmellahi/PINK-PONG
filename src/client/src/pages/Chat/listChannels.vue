@@ -4,7 +4,7 @@
       <div class="leader_box px-5 col-md-9">
         <div class="Channel_content">
           <h3 class="d-inline">{{ channel.name }}</h3>
-          <span>({{ channel.members && channel.members.length }} Members)</span>
+          <span> ({{ channel.membersCount }} Members)</span>
         </div>
         <img
           v-if="channel.isLocked && !isMyChannelPage"
@@ -17,9 +17,7 @@
         <h2 class="m-auto" role="button" @click="openPopup(channel)">Join</h2>
       </div>
       <div class="btn col-md-2 ml-auto leader_box" v-else>
-        <h2 class="m-auto" role="button" @click="enter(channel)">
-          Enter
-        </h2>
+        <h2 class="m-auto" role="button" @click="enter(channel)">Enter</h2>
       </div>
     </div>
     <Popup v-model="show" v-if="currentChannel">

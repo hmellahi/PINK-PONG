@@ -19,6 +19,7 @@ const isAuthenticated = async () => {
   }
   store.commit("User/setUser", data.data);
   store.dispatch("User/connectToGameSocket", VueCookies);
+  // store.dispatch("Chat/connectToChatSocket", VueCookies);
   return true;
 };
 const checkAuth = async (to: Route, from: Route, next: NavigationGuardNext) => {
