@@ -20,6 +20,7 @@ import { io } from "socket.io-client";
   async beforeRouteLeave(to, from, next) {
     // incase if you want to access `this`
     await this.leaveQueue();
+    await this.removeAllListeners();
     // const self = this as any;
     next();
   },
@@ -55,6 +56,11 @@ export default class FindMatch extends Vue {
         }
       );
     // });
+  }
+
+  removeAllListeners() {
+    // this.socket.removeAllListeners();
+    this.socket.removeAllListeners();
   }
 
   get currentUser() {

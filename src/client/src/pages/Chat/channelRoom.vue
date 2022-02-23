@@ -1,5 +1,5 @@
 <template>
-  <Overlay class="text-left">
+  <Overlay class="text-left channel">
     <Button
       class="ml-0 mb-3 col-md-2"
       v-if="this.$route.path != '/profile/mine'"
@@ -71,10 +71,10 @@ import MessageBox from "./Message.vue";
 @Component<channelRoom>({
   components: { Button, InputField, MessageBox, Popup },
   props: {},
-  // async beforeRouteLeave(to, from, next) {
-  //   this.$store.state.Chat.chatSocket.disconnect();
-  //   next();
-  // },
+  async beforeRouteLeave(to, from, next) {
+    await this.leaveRoomSocket();
+    next();
+  },
 })
 export default class channelRoom extends Vue {
   msg = "";
@@ -123,13 +123,7 @@ export default class channelRoom extends Vue {
     }
   }
   async mounted() {
-    // if (this.$store.state.Chat.chatSocket)
-    //   alert()
-    // console.log(this.$store.state.Chat);
-    // if (!this.$store.state.Chat.chatSocket)
     await this.$store.dispatch("Chat/connectToChatSocket", this.$cookies);
-    await this.$store.dispatch("Chat/listenToChannelEvents");
-    alert(Number(this.$route.params.name));
     this.fetchMessages(Number(this.$route.params.name));
   }
   resetTooltips() {
@@ -151,6 +145,11 @@ export default class channelRoom extends Vue {
         title: e, // TODO CHANGE ERROR
       });
     }
+  }
+  leaveRoomSocket(){
+    // this.$store.dispatch("Chat/leaveChannelSocket", {
+    //   channelId: Number(this.$route.params.name),
+    // });
   }
   goBackward() {
     this.$router.go(-1);
@@ -198,6 +197,9 @@ input {
 input:hover {
   background-color: #2a467e8a !important;
   border: 0;
+}
+.channel {
+  overflow: hidden;
 }
 .overlay {
   //   vertical-align: bottom;
