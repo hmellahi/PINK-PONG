@@ -2064,11 +2064,13 @@ body.light hr.separator {
 }
 
 .match_history img {
-  width: 40px;
-  height: 40px;
+  /* width: 40px;
+  height: 40px; */
+  width: 4.5rem;
+  height: 5rem;
   border-radius: 50%;
   box-shadow: inset 0px 0px 4px 2px #c864f8;
-  background: #b183cd;
+  /* background: #b183cd; */
   padding: 10px;
   margin-right: 10px;
 }
@@ -2079,11 +2081,12 @@ body.light hr.separator {
 
 .match_history .match_content .Victory {
   color: #44cb49;
-  font-size: 1rem;
+  font-size: 2rem;
 }
 
 .match_history .match_content .Defeat {
   color: #e42323;
+  font-size: 2rem;
 }
 
 .match_history .match_content h3 {
@@ -2101,7 +2104,7 @@ body.light hr.separator {
 }
 
 .match_right img {
-  width: 60px;
+  width: 5rem;
   border-radius: 10px;
   border: 1px solid #fff;
   margin-right: 2em;

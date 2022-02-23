@@ -272,4 +272,12 @@ export default class Profile extends Vue {
 .tooltip {
   background: #2a467e8a;
 }
+.precent {
+  background: #2a467e8a;
+}
+.precent img {
+ width: auto;
+  height: auto;
+
+}
 </style>
