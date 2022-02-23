@@ -127,10 +127,13 @@ export class ChatGateway {
           msg: 'You have been banned!',
         },
       });
+      
+      if (data.isPermanant) client.leave(data.channelId.toString());
 
       return { err: false, msg: 'user has been banned!' };
     } catch (e) {
       return { err: true, msg: e.message };
     }
   }
+
 }
