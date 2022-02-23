@@ -124,7 +124,7 @@ export default class {
     // this.velocityY = this.speed * Math.sin(angle);
     this.velocityX = direction * Math.cos(angleRad);
     this.velocityY = Math.sin(angleRad);
-    this.speed += 1
+    // this.speed += 1
     // increase speed
     // this.speed += 0.05; TODO CHange
     // console.log(`ball speed ${this.speed}`);

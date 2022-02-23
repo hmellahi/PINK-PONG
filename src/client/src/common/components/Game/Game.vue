@@ -120,6 +120,7 @@ export default class Game extends Vue {
       // GameConstants.canvas.width = 400;
       // GameConstants.canvas.height = 400;
     }
+    console.log(GameConstants.canvas.width, GameConstants.canvas.height);
     this.backColor = GameConstants.backColor;
     this.xBall = GameConstants.canvas.width / 2;
     this.yBall = GameConstants.canvas.height / 2;
@@ -403,6 +404,7 @@ export default class Game extends Vue {
           let { ball, canvas, paddles } = currentGameState;
           this.ball.x = (ball.x / canvas.width) * GameConstants.canvas.width;
           this.ball.y = (ball.y / canvas.height) * GameConstants.canvas.height;
+          // this.ball.speed = ball.
           // paddles
           this.paddle2.y =
             (paddles[1].y / canvas.height) * GameConstants.canvas.height;
@@ -418,10 +420,12 @@ export default class Game extends Vue {
     });
 
     this.socket.on("ballMoves", (data: any) => {
-      if (this.gameData.isPlayer1) return;
+      // if (this.gameData.isPlayer1) return;
       let { ball, canvas } = data;
       this.ball.x = (ball.x / canvas.width) * GameConstants.canvas.width;
       this.ball.y = (ball.y / canvas.height) * GameConstants.canvas.height;
+      // if (this.gameData.isPlayer1)
+      //   console.log(`ballx ${this.ball.x},bally ${this.ball.y}`);
     });
 
     this.socket.on("incrementScore", (ballHitsBorder: number) => {
@@ -547,7 +551,7 @@ export default class Game extends Vue {
   draw(sketch: P5Sketch) {
     if (this.isGameOver) return;
 
-    this.sendNewBallPostion();
+    // this.sendNewBallPostion();
     if (this.map != 3) {
       sketch.background(this.backColor);
     } else {
@@ -579,6 +583,11 @@ export default class Game extends Vue {
       this.ball.x < GameConstants.canvas.width / 2 ? this.paddle2 : this.paddle;
     if (this.ball.hits(player)) {
       this.ball.reverse(player, player == this.paddle);
+    // this.sendNewBallPostion();
+    //   this.ball.draw(sketch);
+
+    //      if (this.gameData.isPlayer1) this.sendNewPaddleVelocity(this.paddle);
+    // else this.sendNewPaddleVelocity(this.paddle2);
       // send
       if (this.isSoundOn) {
         console.log("play sound");
@@ -622,6 +631,8 @@ export default class Game extends Vue {
     }
     if (this.gameData.isPlayer1) this.sendNewPaddleVelocity(this.paddle);
     else this.sendNewPaddleVelocity(this.paddle2);
+    this.sendNewBallPostion();
+
   }
   keydown(e: any) {
     if (this.gameData.isSpectator) return;
