@@ -106,7 +106,7 @@ export default class MessageBox extends Vue {
   mounted() {
     let newDate = moment(this.$props.message.create_date).format("mm:ss");
     if (newDate != "Invalid date") this.$props.message.create_date = newDate;
-    console.clear();
+    // console.clear();
   }
   showMsgTooltip() {
     if (this.currentUser.id == this.$props.message.owner.id) {

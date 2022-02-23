@@ -124,7 +124,6 @@ export default class channelRoom extends Vue {
   }
   async mounted() {
     await this.$store.dispatch("Chat/connectToChatSocket", this.$cookies);
-    await this.$store.dispatch("Chat/listenToChannelEvents");
     this.fetchMessages(Number(this.$route.params.name));
   }
   resetTooltips() {

@@ -64,11 +64,12 @@ export class ChatGateway {
     try {
       // get all messages for specific room
       let messages = await this.chatService.getAllMessages(client.user, data);
-      console.log(data.channelId);
-      console.log(messages);
+      // console.log(data.channelId);
+      // console.log(messages);
 
       // join user to room
       client.join(data.channelId.toString());
+      console.log({ id: client.id });
 
       return { err: false, msg: messages };
     } catch (e) {

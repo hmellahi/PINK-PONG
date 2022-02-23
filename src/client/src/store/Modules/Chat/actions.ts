@@ -49,10 +49,14 @@ const actions = {
       },
     });
     commit("SET_CHATSOCKET", connection);
+    listenToChannelEvents(commit, connection);
   },
 
-  async leaveChannelSocket({ commit, state }: ActionContext<any, any>, data:any){
-    state.chatRoom.emit("leaveChannel", data)
+  async leaveChannelSocket(
+    { commit, state }: ActionContext<any, any>,
+    data: any
+  ) {
+    state.chatRoom.emit("leaveChannel", data);
   },
   async listenToChannelEvents({ commit, state }: ActionContext<any, any>) {
     listenToChannelEvents(commit, state.chatSocket);
