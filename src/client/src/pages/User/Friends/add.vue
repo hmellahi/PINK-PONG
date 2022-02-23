@@ -37,8 +37,6 @@ export default class blockedUsers extends Vue {
       }
   }
 }
-// TODO
-// show a response shows if the request is send or not
 </script>
 
 <style scoped>

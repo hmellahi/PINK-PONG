@@ -29,7 +29,7 @@
             placeholder="Enter New Password"
             class="input-text p-3 col-md-6 my-4"
             autocomplete="true"
-            v-model="channel.password"
+            v-model="newPassword"
           ></InputField>
           <h4>{{ errors }}</h4>
           <Button :onClick="editChannel" class="mt-4 px-4">Save</Button>
@@ -52,25 +52,30 @@ import { isValidInput } from "@/common/helpers/Validations";
 })
 export default class editChannel extends Vue {
   channel: Channel = { name: "WHOS 1v1", type: "", isLocked: false };
-  oldPassword = "";
   newPassword = "";
   errors = "";
   mounted() {
-    // TODO fetch the channel
+    // TODO get the channel name
     // console.log(this.$route.params.name);
     // show channel data
     // this.channel = { name: "WHOS FOR 1V1" };
   }
-  editChannel() {
+  async editChannel() {
     // console.log(this.channel.name);
     // console.log(this.channel.password);
     // let { name, password } = this.channel;
-    // TODO CHECK IF CHANNEL NAME IS UNIQUE??
     // if (!isValidInput(name) || !isValidInput(password)) {
     //   this.errors = "name and password must be more then 8 characters";
     //   return;
     // }
-    this.$router.push("/chat");
+    try {
+      await this.$http.post("chat/updateChannelPassword", {
+        password: this.newPassword,
+        isLocked: this.newPassword != "",
+        channelId: Number(this.$route.params.name),
+      });
+      this.$router.push("/chat");
+    } catch (e) {}
   }
   goBackward() {
     this.$router.go(-1);
@@ -79,18 +84,18 @@ export default class editChannel extends Vue {
     this.$router.push("/chat");
   }
   updateFormDate() {
-    let { newPassword, oldPassword } = this;
+    let { newPassword } = this;
     // console.log({ name: this.  channel.name, oldPassword, newPassword });
   }
 }
 </script>
 
 <style scoped>
-.overlay{
-    height: 24rem!important;
-    display: flex;
-    flex-wrap: wrap;
-    flex-direction: column;
-    justify-content: center;
+.overlay {
+  height: 24rem !important;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+  justify-content: center;
 }
 </style>

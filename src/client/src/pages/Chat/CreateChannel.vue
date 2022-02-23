@@ -55,10 +55,10 @@ export default class createChannel extends Vue {
     else if (password != "") this.channel.isLocked = true;
     try {
       await this.$store.dispatch("Chat/createChannel", this.channel);
-      this.$router.push("/chat");
+      this.$router.go(-1);
     } catch (e) {
       this.errors = e;
-    }                                                          
+    }
   }
   updateFormDate() {
     console.log("sda");

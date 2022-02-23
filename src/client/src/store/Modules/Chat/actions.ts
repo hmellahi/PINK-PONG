@@ -7,34 +7,37 @@ import { io, Socket } from "socket.io-client";
 import { ActionContext } from "vuex";
 import { Channel, Message } from "@/types/Channel";
 import Vue from "vue";
-import moment from "moment";
+import moment, { now } from "moment";
 
 const { VUE_APP_API_URL: API_URL, VUE_APP_SERVER_URL: SERVER_URL } =
   process.env;
 
 const listenToChannelEvents = (commit: any, connection: Socket) => {
-  connection.on("connection", (channels) => {
-    commit("ADD_CHANNELS", channels);
-  });
-
-  connection.on("message", async (msg: Message) => {
-    console.log({ msg });
+  connection.on("message", async ({ msg, owner }: any) => {
+    console.log("recieved a msg", { msg });
     let currentUser = await store.getters["User/getCurrentUser"];
+
     commit("ADD_MSG", {
       msg,
       showTooltip: false,
-      owner: currentUser,
-      create_date: moment().format("mm:ss"),
+      owner,
+      create_date: new Date(),
     });
   });
 };
 
 const actions = {
-  async connectToChatSocket(
-    { commit }: ActionContext<UserState, any>,
-    cookies: any
-  ) {
+  async connectToChatSocket(context: ActionContext<any, any>, cookies: any) {
+    const { commit, state } = context;
     const Authentication = cookies.get("Authentication");
+    // if (state.chatSocket != null) {
+    //   state.chatSocket.removeAllListeners("message");
+    //   state.chatSocket.disconnect();
+    // }
+    if (state.chatSocket != null) {
+      this.fetchMessages(context, state.chatSocket);
+      return;
+    }
     let connection = io(`${SERVER_URL}/chat`, {
       transportOptions: {
         polling: {
@@ -45,14 +48,10 @@ const actions = {
       },
     });
     commit("SET_CHATSOCKET", connection);
-    listenToChannelEvents(commit, connection);
-    // for (let i = 0; i < 10; i++)
-    //   commit("ADD_PUBLIC_CHANNEL", {
-    //     name: "WHO FOR 1V1",
-    //     membersCount: i * 3,
-    //     isLocked: i % 2 == 0,
-    //   });
-    // console.log({ publicChannels: store.state.User.publicChannels });
+  },
+
+  async listenToChannelEvents({ commit, state }: ActionContext<any, any>) {
+    listenToChannelEvents(commit, state.chatSocket);
   },
 
   async fetchChannels({ commit }: ActionContext<any, any>) {
@@ -97,24 +96,22 @@ const actions = {
 
   async fetchMessages({ state, commit }: ActionContext<any, any>, data: any) {
     try {
-      // let data = await api.get("chat/myChannels");
-      // console.log({ private: data });
-      // commit("CLEAR_PUBLIC_CHANNELS", "private");
-      // data.data.map((channel: Channel) => {
-      //   if (!channel) return;
-      //   commit("ADD_PRIVATE_CHANNEL", channel);
-      // });
+      commit("CLEAR_ALL_MEASSAGES");
       state.chatSocket.emit("allMessages", data, ({ err, msg }: any) => {
         if (err) {
+          router.push({ path: "/chat" });
           Vue.notify({
-            duration: 1000,
+            duration: 3000,
             type: "danger",
-            title: msg,
+            title: "invalid room id or you arent a member of this room",
           });
-          router.go(-1);
+          return;
         }
-        commit("ADD_MESSAGES", msg);
+        // console.log({ allMessages : msg });
+        commit("ADD_MESSAGES", msg.messages);
+        commit("SET_IS_ADMIN", msg.isAdmin);
       });
+      // });
     } catch (error) {
       throw error;
     }
@@ -145,7 +142,7 @@ const actions = {
       msg,
       showTooltip: false,
       owner: currentUser,
-      create_date: moment().format("mm:ss"), // TODO CHANGE?
+      create_date: moment(), // TODO CHANGE?
     });
     // console.log({
     //   msg,

@@ -26,7 +26,6 @@ import { catchAction } from "../../../store/Modules/Friends/actions";
   components: { Button, ListFriends },
 })
 export default class Friends extends Vue {
-  // TODO change type
   get friendsCount(): Number {
     return this.$store.getters["Friends/friendsCount"];
   }

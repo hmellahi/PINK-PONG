@@ -7,20 +7,18 @@
       >Back</Button
     >
     <Button
-      class="mb-3 col-md-2 right-btn"
-      style="right: 19%"
-      :onClick="leaveRoom"
-      >Leave</Button
-    >
-    <Button
       v-if="isAdmin(currentUser.id)"
       class="mb-3 col-md-2 right-btn"
       :link="'/chat/edit/' + $route.params.name"
       >Edit</Button
     >
-    <!-- TODO check if admin -->
+    <Button
+      class="mb-3 col-md-2 right-btn"
+      style="right: 19%"
+      :onClick="leaveRoom"
+      >Leave</Button
+    >
     <Button class="mb-3 col-md-2" :onClick="InviteToPrivate">Invite</Button>
-    <!-- <Overlay class="p-3"> -->
     <Popup v-model="show_popup">
       <h4>Invite your friend to this channel</h4>
       <form>
@@ -40,6 +38,7 @@
         :isDM="false"
         v-for="(message, i) in messages"
         :message="message"
+        :isAdmin="isAdmin(currentUser.id)"
         :class="'id-' + i"
         :key="i"
         :openHandler="resetTooltips"
@@ -69,9 +68,13 @@ import InputField from "@/common/components/UI/InputField.vue";
 import { Message } from "@/types/Channel";
 import Popup from "@/common/components/UI/Popup.vue";
 import MessageBox from "./Message.vue";
-@Component({
+@Component<channelRoom>({
   components: { Button, InputField, MessageBox, Popup },
   props: {},
+  // async beforeRouteLeave(to, from, next) {
+  //   this.$store.state.Chat.chatSocket.disconnect();
+  //   next();
+  // },
 })
 export default class channelRoom extends Vue {
   msg = "";
@@ -92,7 +95,7 @@ export default class channelRoom extends Vue {
     return this.$route.params.name;
   }
 
-  async fetchChannel(channelId: String) {
+  async fetchMessages(channelId: Number) {
     // this.$store.dispatch("Chat/fetchChannel", channelId);
     try {
       await this.$store.dispatch("Chat/fetchMessages", { channelId });
@@ -106,8 +109,7 @@ export default class channelRoom extends Vue {
     // this.messages = ;
   }
   isAdmin(userId: any) {
-    return true;
-    return this.currentChannel.admins.some((admin: any) => admin.id == userId);
+    return this.$store.state.Chat.isAdmin;
   }
   async leaveRoom() {
     try {
@@ -121,8 +123,14 @@ export default class channelRoom extends Vue {
     }
   }
   async mounted() {
+    // if (this.$store.state.Chat.chatSocket)
+    //   alert()
+    // console.log(this.$store.state.Chat);
+    // if (!this.$store.state.Chat.chatSocket)
     await this.$store.dispatch("Chat/connectToChatSocket", this.$cookies);
-    this.fetchChannel(this.$route.params.name);
+    await this.$store.dispatch("Chat/listenToChannelEvents");
+    alert(Number(this.$route.params.name));
+    this.fetchMessages(Number(this.$route.params.name));
   }
   resetTooltips() {
     for (var i = 0; i < this.messages.length; i++)
@@ -175,6 +183,7 @@ export default class channelRoom extends Vue {
     });
     this.show_popup = false;
   }
+  unmount() {}
 }
 </script>
 
