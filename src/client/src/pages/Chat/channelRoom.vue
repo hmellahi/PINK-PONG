@@ -148,9 +148,9 @@ export default class channelRoom extends Vue {
     }
   }
   leaveRoomSocket(){
-    this.$store.dispatch("Chat/leaveChannelSocket", {
-      channelId: Number(this.$route.params.name),
-    });
+    // this.$store.dispatch("Chat/leaveChannelSocket", {
+    //   channelId: Number(this.$route.params.name),
+    // });
   }
   goBackward() {
     this.$router.go(-1);

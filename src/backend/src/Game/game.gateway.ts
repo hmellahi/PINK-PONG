@@ -94,7 +94,7 @@ export class GameGateway {
     let { map } = data;
 
     if (!player.userId) {
-      let client = await this.authService.getUserFromSocket(client);
+      let client = await this.authService.getUserFromSocket(player);
       player.userId = client.id;
     }
     if (

@@ -8,7 +8,7 @@ import { ActionContext } from "vuex";
 import { Channel, Message } from "@/types/Channel";
 import Vue from "vue";
 import moment, { now } from "moment";
-import { stat } from "fs";
+// import { stat } from "fs";
 
 const { VUE_APP_API_URL: API_URL, VUE_APP_SERVER_URL: SERVER_URL } =
   process.env;
