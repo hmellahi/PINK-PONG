@@ -97,7 +97,6 @@ export default class MessageBox extends Vue {
     });
   }
   mute() {
-    alert(this.muteDuration);
     this.$store.dispatch("Chat/muteFromChannel", {
       userId: this.$props.message.user_id,
       channelId: this.$route.params.name,

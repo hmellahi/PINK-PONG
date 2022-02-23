@@ -2196,9 +2196,9 @@ body.light hr.separator {
   border-radius: 10px;
   overflow: auto;
   overflow-y: auto;
-  display: flex;
+  /* display: flex;
   justify-content: flex-end;
-  flex-direction: column;
+  flex-direction: column; */
 }
 .popup_wrapper {
   position: absolute;

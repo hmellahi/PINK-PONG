@@ -8,6 +8,7 @@ import { ActionContext } from "vuex";
 import { Channel, Message } from "@/types/Channel";
 import Vue from "vue";
 import moment, { now } from "moment";
+import { stat } from "fs";
 
 const { VUE_APP_API_URL: API_URL, VUE_APP_SERVER_URL: SERVER_URL } =
   process.env;
@@ -35,7 +36,7 @@ const actions = {
     //   state.chatSocket.disconnect();
     // }
     if (state.chatSocket != null) {
-      this.fetchMessages(context, state.chatSocket);
+      // this.fetchMessages(context, state.chatSocket);
       return;
     }
     let connection = io(`${SERVER_URL}/chat`, {
@@ -50,6 +51,9 @@ const actions = {
     commit("SET_CHATSOCKET", connection);
   },
 
+  async leaveChannelSocket({ commit, state }: ActionContext<any, any>, data:any){
+    state.chatRoom.emit("leaveChannel", data)
+  },
   async listenToChannelEvents({ commit, state }: ActionContext<any, any>) {
     listenToChannelEvents(commit, state.chatSocket);
   },
