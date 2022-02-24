@@ -1,6 +1,6 @@
 <template>
   <div class="row">
-    <form class="text-center col-12">
+    <div class="text-center col-12">
       <InputField
         name="name"
         placeholder="Enter Name (*)"
@@ -23,7 +23,7 @@
       </div>
       <h4>{{ errors }}</h4>
       <Button :onClick="createChannel" class="mt-4">Create</Button>
-    </form>
+    </div>
   </div>
 </template>
 
@@ -55,9 +55,20 @@ export default class createChannel extends Vue {
     else if (password != "") this.channel.isLocked = true;
     try {
       await this.$store.dispatch("Chat/createChannel", this.channel);
-      this.$router.go(-1);
+      // this.$router.go(-1);
+      this.$notify({
+        duration: 3000,
+        type: "success",
+        title: "Channel Created successfully",
+      });
+      this.$router.push("/chat/private");
     } catch (e) {
-      this.errors = e;
+      // this.$notify({
+      //   duration: 3000,
+      //   type: "danger",
+      //   title: e.message,
+      // });
+      this.errors = e.response.data.message;
     }
   }
   updateFormDate() {

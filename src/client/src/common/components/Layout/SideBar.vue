@@ -132,7 +132,7 @@ export default class SideBar extends Vue {
     }
   }
   h2 {
-    // font-family: "Merienda" !important;
+  font-family: "BeatWorddemo"!important;
     font-size: 1rem!important;
   }
 }

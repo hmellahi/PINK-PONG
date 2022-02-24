@@ -21,21 +21,21 @@
     <Button class="mb-3 col-md-2" :onClick="InviteToPrivate">Invite</Button>
     <Popup v-model="show_popup">
       <h4>Invite your friend to this channel</h4>
-      <form>
-        <InputField
-          name="inviter"
-          placeholder="Enter The login"
-          type="text"
-          v-model="inviter"
-          class="text-left p-3 my-4"
-        ></InputField>
-      </form>
+      <InputField
+        name="inviter"
+        placeholder="Enter The login"
+        type="text"
+        v-model="inviter"
+        class="text-left p-3 my-4"
+      ></InputField>
       <Button :onClick="SendInvite" class="px-5">Invite</Button>
     </Popup>
     <div class="mb-2 room px-4">
       <!-- <b-alert show variant="primary">Primary Alert</b-alert> -->
+      <div v-if="isLoading">loading</div>
       <MessageBox
         :isDM="false"
+        v-else
         v-for="(message, i) in messages"
         :message="message"
         :isAdmin="isAdmin(currentUser.id)"
@@ -72,7 +72,10 @@ import MessageBox from "./Message.vue";
   components: { Button, InputField, MessageBox, Popup },
   props: {},
   async beforeRouteLeave(to, from, next) {
-    await this.leaveRoomSocket();
+    // await this.leaveRoomSocket();
+    // alert(this.$store.state.Chat.chatSocket.liste)
+    this.$store.state.Chat.chatSocket.removeListener("addAdmin");
+    this.$store.state.Chat.chatSocket.removeListener("banUser");
     next();
   },
 })
@@ -81,6 +84,7 @@ export default class channelRoom extends Vue {
   // messages: Message[] = [];
   show_popup = false;
   currentChannel: any;
+  isLoading = true;
   inviter = "";
   get messages(): Message[] {
     // console.table(this.$store);
@@ -124,7 +128,15 @@ export default class channelRoom extends Vue {
   }
   async mounted() {
     await this.$store.dispatch("Chat/connectToChatSocket", this.$cookies);
-    this.fetchMessages(Number(this.$route.params.name));
+    setTimeout(() => {
+      this.$store.dispatch("Chat/fetchMessages", {
+        channelId: Number(this.currentChannelId),
+      });
+      this.$store.dispatch("Chat/listenToChatEvents", {
+        channelId: Number(this.currentChannelId),
+      });
+      this.isLoading = false;
+    }, 100);
   }
   resetTooltips() {
     for (var i = 0; i < this.messages.length; i++)
@@ -146,7 +158,7 @@ export default class channelRoom extends Vue {
       });
     }
   }
-  leaveRoomSocket(){
+  leaveRoomSocket() {
     // this.$store.dispatch("Chat/leaveChannelSocket", {
     //   channelId: Number(this.$route.params.name),
     // });
@@ -200,6 +212,7 @@ input:hover {
 }
 .channel {
   overflow: hidden;
+  padding: 1.4rem 1.6rem !important;
 }
 .overlay {
   //   vertical-align: bottom;

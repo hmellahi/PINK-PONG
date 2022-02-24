@@ -3,14 +3,14 @@
 @import url("https://fonts.googleapis.com/css2?family=Quicksand:wght@500&display=swap");
 
 @font-face {
-  /* font-family: 'BeatWorddemo'; */
-  /* src: URL('(../fonts/BeatWorddemo.ttf') format('truetype'); */
-  src: local("Merienda"), url(../fonts/BeatWorddemo.ttf) format("truetype");
+  font-family: "BeatWorddemo";
+  src: url("/assets/fonts/BeatWorddemo.ttf");
+  /* src: local("Merienda"), url(../fonts/BeatWorddemo.ttf) format("truetype"); */
 }
 * {
-  font-family: "Merienda";
+  /* font-family: "BeatWorddemo"; */
   font-family: "Quicksand";
-  
+
   /* font-family: "Coda"; */
 }
 
@@ -2077,6 +2077,7 @@ body.light hr.separator {
   /* background: #b183cd; */
   padding: 10px;
   margin-right: 10px;
+  object-fit: cover;
 }
 
 .match_history .match_content {
@@ -2304,15 +2305,12 @@ body.light hr.separator {
 .profile_description {
   padding-top: 52px;
   position: relative;
-  
-  
 }
 .profile_description .user_avatar img {
   border-radius: 50%;
   width: 100px;
   border: 4px solid #b183cd7a;
   padding: 8px;
- 
 }
 .user_avatar .user_name {
   font-size: 1.2rem;
@@ -2343,7 +2341,7 @@ body.light hr.separator {
 }
 .user-stats {
   position: absolute;
-  top: 35px;
+  top: 0.7rem;
   display: -ms-flexbox;
   display: flex;
   -ms-flex-pack: center;
@@ -2358,7 +2356,6 @@ body.light hr.separator {
   .user-stats .user-stat {
     margin: 0 1em;
   }
-  
 }
 @media (max-width: 1000px) {
   .profile_description {
@@ -2592,7 +2589,7 @@ body.light hr.separator {
     margin-top: 1rem;
   }
   .leader_box .left .active {
-   background: transparent !important;
+    background: transparent !important;
   }
   .main {
     top: 5rem;

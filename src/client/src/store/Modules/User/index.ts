@@ -12,7 +12,8 @@ const state = () => ({
       title: "Play Your first Match",
       image: "/assets/img/badge6.png",
       checker: (user: User) => {
-        if (user.wins >= 1 || user.loses >= 1) return true;
+        console.log("user wins", user)
+        if (user.wins >= 1 || user.losses >= 1) return true;
         return false;
       },
     },

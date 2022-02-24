@@ -118,16 +118,16 @@ export class ChatGateway {
     if (!client.user) return { err: true, msg: 'socket not found!' };
     try {
       // await this.chatService.banUser(client.user, data);
-
       client.to(data.channelId.toString()).emit('banUser', {
         err: false,
         msg: {
           userId: data.userId,
           channelId: data.channelId,
           msg: 'You have been banned!',
+          isPermanant: data.isPermanant,
         },
       });
-      
+
       if (data.isPermanant) client.leave(data.channelId.toString());
 
       return { err: false, msg: 'user has been banned!' };
@@ -135,5 +135,4 @@ export class ChatGateway {
       return { err: true, msg: e.message };
     }
   }
-
 }

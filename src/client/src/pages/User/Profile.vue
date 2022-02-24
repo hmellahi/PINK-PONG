@@ -97,6 +97,7 @@
           <MatchHistory
             class="text-center pt-4"
             :matches="user.matches"
+            :user="user"
           ></MatchHistory>
         </div>
       </div>
@@ -123,17 +124,19 @@ export default class Profile extends Vue {
   isMyProfile: boolean = false;
   invited_count: Number = 0;
   achievmentsList: any = [];
-  mounted() {
-    this.updateUserRender();
-  }
+  // async created() {
+  // alert("hey");
+
+  // await this.updateUserRender();
+  // }
   async updateUserRender() {
     await this.checkUser();
-    this.fetchMatches();
-    this.fetchAchievments();
+    await this.fetchMatches();
+    await this.fetchAchievments();
     this.$store.state.User.gameSocket.on(
       "userStatus",
       ({ userId, status }: any) => {
-        console.log(userId, status);
+        // console.log(userId, status);
         if (this.user.id == userId) {
           this.user.status = status;
         }
@@ -150,7 +153,7 @@ export default class Profile extends Vue {
         },
       });
       this.user.matches = data.data;
-      console.log(this.user.matches);
+      // console.log(this.user.matches);
     } catch (e) {
       console.log(e);
     }
@@ -160,9 +163,11 @@ export default class Profile extends Vue {
   }
 
   fetchAchievments() {
+    this.achievmentsList = [];
     this.achievments.map((achievment: any) => {
       if (achievment.checker(this.user) == true)
         this.achievmentsList.push(achievment);
+      // console.log(achievment)
     });
   }
   async getUserStatus(id: number) {
@@ -246,8 +251,10 @@ export default class Profile extends Vue {
     );
     this.invited_count = 1;
   }
-  created() {
-    console.log("im logged again in created");
+  async created() {
+    // console.log("im logged again in created");
+    // alert("hello")
+    await this.updateUserRender();
   }
 }
 </script>
@@ -276,11 +283,10 @@ export default class Profile extends Vue {
   background: #2a467e8a;
 }
 .precent img {
- width: auto;
+  width: auto;
   height: auto;
-
 }
-.precent{
+.precent {
   background: transparent !important;
 }
 </style>
