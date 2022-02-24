@@ -40,6 +40,9 @@
               <Button v-if="!isMyProfile" :onClick="inviteToPlay"
                 ><i class="fa fa-table-tennis"></i> InviteToPlay</Button
               >
+              <Button v-if="!isMyProfile" :onClick="blockUser"
+                ><i class="fa fa-ban"></i> Block Him</Button
+              >
             </div>
             <p v-if="message" class="success_msg">{{ message }}</p>
             <div class="user-stats user_stat_left">
@@ -132,7 +135,7 @@ export default class Profile extends Vue {
   async updateUserRender() {
     await this.checkUser();
     await this.fetchMatches();
-    await this.fetchAchievments();
+    this.fetchAchievments();
     this.$store.state.User.gameSocket.on(
       "userStatus",
       ({ userId, status }: any) => {
@@ -220,9 +223,19 @@ export default class Profile extends Vue {
       let data = await this.$http.post("friendship/sendFriendRequest", {
         recieverLogin: this.$route.params.login,
       });
-      this.message = "Added User succefuly";
-    } catch (e) {
-      this.message = e.response.data.message;
+      this.$notify({
+        duration: 2000,
+        ignoreDuplicates: true,
+        type: "success",
+        title: "Now He is your Friend, Enjoy with him",
+      });
+    } catch (e: any) {
+      this.$notify({
+        duration: 2000,
+        ignoreDuplicates: true,
+        type: "danger",
+        title: e.response.data.message,
+      });
     }
   }
 
@@ -250,6 +263,21 @@ export default class Profile extends Vue {
       }
     );
     this.invited_count = 1;
+  }
+  async blockUser() {
+    try {
+      let data = await this.$http.post("users/blockUser", {
+        userId: this.user.id,
+      });
+    } catch (e) {
+      console.log(e);
+    }
+    this.$notify({
+      duration: 3000,
+      ignoreDuplicates: true,
+      type: "info",
+      title: "You blocked this user, you can't see their message any more",
+    });
   }
   async created() {
     // console.log("im logged again in created");

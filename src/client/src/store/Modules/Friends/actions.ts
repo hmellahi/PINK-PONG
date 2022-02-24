@@ -62,9 +62,11 @@ const actions = {
       const data = await api.post("users/blockUser", {
         userId: userToBlock.user.id,
       });
+      console.log("from block user", data);
     } catch (e) {
       commit("SET_ENTITY", ["friends", friendsBackup]);
       commit("SET_ENTITY", ["blockedUsers", blockedUsersBackup]);
+      console.log(e);
     }
   },
   async unBlockUser({ state, commit }: any, userToUnblock: any) {

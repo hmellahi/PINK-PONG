@@ -2311,9 +2311,10 @@ body.light hr.separator {
   width: 100px;
   border: 4px solid #b183cd7a;
   padding: 8px;
+  height: 100px;
 }
 .user_avatar .user_name {
-  font-size: 1.2rem;
+  font-size: 1rem;
   font-weight: 700;
   text-align: center;
   color: #ffffff;
@@ -2338,6 +2339,7 @@ body.light hr.separator {
   font-size: 0.75rem;
   font-weight: 700;
   line-height: 1em;
+  margin-top: 1.5rem;
 }
 .user-stats {
   position: absolute;
@@ -2374,15 +2376,8 @@ body.light hr.separator {
   font-weight: 700;
   text-transform: uppercase;
   text-align: center;
-  font-size: 1.375rem;
-}
-.user-stat .user-stat-title,
-.user-stat .user-stat-text {
-  font-weight: 700;
-  text-transform: uppercase;
-  text-align: center;
   margin-top: 10px;
-  font-size: 1rem;
+  font-size: 0.7rem;
   color: #fff;
 }
 .user_stat_left {
@@ -2499,7 +2494,7 @@ body.light hr.separator {
 .tooltip_achievment {
   visibility: hidden;
   font-size: 13px;
-  width: 120px;
+  width: 170px;
   background-color: white;
   color: #723f8b;
   text-align: center;
