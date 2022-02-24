@@ -15,13 +15,16 @@ import { Component, Vue } from "vue-property-decorator";
 import Button from "@/common/components/UI/Button.vue";
 import { io } from "socket.io-client";
 
+let queueEvents = ["matchFound"];
+
 @Component<FindMatch>({
   components: { Button },
   async beforeRouteLeave(to, from, next) {
     // incase if you want to access `this`
     await this.leaveQueue();
-    await this.removeAllListeners();
-    // const self = this as any;
+    queueEvents.map((event) => {
+      this.socket.removeListener(event);
+    });
     next();
   },
 })
@@ -38,23 +41,23 @@ export default class FindMatch extends Vue {
     this.socket.on("matchFound", (roomId: any) => {
       this.$router.push("/game?id=" + roomId).catch((err) => {});
     });
-    this.socket.on("connect_failed", function (err: any) {
-      console.log("Connection Failed");
-    });
+    // this.socket.on("connect_failed", function (err: any) {
+    //   console.log("Connection Failed");
+    // });
     // this.socket.on("hehe", () => {
-      this.socket.emit(
-        "joinQueue",
-        { userId: this.currentUser.id, map },
-        (data: any) => {
-          // console.log({ data });
-          this.$notify({
-            duration: 1000,
-            type: "danger",
-            title: data.err,
-          });
-          this.$router.push({ path: "/" });
-        }
-      );
+    this.socket.emit(
+      "joinQueue",
+      { userId: this.currentUser.id, map },
+      (data: any) => {
+        // console.log({ data });
+        this.$notify({
+          duration: 1000,
+          type: "danger",
+          title: data.err,
+        });
+        this.$router.push({ path: "/" });
+      }
+    );
     // });
   }
 

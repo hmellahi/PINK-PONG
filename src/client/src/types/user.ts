@@ -18,7 +18,6 @@ export interface User {
   status: string;
   matches: any[];
   wins: number;
-  loses: number;
   losses: number;
   two_factor_auth_enabled: Boolean;
 }

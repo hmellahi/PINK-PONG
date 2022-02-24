@@ -97,9 +97,9 @@ export default class listChannels extends Vue {
         channelId: this.currentChannel.id,
         password: this.password,
       });
-      this.$router.push({
-        path: "/chat/channel/" + this.currentChannel.id,
-      });
+      // this.$router.push({
+      //   path: "/chat/channel/" + this.currentChannel.id,
+      // });
     } catch (errors) {
       this.errors = errors.response.data.message;
       return;

@@ -451,6 +451,7 @@ export class GameGateway {
         flag: game.ff,
         map: game.map,
       });
+      console.log('stores game');
     } catch (e) {}
   }
 

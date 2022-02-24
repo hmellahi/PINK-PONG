@@ -9,7 +9,7 @@
           <a class="close" @click="props.close">
             <i class="fa fa-fw fa-close"></i>
           </a>
-          <div v-if="props.item.type != 'danger'" @click="props.close">
+          <div v-if="props.item.type == 'success_pro'" @click="props.close">
             <button
               class="btn btn-primary"
               @click="AcceptRequest(props.item.data)"
@@ -73,7 +73,7 @@ export default class App extends Vue {
   async mounted() {
     this.updateIsLoginPage();
     console.clear();
-    // await this.$store.dispatch("Chat/connectToChatSocket", this.$cookies);   
+    // await this.$store.dispatch("Chat/connectToChatSocket", this.$cookies);
   }
 
   updateIsLoginPage() {
@@ -129,7 +129,8 @@ export default class App extends Vue {
   border-left-color: #b82e24;
   padding: 10px;
 }
-.success {
+.success,
+.success_pro {
   background: #68cd86;
   border-left-color: #42a85f;
   padding: 10px;

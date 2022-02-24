@@ -32,8 +32,8 @@ const listenToNotifications = (gameSocket: Socket) => {
     // }
     if (receiver != store.state.User.user.id) return;
     Vue.notify({
-      duration: -1,
-      type: "info",
+      duration: 20000,
+      type: "success_pro",
       ignoreDuplicates: true,
       title: `${senderName} want to play with you !`,
       data: {
@@ -69,8 +69,7 @@ const actions = {
 
     router.push("/");
   },
-  logout({ commit }: ActionContext<UserState, any>) {
-  },
+  logout({ commit }: ActionContext<UserState, any>) {},
 
   sendGameInvite(
     { commit, state }: ActionContext<UserState, any>,

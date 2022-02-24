@@ -44,7 +44,7 @@ import moment from "moment";
 
 @Component({
   // components: {Title, SideBar },
-  props: ["matches"],
+  props: ["matches", "user"],
 })
 export default class MatchHistory extends Vue {
   created() {
@@ -63,7 +63,7 @@ export default class MatchHistory extends Vue {
   }
   getOpLogin(match: any){
     // let isMe = match.first_user.id == this.currentUser.id ? 1 : 2;
-    if (match.first_user.id == this.currentUser.id){
+    if (match.first_user.id == this.$props.user.id){
       return match.second_user.login;
     }
     else 
@@ -71,8 +71,8 @@ export default class MatchHistory extends Vue {
   }
   getResult(match: any) {
     console.log("user id",match.first_user.login);
-    let isMe = match.first_user.id == this.currentUser.id ? 1 : 2;
-    console.log(match.flag, this.currentUser.id, match.first_user.id, match.second_user.id);
+    let isMe = match.first_user.id == this.$props.user.id ? 1 : 2;
+    console.log(match.flag, this.$props.user.id, match.first_user.id, match.second_user.id);
     if ((isMe == 1 && match.flag == 2) || (isMe == 2 && match.flag == 1))
       return "Victory";
     else if (match.flag != 0) return "Defeat";
