@@ -8,13 +8,14 @@ import { ActionContext } from "vuex";
 import { Channel, Message } from "@/types/Channel";
 import Vue from "vue";
 import moment, { now } from "moment";
+// import { stat } from "fs";
 
 const { VUE_APP_API_URL: API_URL, VUE_APP_SERVER_URL: SERVER_URL } =
   process.env;
 
 const listenToChannelEvents = (commit: any, connection: Socket) => {
-  connection.on("message", async ({ msg, owner }: any) => {
-    console.log("recieved a msg", { msg });
+  connection.on("message", async ({ msg, owner, channelId }: any) => {
+    console.log("recieved a msg", { channelId, msg, owner });
     let currentUser = await store.getters["User/getCurrentUser"];
 
     commit("ADD_MSG", {
@@ -22,6 +23,7 @@ const listenToChannelEvents = (commit: any, connection: Socket) => {
       showTooltip: false,
       owner,
       create_date: new Date(),
+      channelId,
     });
   });
 };
@@ -35,7 +37,7 @@ const actions = {
     //   state.chatSocket.disconnect();
     // }
     if (state.chatSocket != null) {
-      this.fetchMessages(context, state.chatSocket);
+      // this.fetchMessages(context, state.chatSocket);
       return;
     }
     let connection = io(`${SERVER_URL}/chat`, {
@@ -48,8 +50,35 @@ const actions = {
       },
     });
     commit("SET_CHATSOCKET", connection);
+    listenToChannelEvents(commit, connection);
   },
 
+  async listenToChatEvents(
+    { commit, state }: ActionContext<any, any>,
+    { channelId }: any
+  ) {
+    state.chatSocket.on("addAdmin", async ({ err, msg }: any) => {
+      let currentUser = await store.getters["User/getCurrentUser"];
+      if (currentUser.id != msg.userId || msg.channelId != channelId) return;
+      commit("SET_IS_ADMIN", true);
+    });
+    state.chatSocket.on("banUser", async ({ err, msg }: any) => {
+      let currentUser = await store.getters["User/getCurrentUser"];
+      if (currentUser.id != msg.userId || msg.channelId != channelId) return;
+      if (msg.isPermanant) router.push({ path: "/chat" });
+      Vue.notify({
+        duration: 1000,
+        type: "danger",
+        title: msg.msg,
+      });
+    });
+  },
+  async leaveChannelSocket(
+    { commit, state }: ActionContext<any, any>,
+    data: any
+  ) {
+    state.chatRoom.emit("leaveChannel", data);
+  },
   async listenToChannelEvents({ commit, state }: ActionContext<any, any>) {
     listenToChannelEvents(commit, state.chatSocket);
   },
@@ -66,6 +95,9 @@ const actions = {
   async joinChannel({ commit }: ActionContext<any, any>, data: any) {
     try {
       let resp = await api.post("chat/joinChannel", data);
+      router.push({
+        path: "/chat/channel/" + data.channelId,
+      });
       // commit("ADD_CHANNELS", data.data); TODO ADD TO MY CHANNELS LIST
     } catch (error) {
       throw error;
@@ -142,15 +174,9 @@ const actions = {
       msg,
       showTooltip: false,
       owner: currentUser,
-      create_date: moment(), // TODO CHANGE?
+      create_date: moment(),
+      channelId,
     });
-    // console.log({
-    //   msg,
-    //   showTooltip: false,
-    //   owner: currentUser,
-    //   create_date: moment().format("mm:ss"),
-    // });
-    // console.log({ store: rootState.User.user });
     state.chatSocket.emit(
       "message",
       { msg, channelId },
@@ -159,7 +185,7 @@ const actions = {
           throw err;
         }
       }
-    ); // TODO
+    );
   },
 
   async createChannel({ commit }: ActionContext<UserState, any>, channel: any) {
@@ -174,27 +200,45 @@ const actions = {
     }
   },
 
-  async addAdmin({ commit }: ActionContext<any, any>, data: any) {
+  async addAdmin({ commit, state }: ActionContext<any, any>, data: any) {
     try {
-      let resp = await api.post("/chat/addAdmin", data);
-      console.log({ data }, { resp });
+      // let resp = await api.post("/chat/addAdmin", data);
+      // console.log({ data }, { resp });
+      state.chatSocket.emit("addAdmin", data, ({ err, msg }: any) => {
+        Vue.notify({
+          duration: 3000,
+          type: err ? "danger" : "success",
+          title: msg,
+        });
+        console.log({ err, msg });
+      });
     } catch (error) {
       throw error;
     }
   },
 
-  async muteFromChannel({ commit }: ActionContext<any, any>, data: any) {
+  // async muteFromChannel({ commit, state }: ActionContext<any, any>, data: any) {
+  //   try {
+  //     state.chatSocket.emit("banUser", data, ({ err, msg }: any) => {
+  //       Vue.notify({
+  //         duration: 1000,
+  //         type: err ? "danger" : "success",
+  //         title: msg,
+  //       });
+  //     });
+  //   } catch (error) {
+  //     throw error;
+  //   }
+  // },
+  async banFromChannel({ commit, state }: ActionContext<any, any>, data: any) {
     try {
-      let resp = await api.post("/chat/muteFromChannel", data);
-      console.log({ data }, { resp });
-    } catch (error) {
-      throw error;
-    }
-  },
-  async banFromChannel({ commit }: ActionContext<any, any>, data: any) {
-    try {
-      let resp = await api.post("/chat/banFromChannel", data);
-      console.log({ data }, { resp });
+      state.chatSocket.emit("banUser", data, ({ err, msg }: any) => {
+        Vue.notify({
+          duration: 1000,
+          type: err ? "danger" : "success",
+          title: msg,
+        });
+      });
     } catch (error) {
       throw error;
     }

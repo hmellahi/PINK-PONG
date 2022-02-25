@@ -8,7 +8,7 @@
     </div>
     <Overlay>
       <div class="row">
-        <form class="text-center col-12">
+        <div class="text-center col-12">
           <!-- <InputField
             name="name"
             placeholder="Enter Name"
@@ -33,8 +33,8 @@
           ></InputField>
           <h4>{{ errors }}</h4>
           <Button :onClick="editChannel" class="mt-4 px-4">Save</Button>
-          <Button :onClick="deleteChannel" class="mt-4 px-4">Delete</Button>
-        </form>
+          <!-- <Button :onClick="deleteChannel" class="mt-4 px-4">Delete</Button> -->
+        </div>
       </div>
     </Overlay>
   </div>
@@ -74,8 +74,19 @@ export default class editChannel extends Vue {
         isLocked: this.newPassword != "",
         channelId: Number(this.$route.params.name),
       });
-      this.$router.push("/chat");
-    } catch (e) {}
+      this.$notify({
+        duration: 3000,
+        type: "success",
+        title: "Updated successfully",
+      });
+      this.$router.push("/chat/private");
+    } catch (e) {
+      this.$notify({
+        duration: 3000,
+        type: "danger",
+        title: e.response.data.message,
+      });
+    }
   }
   goBackward() {
     this.$router.go(-1);

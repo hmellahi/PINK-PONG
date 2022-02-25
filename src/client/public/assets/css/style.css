@@ -3,10 +3,14 @@
 @import url("https://fonts.googleapis.com/css2?family=Quicksand:wght@500&display=swap");
 
 @font-face {
-  src: local("Merienda"), url(../fonts/BeatWorddemo.ttf) format("truetype");
+  font-family: "BeatWorddemo";
+  src: url("/assets/fonts/BeatWorddemo.ttf");
+  /* src: local("Merienda"), url(../fonts/BeatWorddemo.ttf) format("truetype"); */
 }
 * {
+  /* font-family: "BeatWorddemo"; */
   font-family: "Quicksand";
+
   /* font-family: "Coda"; */
 }
 
@@ -18,7 +22,7 @@ html {
   height: 30em;
 }
 body {
-  font-family: "Rajdhani", sans-serif;
+  /* font-family: "Rajdhani", sans-serif; */
   font-size: 15px;
   color: #fff;
   font-weight: 500;
@@ -2064,13 +2068,16 @@ body.light hr.separator {
 }
 
 .match_history img {
-  width: 40px;
-  height: 40px;
+  /* width: 40px;
+  height: 40px; */
+  width: 4.5rem;
+  height: 5rem;
   border-radius: 50%;
   box-shadow: inset 0px 0px 4px 2px #c864f8;
-  background: #b183cd;
+  /* background: #b183cd; */
   padding: 10px;
   margin-right: 10px;
+  object-fit: cover;
 }
 
 .match_history .match_content {
@@ -2079,11 +2086,12 @@ body.light hr.separator {
 
 .match_history .match_content .Victory {
   color: #44cb49;
-  font-size: 1rem;
+  font-size: 2rem;
 }
 
 .match_history .match_content .Defeat {
   color: #e42323;
+  font-size: 2rem;
 }
 
 .match_history .match_content h3 {
@@ -2101,7 +2109,7 @@ body.light hr.separator {
 }
 
 .match_right img {
-  width: 60px;
+  width: 5rem;
   border-radius: 10px;
   border: 1px solid #fff;
   margin-right: 2em;
@@ -2196,9 +2204,9 @@ body.light hr.separator {
   border-radius: 10px;
   overflow: auto;
   overflow-y: auto;
-  display: flex;
+  /* display: flex;
   justify-content: flex-end;
-  flex-direction: column;
+  flex-direction: column; */
 }
 .popup_wrapper {
   position: absolute;
@@ -2303,15 +2311,19 @@ body.light hr.separator {
   width: 100px;
   border: 4px solid #b183cd7a;
   padding: 8px;
+  height: 100px;
 }
 .user_avatar .user_name {
-  font-size: 1.2rem;
+  font-size: 1rem;
   font-weight: 700;
   text-align: center;
   color: #ffffff;
   line-height: 1em;
   margin-top: 1.4em;
   margin-bottom: 0.3em;
+  max-width: 100px;
+  margin: auto;
+  overflow-wrap: break-word;
 }
 .user_status {
   display: -ms-flexbox;
@@ -2327,10 +2339,11 @@ body.light hr.separator {
   font-size: 0.75rem;
   font-weight: 700;
   line-height: 1em;
+  margin-top: 1.5rem;
 }
 .user-stats {
   position: absolute;
-  top: 35px;
+  top: 0.7rem;
   display: -ms-flexbox;
   display: flex;
   -ms-flex-pack: center;
@@ -2341,12 +2354,22 @@ body.light hr.separator {
   position: relative;
   margin: 0px 3em;
 }
-.user-stat .user-stat-title,
-.user-stat .user-stat-text {
-  font-weight: 700;
-  text-transform: uppercase;
-  text-align: center;
-  font-size: 1.375rem;
+@media (max-width: 1200px) {
+  .user-stats .user-stat {
+    margin: 0 1em;
+  }
+}
+@media (max-width: 1000px) {
+  .profile_description {
+    height: 200px;
+  }
+  .user-stats {
+    bottom: 0;
+    top: auto;
+  }
+  .profile_header_info {
+    padding: 0;
+  }
 }
 .user-stat .user-stat-title,
 .user-stat .user-stat-text {
@@ -2354,7 +2377,7 @@ body.light hr.separator {
   text-transform: uppercase;
   text-align: center;
   margin-top: 10px;
-  font-size: 1rem;
+  font-size: 0.7rem;
   color: #fff;
 }
 .user_stat_left {
@@ -2471,7 +2494,7 @@ body.light hr.separator {
 .tooltip_achievment {
   visibility: hidden;
   font-size: 13px;
-  width: 120px;
+  width: 170px;
   background-color: white;
   color: #723f8b;
   text-align: center;
@@ -2559,6 +2582,9 @@ body.light hr.separator {
   }
   .leader_box .left {
     margin-top: 1rem;
+  }
+  .leader_box .left .active {
+    background: transparent !important;
   }
   .main {
     top: 5rem;

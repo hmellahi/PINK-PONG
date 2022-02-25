@@ -1,8 +1,8 @@
 <template>
   <div id="game" ref="game" class="h-100">
     <div v-if="!isLoading">
-      <!-- <img :src="player2.avatar_url" alt="" class="player_left" />
-      <img :src="player1.avatar_url" alt="" class="player_right" /> -->
+      <img :src="player2.avatar_url" alt="" class="player_left" />
+      <img :src="player1.avatar_url" alt="" class="player_right" />
       <P5 v-on="{ setup }" />
     </div>
     <div v-else>Loading....</div>
@@ -27,17 +27,16 @@ import Score from "@/common/Game/Objects/Score";
 
 const MAX_SCORE = 5;
 const COUNTDOWN = 3;
-
+let RAD = 80;
+let gameEvents = ["paddleMoves", "gameOver", "ballMoves", "incrementScore"];
 @Component<Game>({
   components: { P5 },
   async beforeRouteLeave(to, from, next) {
-    // prompt("hey")
-
-    // console.log("beforeRouteLeave", to.path, from.path);
-    // this.isMusicOn = false;
-    // this.isSoundOn = false;
     try {
       await this.leaveGame();
+      gameEvents.map((event) => {
+        this.socket.removeListener(event);
+      });
       this.Clairo.pause();
     } catch (e) {}
     next();
@@ -54,9 +53,9 @@ export default class Game extends Vue {
   // xBall: number = Math.floor(Math.random() * 300) + GameConstants.ball.x;
   xBall: number = GameConstants.canvas.width / 2;
   yBall: number = GameConstants.canvas.height / 2; //TODO add randomness
-  radius: number = 10;
+  radius: number = GameConstants.canvas.width / RAD;
   sounds: Array<any> = [];
-  ball: Ball = new Ball(this.xBall, this.yBall, this.radius, 0);
+  ball: Ball;
   isGameOver: boolean = false;
   xPaddle = GameConstants.paddle.x;
   yPaddle = GameConstants.paddle.y;
@@ -124,14 +123,15 @@ export default class Game extends Vue {
     this.backColor = GameConstants.backColor;
     this.xBall = GameConstants.canvas.width / 2;
     this.yBall = GameConstants.canvas.height / 2;
-    this.radius = 10;
+    // this.radius = 10;
     this.sounds = [];
+    console.log({ rad: this.radius });
     this.ball = new Ball(this.xBall, this.yBall, this.radius, 0);
     this.isGameOver = false;
     this.xPaddle = GameConstants.paddle.x;
     this.yPaddle = GameConstants.paddle.y;
-    this.paddleWidth = GameConstants.paddle.width;
-    this.paddleHeight = GameConstants.paddle.height;
+    this.paddleWidth = GameConstants.canvas.width / 60;
+    this.paddleHeight = GameConstants.canvas.height / 9;
     this.paddle = new Paddle(
       GameConstants.canvas.width - this.paddleWidth - 20,
       this.yPaddle,
@@ -165,82 +165,6 @@ export default class Game extends Vue {
     this.scores = [this.score, this.score2];
     this.roomId = "";
   }
-  resizeObjects() {
-    // console.log("setup");
-
-    // console.log(`before ball speed ${this.ball.speed}`);
-    // console.log(`before ball VeloX ${this.ball.velocityX} and VeloY ${this.ball.velocityY}`);
-    // console.log(`before ball X ${this.ball.x} and Y ${this.ball.y}`);
-
-    var xF = this.ball.x / GameConstants.canvas.width;
-    var yF = this.ball.y / GameConstants.canvas.height;
-    console.log(`ball factors X ${xF} and Y ${yF}`);
-
-    var game: any = this.$refs.game;
-    var rx = GameConstants.canvas.width / 10;
-    var ry = GameConstants.canvas.height / 10;
-
-    // var ratiox:boolean = Math.abs(game.offsetWidth - GameConstants.canvas.width) > rx;
-    // var ratioy:boolean = Math.abs(game.offsetHeight - GameConstants.canvas.height) > ry;
-
-    if (game) {
-      GameConstants.canvas.width = game.offsetWidth;
-      GameConstants.canvas.height = game.offsetHeight;
-      // console.log(`the id height>> ${game.offsetHeight}`);
-      // console.log(`the id width>> ${game.offsetWidth}`);
-    }
-    this.radius = 10;
-    this.ball = new Ball(
-      xF * GameConstants.canvas.width,
-      yF * GameConstants.canvas.height,
-      this.radius,
-      0
-    );
-    // this.ball = new Ball(GameConstants.canvas.width/2, GameConstants.canvas.height/2, this.radius, 0);
-
-    // console.log(`after ball speed ${this.ball.speed}`);
-    // console.log(`after ball VeloX ${this.ball.velocityX} and VeloY ${this.ball.velocityY}`);
-    // console.log(`after ball X ${this.ball.x} and Y ${this.ball.y}`);
-    this.isGameOver = false;
-    this.paddleWidth = GameConstants.paddle.width;
-    this.paddleHeight = GameConstants.paddle.height;
-    this.paddle = new Paddle(
-      GameConstants.canvas.width - this.paddleWidth - 20,
-      this.paddle.y,
-      this.paddleWidth,
-      this.paddleHeight
-    );
-    this.paddle2 = new Paddle(
-      20,
-      this.paddle2.y,
-      this.paddleWidth,
-      this.paddleHeight
-    );
-
-    this.net = new Net(
-      GameConstants.canvas.width,
-      GameConstants.canvas.height,
-      this.net.map
-    );
-    this.background = new BackGround();
-
-    this.score = new Score(
-      GameConstants.canvas.width / 4 - 60,
-      30,
-      this.score.value
-    );
-    this.score2 = new Score(
-      GameConstants.canvas.width - GameConstants.canvas.width / 4,
-      30,
-      this.score2.value
-    );
-    this.countdown = new Score(
-      GameConstants.canvas.width / 2 - 15,
-      GameConstants.canvas.height / 2 - 25,
-      this.countdown.value
-    );
-    this.scores = [this.score, this.score2];
-  }
 
   resizeObjectsOpt() {
     var xF = this.ball.x / GameConstants.canvas.width;
@@ -252,12 +176,12 @@ export default class Game extends Vue {
       GameConstants.canvas.width = game.offsetWidth;
       GameConstants.canvas.height = game.offsetHeight;
     }
-    this.radius = 10;
+    this.radius = GameConstants.canvas.width / RAD;
     this.ball.x = xF * GameConstants.canvas.width;
     this.ball.y = yF * GameConstants.canvas.height;
     this.isGameOver = false;
-    this.paddleWidth = GameConstants.paddle.width;
-    this.paddleHeight = GameConstants.paddle.height;
+    this.paddleWidth = GameConstants.canvas.width / 120;
+    this.paddleHeight = GameConstants.canvas.height / 80;
     this.paddle.x = GameConstants.canvas.width - this.paddleWidth - 20;
     this.paddle.y = this.paddle.y;
     this.paddle2.x = 20;
@@ -325,10 +249,6 @@ export default class Game extends Vue {
     return this.$store.state.User.gameSocket;
   }
   async listenToGameEvents() {
-    this.socket.on("connect", function () {
-      // console.log("yes sir")
-    });
-
     this.socket.on("paddleMoves", (data: any) => {
       // console.table({"recieved": data});
       let { paddle: enemyPaddle, isPlayer1, canvas } = data;
@@ -343,23 +263,15 @@ export default class Game extends Vue {
       }
     });
 
-    this.socket.on("disconnect", function () {
-      console.log("Connection Failed");
-    });
-
     this.socket.on("gameOver", (ff: any) => {
       // this.scores[ballHitsBorder - 1].value++;
       this.isGameOver = true;
       this.intervals.map((interval) => {
         clearInterval(interval);
       });
-      // if (ff != 0){
-
-      // }
       this.over(ff);
     });
 
-    // this.socket.on("hehe", () => {
     this.socket.emit(
       "joinGame",
       { roomId: this.roomId },
@@ -416,7 +328,6 @@ export default class Game extends Vue {
         console.log("aa", { msg });
       }
     );
-    // });
 
     this.socket.on("ballMoves", (data: any) => {
       // if (this.gameData.isPlayer1) return;
@@ -448,11 +359,13 @@ export default class Game extends Vue {
     else {
       this.playerLost(this.sketch, "you Have lost");
     }
+    this.worker.terminate();
   }
   async leaveGame() {
     await this.socket.emit("leaveGame", {
       roomId: this.roomId,
     });
+    this.worker.terminate();
   }
 
   resize() {
@@ -462,6 +375,8 @@ export default class Game extends Vue {
     // }
     // this.init();
     // this.resizeObjects();
+    console.log({ rad: this.radius });
+
     this.resizeObjectsOpt(); //optimzed version
 
     if (!this.sketch) return;
@@ -582,11 +497,11 @@ export default class Game extends Vue {
       this.ball.x < GameConstants.canvas.width / 2 ? this.paddle2 : this.paddle;
     if (this.ball.hits(player)) {
       this.ball.reverse(player, player == this.paddle);
-    // this.sendNewBallPostion();
-    //   this.ball.draw(sketch);
+      // this.sendNewBallPostion();
+      //   this.ball.draw(sketch);
 
-    //      if (this.gameData.isPlayer1) this.sendNewPaddleVelocity(this.paddle);
-    // else this.sendNewPaddleVelocity(this.paddle2);
+      //      if (this.gameData.isPlayer1) this.sendNewPaddleVelocity(this.paddle);
+      // else this.sendNewPaddleVelocity(this.paddle2);
       // send
       if (this.isSoundOn) {
         console.log("play sound");
@@ -631,7 +546,6 @@ export default class Game extends Vue {
     if (this.gameData.isPlayer1) this.sendNewPaddleVelocity(this.paddle);
     else this.sendNewPaddleVelocity(this.paddle2);
     this.sendNewBallPostion();
-
   }
   keydown(e: any) {
     if (this.gameData.isSpectator) return;

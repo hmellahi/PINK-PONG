@@ -9,6 +9,7 @@ import { Socket, Server } from 'socket.io';
 import { AuthService } from 'src/authentication/auth.service';
 import { MessageInstance } from 'twilio/lib/rest/api/v2010/account/message';
 import { ChatService } from './chat.service';
+import { AddAdminDto, BanUserDto } from './dtos/channel.dto';
 import { GetMessagesDto, MessageDto } from './dtos/message.dto';
 
 @WebSocketGateway({
@@ -55,20 +56,17 @@ export class ChatGateway {
 
   @SubscribeMessage('allMessages')
   async getAllMessages(client: Socket | any, data: GetMessagesDto) {
-    const authentication = await this.authService.getUserFromSocket(client);
-    if (!authentication) {
-      return { err: true, msg: 'socket not found!' };
-    }
     if (!client.user) return { err: true, msg: 'socket not found!' };
 
     try {
       // get all messages for specific room
       let messages = await this.chatService.getAllMessages(client.user, data);
-      console.log(data.channelId);
+
       console.log(messages);
 
       // join user to room
       client.join(data.channelId.toString());
+      console.log({ id: client.id });
 
       return { err: false, msg: messages };
     } catch (e) {
@@ -84,9 +82,55 @@ export class ChatGateway {
       // save on database
       await this.chatService.createMessage(client.user, data);
       // send message to specific room
-      client
-        .to(data.channelId.toString())
-        .emit('message', { err: false, msg: data.msg, owner: client.user });
+      client.to(data.channelId.toString()).emit('message', {
+        err: false,
+        msg: data.msg,
+        owner: client.user,
+        channelId: data.channelId,
+      });
+    } catch (e) {
+      return { err: true, msg: e.message };
+    }
+  }
+
+  @SubscribeMessage('addAdmin')
+  async addAdmin(client: Socket | any, data: AddAdminDto) {
+    if (!client.user) return { err: true, msg: 'socket not found!' };
+    try {
+      await this.chatService.addAdmin(client.user, data);
+
+      client.to(data.channelId.toString()).emit('addAdmin', {
+        err: false,
+        msg: {
+          userId: data.userId,
+          channelId: data.channelId,
+          msg: 'you have been granted admin privilege!',
+        },
+      });
+      return { err: false, msg: 'user is admin' };
+    } catch (e) {
+      return { err: true, msg: e.message };
+    }
+  }
+
+  @SubscribeMessage('banUser')
+  async banUser(client: Socket | any, data: BanUserDto) {
+    if (!client.user) return { err: true, msg: 'socket not found!' };
+    try {
+      // await this.chatService.banUser(client.user, data);
+      client.to(data.channelId.toString()).emit('banUser', {
+        err: false,
+        msg: {
+          userId: data.userId,
+          channelId: data.channelId,
+          msg: 'You have been banned!',
+          isPermanant: data.isPermanant,
+        },
+      });
+
+      if (data.isPermanant) client.leave(data.channelId.toString());
+
+      return { err: false, msg: 'user has been banned!' };
     } catch (e) {
       return { err: true, msg: e.message };
     }

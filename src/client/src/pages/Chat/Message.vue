@@ -2,12 +2,13 @@
   <div>
     <Popup v-model="show_popup">
       <div v-if="!isDM">
-        <div v-if="message.isAdmin" class="mb-2">
+        <div v-if="isAdmin" class="mb-2">
           <span
             ><input
               class="checkbox_admin"
               type="checkbox"
-              :value="message.isAdmin"
+              :value="isAdmin"
+              @change="addAdmin"
             />
             Administrator</span
           >
@@ -17,7 +18,7 @@
         <Button class="m-0" :link="'/profile/' + message.owner.login"
           >Profile</Button
         >
-        <Button class="m-0" :onClick="InviteToPlay">Invite To Play</Button>
+        <Button class="m-0" :onClick="ban" v-if="isAdmin">Kick</Button>
         <Button class="m-0" :onClick="ban" v-if="isAdmin">Ban</Button>
         <div class="mute-message" v-if="isAdmin">
           <select
@@ -86,28 +87,29 @@ export default class MessageBox extends Vue {
   addAdmin() {
     console.log(this.$props.message.user_id);
     this.$store.dispatch("Chat/addAdmin", {
-      userId: this.$props.message.user_id,
+      userId: this.$props.message.owner.id,
       channelId: this.$route.params.name,
     });
   }
   ban() {
     this.$store.dispatch("Chat/banFromChannel", {
-      userId: this.$props.message.user_id,
+      userId: this.$props.message.owner.id,
       channelId: this.$route.params.name,
+      isPermanant: true,
     });
   }
   mute() {
-    alert(this.muteDuration);
-    this.$store.dispatch("Chat/muteFromChannel", {
-      userId: this.$props.message.user_id,
+    this.$store.dispatch("Chat/banFromChannel", {
+      userId: this.$props.message.owner.id,
       channelId: this.$route.params.name,
       muteDuration: this.muteDuration,
+      isPermanant: false,
     });
   }
   mounted() {
     let newDate = moment(this.$props.message.create_date).format("mm:ss");
     if (newDate != "Invalid date") this.$props.message.create_date = newDate;
-    console.clear();
+    // console.clear(); TODO UNCOMENT
   }
   showMsgTooltip() {
     if (this.currentUser.id == this.$props.message.owner.id) {

@@ -40,6 +40,9 @@
               <Button v-if="!isMyProfile" :onClick="inviteToPlay"
                 ><i class="fa fa-table-tennis"></i> InviteToPlay</Button
               >
+              <Button v-if="!isMyProfile" :onClick="blockUser"
+                ><i class="fa fa-ban"></i> Block Him</Button
+              >
             </div>
             <p v-if="message" class="success_msg">{{ message }}</p>
             <div class="user-stats user_stat_left">
@@ -97,6 +100,7 @@
           <MatchHistory
             class="text-center pt-4"
             :matches="user.matches"
+            :user="user"
           ></MatchHistory>
         </div>
       </div>
@@ -123,17 +127,19 @@ export default class Profile extends Vue {
   isMyProfile: boolean = false;
   invited_count: Number = 0;
   achievmentsList: any = [];
-  mounted() {
-    this.updateUserRender();
-  }
+  // async created() {
+  // alert("hey");
+
+  // await this.updateUserRender();
+  // }
   async updateUserRender() {
     await this.checkUser();
-    this.fetchMatches();
+    await this.fetchMatches();
     this.fetchAchievments();
     this.$store.state.User.gameSocket.on(
       "userStatus",
       ({ userId, status }: any) => {
-        console.log(userId, status);
+        // console.log(userId, status);
         if (this.user.id == userId) {
           this.user.status = status;
         }
@@ -150,7 +156,7 @@ export default class Profile extends Vue {
         },
       });
       this.user.matches = data.data;
-      console.log(this.user.matches);
+      // console.log(this.user.matches);
     } catch (e) {
       console.log(e);
     }
@@ -160,9 +166,11 @@ export default class Profile extends Vue {
   }
 
   fetchAchievments() {
+    this.achievmentsList = [];
     this.achievments.map((achievment: any) => {
       if (achievment.checker(this.user) == true)
         this.achievmentsList.push(achievment);
+      // console.log(achievment)
     });
   }
   async getUserStatus(id: number) {
@@ -215,9 +223,19 @@ export default class Profile extends Vue {
       let data = await this.$http.post("friendship/sendFriendRequest", {
         recieverLogin: this.$route.params.login,
       });
-      this.message = "Added User succefuly";
-    } catch (e) {
-      this.message = e.response.data.message;
+      this.$notify({
+        duration: 2000,
+        ignoreDuplicates: true,
+        type: "success",
+        title: "Now He is your Friend, Enjoy with him",
+      });
+    } catch (e: any) {
+      this.$notify({
+        duration: 2000,
+        ignoreDuplicates: true,
+        type: "danger",
+        title: e.response.data.message,
+      });
     }
   }
 
@@ -246,8 +264,25 @@ export default class Profile extends Vue {
     );
     this.invited_count = 1;
   }
-  created() {
-    console.log("im logged again in created");
+  async blockUser() {
+    try {
+      let data = await this.$http.post("users/blockUser", {
+        userId: this.user.id,
+      });
+    } catch (e) {
+      console.log(e);
+    }
+    this.$notify({
+      duration: 3000,
+      ignoreDuplicates: true,
+      type: "info",
+      title: "You blocked this user, you can't see their message any more",
+    });
+  }
+  async created() {
+    // console.log("im logged again in created");
+    // alert("hello")
+    await this.updateUserRender();
   }
 }
 </script>
@@ -271,5 +306,15 @@ export default class Profile extends Vue {
 }
 .tooltip {
   background: #2a467e8a;
+}
+.precent {
+  background: #2a467e8a;
+}
+.precent img {
+  width: auto;
+  height: auto;
+}
+.precent {
+  background: transparent !important;
 }
 </style>

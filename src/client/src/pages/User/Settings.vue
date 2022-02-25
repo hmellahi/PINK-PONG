@@ -26,7 +26,6 @@
               class="text-left p-3 my-4"
               v-model="login"
             ></InputField>
-            <p class="success_msg" v-if="success">{{ success }}</p>
           </div>
         </div>
       </div>
@@ -88,7 +87,6 @@
             v-model="pin_code"
             placeholder="Enter the pin code"
           ></InputField>
-          {{ error }}
           <Button
             class="text-left px-5 m-0 mb-2"
             :onClick="enableFactor"
@@ -129,17 +127,14 @@ import axios from "axios";
 export default class Settings extends Vue {
   settings: any[] = [];
   pin_code = "";
-  error = "";
   avatar = {};
   isActive = false;
-  success = "";
   a = 0;
   file_image: any = "";
   API_URL = process.env.VUE_APP_API_URL;
   showVerify = false;
   login = this.user.login;
   onFileChange(e: any) {
-    this.success = "";
     let file: any = e.target.files[0];
     if (file) {
       let reader = new FileReader();
@@ -159,8 +154,19 @@ export default class Settings extends Vue {
     try {
       await this.$http.post(`users/updateAvatar`, formData);
       this.$store.commit("User/setAvatar", this.file_image);
+      this.$notify({
+        duration: 3000,
+        ignoreDuplicates: true,
+        type: "success",
+        title: "The avatar changed succesfully",
+      });
     } catch (e: any) {
-      this.success = e.response.data.message;
+      this.$notify({
+        duration: 3000,
+        ignoreDuplicates: true,
+        type: "danger",
+        title: e.response.data.message,
+      });
       return;
     }
   }
@@ -179,10 +185,20 @@ export default class Settings extends Vue {
       });
       this.showVerify = false;
       this.pin_code = "";
-      this.error = "";
       this.$store.commit("User/setEnableFactor", true);
+      this.$notify({
+        duration: 3000,
+        ignoreDuplicates: true,
+        type: "success",
+        title: "The 2Fa enabled successfuly",
+      });
     } catch (e) {
-      this.error = "verification code isnt valid";
+      this.$notify({
+        duration: 2000,
+        ignoreDuplicates: true,
+        type: "danger",
+        title: "verification code isnt valid",
+      });
       return;
     }
   }
@@ -199,10 +215,20 @@ export default class Settings extends Vue {
       });
       this.showVerify = false;
       this.pin_code = "";
-      this.error = "";
       this.$store.commit("User/setEnableFactor", false);
+      this.$notify({
+        duration: 3000,
+        ignoreDuplicates: true,
+        type: "success",
+        title: "The 2Fa disabled successfuly",
+      });
     } catch (e) {
-      this.error = "verification code isnt valid";
+      this.$notify({
+        duration: 2000,
+        ignoreDuplicates: true,
+        type: "danger",
+        title: "verification code isnt valid",
+      });
       return;
     }
   }
@@ -234,17 +260,34 @@ export default class Settings extends Vue {
     console.log("toggleA");
     let newValue = this.settings[0].isActive.toString();
     localStorage[this.user.id + "#settings#" + 0] = newValue;
+    this.$notify({
+      duration: 3000,
+      ignoreDuplicates: true,
+      type: "success",
+      title: "The music Changed Succeffuly",
+    });
   }
 
   toggleB() {
     // console.log(this.settings[1].isActive.toString());
     let newValue = this.settings[1].isActive.toString();
     localStorage[this.user.id + "#settings#" + 1] = newValue;
+    this.$notify({
+      duration: 3000,
+      ignoreDuplicates: true,
+      type: "success",
+      title: "The sound Changed Succeffuly",
+    });
   }
 
   async saveData() {
     if (this.user.login == this.login) {
-      this.success = "wtf brooo aslan rah mbdltihach";
+      this.$notify({
+        duration: 3000,
+        ignoreDuplicates: true,
+        type: "info",
+        title: "wtf brooo aslan rah mbdltihach",
+      });
       return;
     }
     try {
@@ -256,9 +299,19 @@ export default class Settings extends Vue {
         },
       });
       this.$store.commit("User/setUsername", this.login);
-      this.success = "Updated succefully";
+      this.$notify({
+        duration: 3000,
+        ignoreDuplicates: true,
+        type: "success",
+        title: "your login is Updated succefully",
+      });
     } catch (e: any) {
-      this.success = e.response.data.message;
+      this.$notify({
+        duration: 3000,
+        ignoreDuplicates: true,
+        type: "danger",
+        title: e.response.data.message,
+      });
       return;
     }
   }

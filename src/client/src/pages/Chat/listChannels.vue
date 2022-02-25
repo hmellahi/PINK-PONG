@@ -1,25 +1,28 @@
 <template>
   <div>
-    <div class="row" v-for="channel in channels">
-      <div class="leader_box px-5 col-md-9">
-        <div class="Channel_content">
-          <h3 class="d-inline">{{ channel.name }}</h3>
-          <span> ({{ channel.membersCount }} Members)</span>
+    <div v-if="channels && channels.length">
+      <div class="row" v-for="channel in channels">
+        <div class="leader_box px-5 col-md-9">
+          <div class="Channel_content">
+            <h3 class="d-inline">{{ channel.name }}</h3>
+            <span> ({{ channel.membersCount }} Members)</span>
+          </div>
+          <img
+            v-if="channel.isLocked && !isMyChannelPage"
+            src="/assets/svg/lock.svg"
+            alt=""
+            class="icon"
+          />
         </div>
-        <img
-          v-if="channel.isLocked && !isMyChannelPage"
-          src="/assets/svg/lock.svg"
-          alt=""
-          class="icon"
-        />
-      </div>
-      <div class="btn col-md-2 ml-auto leader_box" v-if="!isMyChannelPage">
-        <h2 class="m-auto" role="button" @click="openPopup(channel)">Join</h2>
-      </div>
-      <div class="btn col-md-2 ml-auto leader_box" v-else>
-        <h2 class="m-auto" role="button" @click="enter(channel)">Enter</h2>
+        <div class="btn col-md-2 ml-auto leader_box" v-if="!isMyChannelPage">
+          <h2 class="m-auto" role="button" @click="openPopup(channel)">Join</h2>
+        </div>
+        <div class="btn col-md-2 ml-auto leader_box" v-else>
+          <h2 class="m-auto" role="button" @click="enter(channel)">Enter</h2>
+        </div>
       </div>
     </div>
+    <h4 v-else>There is no channels yet</h4>
     <Popup v-model="show" v-if="currentChannel">
       <h2>{{ currentChannel.name }}</h2>
       <form>
@@ -97,9 +100,9 @@ export default class listChannels extends Vue {
         channelId: this.currentChannel.id,
         password: this.password,
       });
-      this.$router.push({
-        path: "/chat/channel/" + this.currentChannel.id,
-      });
+      // this.$router.push({
+      //   path: "/chat/channel/" + this.currentChannel.id,
+      // });
     } catch (errors) {
       this.errors = errors.response.data.message;
       return;
