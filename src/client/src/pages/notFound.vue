@@ -12,7 +12,7 @@
         <!-- <h1 class="">404-NOT FOUND</h1> -->
         <!-- <h1>h</h1> -->
         <div class="col-md-12 text-center">
-          <img src="Project_Name_1.gif" width="100%" />
+          <img src="/Project_Name_1.gif" width="100%" />
         </div>
       </div>
     </div>

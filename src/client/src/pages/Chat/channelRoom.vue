@@ -18,6 +18,7 @@
       :onClick="leaveRoom"
       >Leave</Button
     >
+    {{myRole}}
     <Button class="mb-3 col-md-2" :onClick="InviteToPrivate">Invite</Button>
     <Popup v-model="show_popup">
       <h4>Invite your friend to this channel</h4>
@@ -38,7 +39,7 @@
         v-else
         v-for="(message, i) in messages"
         :message="message"
-        :isAdmin="isAdmin(currentUser.id)"
+        :myRole="myRole"
         :class="'id-' + i"
         :key="i"
         :openHandler="resetTooltips"
@@ -100,20 +101,23 @@ export default class channelRoom extends Vue {
   }
 
   async fetchMessages(channelId: Number) {
-    // this.$store.dispatch("Chat/fetchChannel", channelId);
     try {
       await this.$store.dispatch("Chat/fetchMessages", { channelId });
     } catch (e) {
       this.$notify({
         duration: 1000,
         type: "danger",
-        title: e.message, // TODO CHANGE ERROR
+        title: e.message,
       });
     }
-    // this.messages = ;
   }
-  isAdmin(userId: any) {
-    return this.$store.state.Chat.isAdmin;
+
+  isAdmin() {
+    return this.myRole != "member";
+  }
+
+  get myRole() {
+    return this.$store.state.Chat.role;
   }
   async leaveRoom() {
     try {
@@ -136,7 +140,7 @@ export default class channelRoom extends Vue {
         channelId: Number(this.currentChannelId),
       });
       this.isLoading = false;
-    }, 100);
+    }, 2000);
   }
   resetTooltips() {
     for (var i = 0; i < this.messages.length; i++)
