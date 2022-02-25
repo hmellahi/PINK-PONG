@@ -1,7 +1,7 @@
 import { ForbiddenException, HttpCode, HttpException, HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { AddAdminDto, AddMemberDto, CreateChannelDto, JoinChannelDto, LeaveChannelDto, UpdateChannelPassword } from './dtos/channel.dto';
+import { AddAdminDto, AddMemberDto, BanUserDto, CreateChannelDto, JoinChannelDto, LeaveChannelDto, UpdateChannelPassword } from './dtos/channel.dto';
 import ChannelEntity  from './entities/channel.entity';
 import * as bcrypt from "bcrypt";
 import { AuthService } from 'src/authentication/auth.service';
@@ -163,11 +163,52 @@ export class ChatService {
             throw new HttpException("Channel not exist  or User already admin", HttpStatus.BAD_REQUEST);
         if (!this.isAdmin(channel.admins, member))
             throw new ForbiddenException;
-        await this.channelRepository
-                .createQueryBuilder()
-                .relation('admins')
-                .of({id: data.channelId})
-                .add(newAdmin);
+        channel.admins.push(newAdmin);
+        await this.channelRepository.save(channel);
+    }
+
+    public async banMember(member: UserEntity, data: BanUserDto)
+    {
+        const toBanUser = await this.userService.getById(data.userId);
+        const channel = await this.channelRepository
+                                    .findOne(
+                                           { id:data.channelId},
+                                           { relations: ["owner", "admins", "members"]}
+                                    );
+        if (!channel)
+            throw new HttpException("Channel not exist", HttpStatus.BAD_REQUEST);
+        if (!this.isAdmin(channel.admins, member) ||
+            (this.isAdmin(channel.admins, toBanUser) && channel.owner.id !== member.id)||
+            channel.owner.id === data.userId)
+            throw new HttpException("You have not permission to ban this user", HttpStatus.FORBIDDEN);
+        channel.admins.push(toBanUser);
+        await this.channelRepository.save(channel);
+    }
+
+    public async muteMemer(member: UserEntity, data: BanUserDto)
+    {
+        const user = await this.userService.getById(data.userId);
+        const channel = await this.channelRepository
+                                    .findOne(
+                                           { id:data.channelId},
+                                           { relations: ["owner", "admins", "members"]}
+                                    );
+        if (!channel)
+            throw new HttpException("Channel not exist", HttpStatus.BAD_REQUEST);
+        if (!this.isAdmin(channel.admins, member) ||
+            (this.isAdmin(channel.admins, user) && channel.owner.id !== member.id)||
+            channel.owner.id === data.userId)
+            throw new HttpException("You have not permission to ban this user", HttpStatus.FORBIDDEN);
+        return {user, channel}
+    }
+
+    private getRole(user: UserEntity, channel: ChannelEntity): string
+    {
+        if (channel.owner && user.id == channel.owner.id)
+            return "owner";
+        if (this.isAdmin(channel.admins, user))
+            return "admin";
+        return "member";
     }
 
     private isMember(members: UserEntity[], userToFind: UserEntity)
@@ -179,7 +220,10 @@ export class ChatService {
     {
         return admins.find(user => user.id === userToFind.id) !== undefined;
     }
+    private async getChannelBan_Mute(member: UserEntity, data: BanUserDto)
+    {
 
+    }
 
     // Messages
 
@@ -201,18 +245,28 @@ export class ChatService {
         const channel = await this.channelRepository
                                 .findOne(
                                     {id: data.channelId},
-                                    {relations:['members', 'admins']});
+                                    {relations:['members', 'admins', 'owner']});
         if (!channel || !this.isMember(channel.members, member))
             throw new HttpException("channel not found or user is not member", HttpStatus.NOT_FOUND);
-        const messages = (await this.messgaeRepository
-                        .find(
-                            {
-                                where: {channel: channel},
-                                relations: ['owner'],
-                                order: {create_date: "ASC"}
-                            })
-                )
-                .map(({owner, ...res})=>({...res, owner: filteredUser(owner), channelId: channel.id}));
-        return {isAdmin: this.isAdmin(channel.admins, member), messages: messages}
+        const allMessage = await this.messgaeRepository
+                                    .find(
+                                        {
+                                            where: {channel: channel},
+                                            relations: ['owner'],
+                                            order: {create_date: "ASC"}
+                                        })
+        let messages = await (Promise.all(
+
+                allMessage.map(async ({owner, ...res})=>
+                {
+                    if (!await this.userService.isBlockedUser(member, owner))
+                        return (
+                            {...res, 
+                            owner: {...filteredUser(owner), role: this.getRole(owner, channel)},
+                            channelId: channel.id})
+                })));
+        messages = messages.filter((message)=> message)
+        
+        return {role: this.getRole(member, channel), messages: messages}
     }
 }

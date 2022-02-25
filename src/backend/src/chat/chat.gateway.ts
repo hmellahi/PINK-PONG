@@ -7,6 +7,7 @@ import {
 } from '@nestjs/websockets';
 import { Socket, Server } from 'socket.io';
 import { AuthService } from 'src/authentication/auth.service';
+import { UserService } from 'src/user/user.service';
 import { MessageInstance } from 'twilio/lib/rest/api/v2010/account/message';
 import { ChatService } from './chat.service';
 import { AddAdminDto, BanUserDto } from './dtos/channel.dto';
@@ -25,6 +26,7 @@ export class ChatGateway {
   constructor(
     private authService: AuthService,
     private chatService: ChatService,
+    private userService: UserService
   ) {}
 
   async handleConnection(client: any | Socket) {
@@ -40,7 +42,6 @@ export class ChatGateway {
     // join client to all his rooms
     try {
       let myChannels = await this.chatService.getMyChannels(authentication);
-      console.log(myChannels[0].id);
       myChannels.forEach(function (channel) {
         client.join(channel.id.toString());
       });
@@ -61,13 +62,9 @@ export class ChatGateway {
     try {
       // get all messages for specific room
       let messages = await this.chatService.getAllMessages(client.user, data);
-
-      console.log(messages);
-
       // join user to room
       client.join(data.channelId.toString());
-      console.log({ id: client.id });
-
+      console.log(messages)
       return { err: false, msg: messages };
     } catch (e) {
       return { err: true, msg: e.message };
@@ -82,6 +79,7 @@ export class ChatGateway {
       // save on database
       await this.chatService.createMessage(client.user, data);
       // send message to specific room
+      // check if the user is blocked before sending
       client.to(data.channelId.toString()).emit('message', {
         err: false,
         msg: data.msg,
@@ -117,7 +115,7 @@ export class ChatGateway {
   async banUser(client: Socket | any, data: BanUserDto) {
     if (!client.user) return { err: true, msg: 'socket not found!' };
     try {
-      // await this.chatService.banUser(client.user, data);
+      const bandedUser = await this.userService.getById(data.userId);
       client.to(data.channelId.toString()).emit('banUser', {
         err: false,
         msg: {
