@@ -140,7 +140,7 @@ export default class channelRoom extends Vue {
         channelId: Number(this.currentChannelId),
       });
       this.isLoading = false;
-    }, 2000);
+    }, 700);
   }
   resetTooltips() {
     for (var i = 0; i < this.messages.length; i++)
