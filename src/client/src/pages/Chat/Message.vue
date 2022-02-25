@@ -1,8 +1,11 @@
 <template>
   <div>
     <Popup v-model="show_popup">
-      <div v-if="!isDM">
-        <div v-if="isAdmin" class="mb-2">
+      <!-- {{ message.owner.role }} -->
+      {{ message.owner.role }}
+      {{ myRole }}
+      <div v-if="true">
+        <div v-if="isAdmin && message.owner.role == 'member'" class="mb-2">
           <span
             ><input
               class="checkbox_admin"
@@ -10,6 +13,7 @@
               :value="isAdmin"
               @change="addAdmin"
             />
+            <!-- {{ message.owner.role }} -->
             Administrator</span
           >
         </div>
@@ -18,7 +22,7 @@
         <Button class="m-0" :link="'/profile/' + message.owner.login"
           >Profile</Button
         >
-        <Button class="m-0" :onClick="ban" v-if="isAdmin">Kick</Button>
+        <Button class="m-0" :onClick="kick" v-if="isAdmin">Kick</Button>
         <Button class="m-0" :onClick="ban" v-if="isAdmin">Ban</Button>
         <div class="mute-message" v-if="isAdmin">
           <select
@@ -38,7 +42,7 @@
     </Popup>
     <div class="msg position-relative">
       <span class="date">[{{ message.create_date }}]</span>
-      <span v-if="!isDM">
+      <span v-if="true">
         <img src="/assets/svg/medal.svg" v-if="message.isAdmin" alt="" />
       </span>
       <span class="sender" @click="showMsgTooltip">
@@ -66,7 +70,7 @@ import { User } from "../../types/user";
       // type: Message, //wtf why?
       required: true,
     },
-    isAdmin: Boolean,
+    myRole: String,
     openHandler: Function,
   },
   components: { Popup, Button, Checkbox, InputField },
@@ -84,18 +88,40 @@ export default class MessageBox extends Vue {
     //   },
     // ],
   };
-  addAdmin() {
+  get isAdmin() {
+    let { myRole, message } = this.$props;
+    let messageOwnerRole = message.owner.role;
+    // console.log({})
+    return (
+      (myRole == "owner" && messageOwnerRole != "owner") ||
+      (myRole == "admin" && messageOwnerRole == "member")
+    );
+  }
+  async addAdmin() {
     console.log(this.$props.message.user_id);
-    this.$store.dispatch("Chat/addAdmin", {
-      userId: this.$props.message.owner.id,
-      channelId: this.$route.params.name,
-    });
+    try {
+      await this.$store.dispatch("Chat/addAdmin", {
+        userId: this.$props.message.owner.id,
+        channelId: this.$route.params.name,
+        callback: this.addAdminCallback,
+      });
+    } catch (e) {}
+  }
+  addAdminCallback() {
+    this.$props.message.owner.role = "admin";
   }
   ban() {
     this.$store.dispatch("Chat/banFromChannel", {
       userId: this.$props.message.owner.id,
       channelId: this.$route.params.name,
       isPermanant: true,
+    });
+  }
+  kick() {
+    this.$store.dispatch("Chat/banFromChannel", {
+      userId: this.$props.message.owner.id,
+      channelId: this.$route.params.name,
+      isPermanant: false,
     });
   }
   mute() {

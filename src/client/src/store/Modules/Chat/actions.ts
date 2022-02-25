@@ -60,12 +60,13 @@ const actions = {
     state.chatSocket.on("addAdmin", async ({ err, msg }: any) => {
       let currentUser = await store.getters["User/getCurrentUser"];
       if (currentUser.id != msg.userId || msg.channelId != channelId) return;
-      commit("SET_IS_ADMIN", true);
+      commit("SET_ROLE", "admin");
     });
     state.chatSocket.on("banUser", async ({ err, msg }: any) => {
       let currentUser = await store.getters["User/getCurrentUser"];
       if (currentUser.id != msg.userId || msg.channelId != channelId) return;
-      if (msg.isPermanant) router.push({ path: "/chat" });
+      // if (msg.isPermanant) 
+      router.push({ path: "/chat" });
       Vue.notify({
         duration: 1000,
         type: "danger",
@@ -141,7 +142,7 @@ const actions = {
         }
         // console.log({ allMessages : msg });
         commit("ADD_MESSAGES", msg.messages);
-        commit("SET_IS_ADMIN", msg.isAdmin);
+        commit("SET_ROLE", msg.role);
       });
       // });
     } catch (error) {
@@ -205,12 +206,14 @@ const actions = {
       // let resp = await api.post("/chat/addAdmin", data);
       // console.log({ data }, { resp });
       state.chatSocket.emit("addAdmin", data, ({ err, msg }: any) => {
+        if (err) throw err;
         Vue.notify({
           duration: 3000,
           type: err ? "danger" : "success",
           title: msg,
         });
         console.log({ err, msg });
+        data.callback();
       });
     } catch (error) {
       throw error;

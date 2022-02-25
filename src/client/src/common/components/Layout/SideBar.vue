@@ -104,7 +104,7 @@ export default class SideBar extends Vue {
   }
 }
 </script>
-
+// ba
 <style lang="scss">
 .side {
   margin-right: 9%;
