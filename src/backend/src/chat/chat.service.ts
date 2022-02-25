@@ -7,10 +7,11 @@ import * as bcrypt from "bcrypt";
 import { AuthService } from 'src/authentication/auth.service';
 import UserEntity from 'src/user/entities/user.entity';
 import { UserService } from 'src/user/user.service';
-import { GetMessagesDto, MessageDto } from './dtos/message.dto';
+import { DmMessageDto, GetDmMessagesDto, GetMessagesDto, MessageDto } from './dtos/message.dto';
 import MessageEntity from './entities/message.entity';
 import { filteredUser } from 'src/user/utils/user.utils';
 import { getRole, isAdmin, isBaned, isMember } from './utils/chat.utils';
+import User from 'src/user/entities/user.entity';
 
 @Injectable()
 export class ChatService {
@@ -48,6 +49,30 @@ export class ChatService {
                                     channels.push({...channel, membersCount: members.length});
                             }); // it's need to be filtered
         return channels;
+    }
+
+    
+    async getAllDms(user:UserEntity)
+    {
+        let dms = [];
+        (await this.channelRepository
+                            .find(
+                                {
+                                    where: {type: "dms"},
+                                    relations:["members"]}
+                                ))
+                            .map(({members,password,...channel})=>
+                            {
+                                if (isMember(members, user))
+                                {
+                                    dms.push(
+                                        {   
+                                            ...channel,
+                                            user: filteredUser(members.filter(u => u.id !== user.id)[0])
+                                        });
+                                }
+                            });
+        return dms;   
     }
 
     async getMyChannels(user:UserEntity) {
@@ -173,7 +198,6 @@ export class ChatService {
     {
         const {channel, user} = await this.getChannel_Kick_Ban_Mute(member, data);
 
-        // flag= true ==> ban falg=false ==> kick
         if (data.isPermanant)
             channel.bandedUsers.push(user);
         channel.members = channel.members.filter((u)=> u.id !== data.userId);
@@ -229,25 +253,83 @@ export class ChatService {
                                     {relations:['members', 'admins', 'owner']});
         if (!channel || !isMember(channel.members, member))
             throw new HttpException("channel not found or user is not member", HttpStatus.NOT_FOUND);
-        const allMessage = await this.messgaeRepository
+        let messages  = [];
+        await Promise.all((await this.messgaeRepository
                                     .find(
                                         {
                                             where: {channel: channel},
                                             relations: ['owner'],
                                             order: {create_date: "ASC"}
-                                        })
-        let messages = await (Promise.all(
-
-                allMessage.map(async ({owner, ...res})=>
-                {
-                    if (!await this.userService.isBlockedUser(member, owner))
-                        return (
-                            {...res, 
-                            owner: {...filteredUser(owner), role: getRole(owner, channel)},
-                            channelId: channel.id})
-                })));
-        messages = messages.filter((message)=> message)
+                                        }))
+                                    .map(async ({owner, ...res})=>
+                                    {
+                                        if (!await this.userService.isBlockedUser(member, owner))
+                                        {
+                                            messages.push(
+                                                {...res, 
+                                                owner: {...filteredUser(owner),
+                                                        role: getRole(owner, channel)},
+                                                channelId: channel.id})
+                                        }
+                                    }));
         
         return {role: getRole(member, channel), messages: messages}
     }
+
+    private async getDmChannel(member1: UserEntity, member2: UserEntity)
+    {
+        let ch: any = undefined;
+        (await this.channelRepository
+            .find(
+                {
+                    where:[
+                        {owner: member1, type: 'dms'},
+                        {owner: member2, type: 'dms'}
+                    ],
+                    relations:['members']
+                }
+            ))
+            .map((channel) =>
+            {
+                if(isMember(channel.members, member1) &&
+                        isMember(channel.members, member2))
+                ch = channel;
+            });
+        return ch
+    }
+
+    async getDmsMessages(member: UserEntity, data: GetDmMessagesDto)
+    {
+        const user = await this.userService.getById(data.userId);
+
+        const channel = await this.getDmChannel(member, user);
+        if (channel)
+            return this.getAllMessages(member, {channelId: channel.id});
+        return [];
+    }
+
+    async createDmMessage(member: UserEntity, data: DmMessageDto)
+    {
+        const user = await this.userService.getById(data.userId);
+
+        let channel : any  = await this.getDmChannel(member, user);
+        let id: number;
+
+        if (!channel)
+        {
+            channel = await this.createChannel({
+                owner: member,
+                type: "dms",
+                isLocked: false,
+                name: "dms"
+            });
+            await this.addMember(member, {login:user.login, channelId:channel.id})
+        }
+        this.createMessage(member, {
+            msg: data.msg,
+            channelId: channel.id 
+        })
+
+    }
+
 }

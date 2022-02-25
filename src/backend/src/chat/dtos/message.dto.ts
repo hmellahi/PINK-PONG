@@ -9,6 +9,14 @@ export class GetMessagesDto
     channelId:number;
 }
 
+export class GetDmMessagesDto
+{
+    @IsNotEmpty()
+    @IsNumber()
+    userId:number;
+}
+
+
 export class MessageDto {
 
     @IsNotEmpty()
@@ -17,4 +25,14 @@ export class MessageDto {
     @IsNotEmpty()
     @IsNumber()
     channelId: number;
+}
+
+export class DmMessageDto {
+
+    @IsNotEmpty()
+    msg: string;
+
+    @IsNotEmpty()
+    @IsNumber()
+    userId: number;
 }
