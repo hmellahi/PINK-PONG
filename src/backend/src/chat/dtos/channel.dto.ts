@@ -81,4 +81,5 @@ export class BanUserDto {
   isPermanant: Boolean;
 
   time?: string;
+
 }

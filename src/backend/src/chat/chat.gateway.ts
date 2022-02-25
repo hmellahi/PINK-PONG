@@ -113,22 +113,25 @@ export class ChatGateway {
 
   @SubscribeMessage('banUser')
   async banUser(client: Socket | any, data: BanUserDto) {
+
+    const action: string = (data.isPermanant) ? "banned": "kicked";
     if (!client.user) return { err: true, msg: 'socket not found!' };
     try {
-      const bandedUser = await this.userService.getById(data.userId);
+      await this.chatService.ban_Kick_Member(client.user, data)
       client.to(data.channelId.toString()).emit('banUser', {
         err: false,
         msg: {
           userId: data.userId,
           channelId: data.channelId,
-          msg: 'You have been banned!',
+          msg: `You have been ${action}!`,
           isPermanant: data.isPermanant,
         },
       });
 
-      if (data.isPermanant) client.leave(data.channelId.toString());
+      // if (data.isPermanant) 
+      client.leave(data.channelId.toString());
 
-      return { err: false, msg: 'user has been banned!' };
+      return { err: false, msg: `user has been ${action}!` };
     } catch (e) {
       return { err: true, msg: e.message };
     }
