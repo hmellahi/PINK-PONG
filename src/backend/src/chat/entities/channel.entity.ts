@@ -6,6 +6,7 @@ import { Column, Entity, JoinTable, ManyToMany,
          PrimaryGeneratedColumn
         }
         from "typeorm";
+import MutedList from "./mute.entity";
 
 @Entity()
 export default class Channel
@@ -46,5 +47,6 @@ export default class Channel
     @Column({nullable:true})
     password: string;
 
-
+    @OneToMany(()=> MutedList, mutedList => mutedList.mutedUser)
+    mutedList: MutedList[];
 }   
