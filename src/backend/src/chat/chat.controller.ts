@@ -130,18 +130,4 @@ export class ChatController {
     {
         return await this.chatService.getAllDms(request.user);
     }
-
-    @Get("getDmsMessages")
-    async getDmsMessages(@Req() request: RequestWithUser, @Body() data: GetDmMessagesDto)
-    {
-        console.log(data);
-        return await this.chatService.getDmsMessages(request.user, data);
-    }
-    
-    @Post("createDmMessage")
-    @HttpCode(200)
-    async createDmMessage(@Req() request: RequestWithUser, @Body() msg: DmMessageDto)
-    {
-        await this.chatService.createDmMessage(request.user, msg);
-    }
 }   
