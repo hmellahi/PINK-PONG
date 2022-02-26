@@ -127,8 +127,8 @@ export default class MessageBox extends Vue {
   mute() {
     var minutesToAdd = this.muteDuration;
     var currentDate = new Date();
-    var expireDate = new Date(currentDate.getTime() + minutesToAdd * 60000);\
-    console.log(expireDate)
+    var expireDate = new Date(currentDate.getTime() + minutesToAdd * 60000);
+    console.log(expireDate);
     this.$store.dispatch("Chat/muteFromChannel", {
       userId: this.$props.message.owner.id,
       channelId: this.$route.params.name,
