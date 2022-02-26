@@ -18,7 +18,6 @@
       :onClick="leaveRoom"
       >Leave</Button
     >
-    {{myRole}}
     <Button class="mb-3 col-md-2" :onClick="InviteToPrivate">Invite</Button>
     <Popup v-model="show_popup">
       <h4>Invite your friend to this channel</h4>

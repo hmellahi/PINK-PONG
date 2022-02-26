@@ -168,7 +168,7 @@ const actions = {
 
   async sendMessage(
     { commit, state, rootState }: ActionContext<any, any>,
-    { msg, channelId }: any
+    { msg, channelId, userId }: any
   ) {
     let currentUser = await store.getters["User/getCurrentUser"];
     commit("ADD_MSG", {
@@ -180,7 +180,7 @@ const actions = {
     });
     state.chatSocket.emit(
       "message",
-      { msg, channelId },
+      { msg, channelId,userId},
       ({ err, msg }: any) => {
         if (err) {
           throw err;

@@ -48,41 +48,48 @@ import MessageBox from "./Message.vue";
 export default class channelRoom extends Vue {
   msg = "";
   messages: Message[] = [];
+  isLoading = true;
 
-  mounted() {
-    // for (let i = 0; i < 10; i++)
-    //   this.messages.push({
-    //     sender: "Leona",
-    //     content: "wach a drari, daaamn",
-    //     isAdmin: false,
-    //     date: "20:40",
-    //     showTooltip: false,
-    //   });
-    // this.messages.push({
-    //   sender: "karim",
-    //   content: "wach a drari, daaamn",
-    //   isAdmin: false,
-    //   createdAt: "20:40",
-    //   showTooltip: false,
-    // });
-    // for (var i = 0; i < this.messages.length; i++)
-    //   this.messages[i].showTooltip = false;
+  async mounted() {
+    await this.$store.dispatch("Chat/connectToChatSocket", this.$cookies);
+    setTimeout(() => {
+      this.fetchMessages();
+      this.isLoading = false;
+    }, 700);
   }
   resetTooltips() {
     for (var i = 0; i < this.messages.length; i++)
       this.messages[i].showTooltip = false;
   }
-  sendMessage() {
-    // if (!this.msg) return;
-    // this.messages.push({
-    //   sender: "leona",
-    //   content: this.msg,
-    //   isAdmin: true,
-    //   createdAt: "20:40",
-    //   showTooltip: false,
-    //   channelId = "";
-    // });
-    // this.msg = "";
+
+  async fetchMessages() {
+    try {
+      await this.$store.dispatch("Chat/fetchMessages", {
+        userId: Number(this.$route.params.id),
+      });
+    } catch (e) {
+      this.$notify({
+        duration: 1000,
+        type: "danger",
+        title: e.message,
+      });
+    }
+  }
+  async sendMessage() {
+    if (this.msg.trim().length <= 0) return;
+    try {
+      await this.$store.dispatch("Chat/sendMessage", {
+        userId: Number(this.$route.params.id),
+        msg: this.msg,
+      });
+      this.msg = "";
+    } catch (e) {
+      this.$notify({
+        duration: 1000,
+        type: "danger",
+        title: e, // TODO CHANGE ERROR
+      });
+    }
   }
   goBackward() {
     this.$router.go(-1);

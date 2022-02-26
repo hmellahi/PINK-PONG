@@ -127,7 +127,7 @@ const routes: Array<RouteConfig> = [
     name: "createChannel",
   },
   {
-    path: "/chat/directMessage/:name",
+    path: "/chat/dms/:id",
     component: directMessage,
   },
   {
