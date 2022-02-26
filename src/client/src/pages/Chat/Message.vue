@@ -1,10 +1,7 @@
 <template>
   <div>
     <Popup v-model="show_popup">
-      <!-- {{ message.owner.role }} -->
-      {{ message.owner.role }}
-      {{ myRole }}
-      <div v-if="true">
+      <div v-if="!isDM">
         <div v-if="isAdmin && message.owner.role == 'member'" class="mb-2">
           <span
             ><input
@@ -13,30 +10,33 @@
               :value="isAdmin"
               @change="addAdmin"
             />
-            <!-- {{ message.owner.role }} -->
             Administrator</span
           >
         </div>
       </div>
       <div class="btn-messages">
-        <Button class="m-0" :link="'/profile/' + message.owner.login"
-          >Profile</Button
-        >
-        <Button class="m-0" :onClick="kick" v-if="isAdmin">Kick</Button>
-        <Button class="m-0" :onClick="ban" v-if="isAdmin">Ban</Button>
-        <div class="mute-message" v-if="isAdmin">
-          <select
-            v-model="muteDuration"
-            class="m-2 ml-3 px-2"
-            style="width: 5rem"
+        <div>
+          <Button class="m-0" :link="'/profile/' + message.owner.login"
+            >Profile</Button
           >
-            <option value="15">15 min</option>
-            <option value="60">1 hr</option>
-            <option value="180">3 hr</option>
-            <option value="480">8 hr</option>
-            <option value="1440">24 hr</option>
-          </select>
-          <Button class="m-0" :onClick="mute">Mute</Button>
+        </div>
+        <div v-if="!isDM">
+          <Button class="m-0" :onClick="kick" v-if="isAdmin">Kick</Button>
+          <Button class="m-0" :onClick="ban" v-if="isAdmin">Ban</Button>
+          <div class="mute-message" v-if="isAdmin">
+            <select
+              v-model="muteDuration"
+              class="m-2 ml-3 px-2"
+              style="width: 5rem"
+            >
+              <option value="15">15 min</option>
+              <option value="60">1 hr</option>
+              <option value="180">3 hr</option>
+              <option value="480">8 hr</option>
+              <option value="1440">24 hr</option>
+            </select>
+            <Button class="m-0" :onClick="mute">Mute</Button>
+          </div>
         </div>
       </div>
     </Popup>

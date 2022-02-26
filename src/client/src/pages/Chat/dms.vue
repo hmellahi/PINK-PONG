@@ -2,29 +2,23 @@
   <div>
     <div class="row" v-for="conversation in dms">
       <router-link
-        :to="'directMessage/' + conversation.name"
+        :to="'/chat/dms/' + getFriend(conversation).id"
         class="leader_box px-5 col-md-11 mx-4"
       >
         <div class="col-md-3 avatar-box">
-          <img :src="conversation.avatar" alt="" class="my-auto" />
+          <img
+            :src="getFriend(conversation).avatar_url"
+            alt=""
+            class="my-auto"
+          />
         </div>
         <div class="col-md-9">
           <div class="Channel_content">
-            <div class="conv-name">{{ conversation.name }}</div>
+            <div class="conv-name">{{ getFriend(conversation).name }}</div>
             <!-- <span class="conv-msg"> {{ short(conversation.last_msg) }}</span> -->
           </div>
-          <img
-            v-if="conversation.isLocked"
-            src="assets/svg/lock.svg"
-            alt=""
-            class="icon"
-          />
         </div>
       </router-link>
-      <!-- <div class="btn col-md-2 mx-auto leader_box" @click="enter(conversation)">
-        <h2  class="m-auto">Enter</h2>
-        <!-- <img src="/assets/svg/bin.svg" alt="" class="mx-auto" /> -->
-      </div> -->
     </div>
   </div>
 </template>
@@ -34,6 +28,7 @@ import { Component, Vue } from "vue-property-decorator";
 import BinSVG from "../../../public/assets/svg/bin.svg";
 import Button from "@/common/components/UI/Button.vue";
 import { directMessage } from "@/types/Channel";
+import { Channel } from "../../types/Channel";
 // type Conversation = any;
 
 @Component({
@@ -47,17 +42,21 @@ import { directMessage } from "@/types/Channel";
   },
 })
 export default class DMS extends Vue {
-  dms: directMessage[] = [];
+  dms: Channel[] = [];
   mounted() {
-    this.dms = [
-      {
-        avatar: "/assets/svg/Avatar.svg",
-        name: "leona",
-        last_msg:
-          "Bdl l password la bghiti Ana makhdamch b tel ghi tl3atli notification bach ntabht ",
-      },
-    ];
-    for (let i = 0; i < 10; i++) this.dms.push(this.dms[0]);
+    try {
+      let data: any = this.$http.get("chat/getAllDms");
+      this.dms = data.data;
+      // this.dms = [...this.dms, ...data.data];
+    } catch (e) {}
+  }
+  getFriend(dm: any) {
+    return dm.members[0].id == this.currentUser.id
+      ? dm.members[0]
+      : dm.members[1];
+  }
+  get currentUser() {
+    return this.$store.getters["User/getCurrentUser"];
   }
   deleteConversation() {}
   short(msg: String) {
