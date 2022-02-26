@@ -4,6 +4,7 @@ import  BlockList from "./blockedUserList.entity";
 import Game from "src/Game/entities/game.entity";
 import Channel from "src/chat/entities/channel.entity";
 import Message from "src/chat/entities/message.entity";
+import MutedList from "src/chat/entities/mute.entity";
 
 @Entity()
 export default class  User
@@ -75,4 +76,8 @@ export default class  User
 
     @OneToMany(()=> Message, message => message.owner)
     messages: Message[];
+
+    @OneToMany(()=> MutedList, mutedList => mutedList.channel)
+    mutedList: MutedList[];
+
 }

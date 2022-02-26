@@ -1,7 +1,7 @@
 import { ForbiddenException, HttpCode, HttpException, HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { AddAdminDto, AddMemberDto, BanUserDto, CreateChannelDto, JoinChannelDto, LeaveChannelDto, UpdateChannelPassword } from './dtos/channel.dto';
+import { LessThan, MoreThan, MoreThanOrEqual, Repository } from 'typeorm';
+import { AddAdminDto, AddMemberDto, BanUserDto, CreateChannelDto, JoinChannelDto, LeaveChannelDto, MuteMemberDto, UpdateChannelPassword } from './dtos/channel.dto';
 import ChannelEntity  from './entities/channel.entity';
 import * as bcrypt from "bcrypt";
 import { AuthService } from 'src/authentication/auth.service';
@@ -11,7 +11,8 @@ import { DmMessageDto, GetDmMessagesDto, GetMessagesDto, MessageDto } from './dt
 import MessageEntity from './entities/message.entity';
 import { filteredUser } from 'src/user/utils/user.utils';
 import { getRole, isAdmin, isBaned, isMember } from './utils/chat.utils';
-import User from 'src/user/entities/user.entity';
+import MutedListEntity from './entities/mute.entity';
+import MutedList from './entities/mute.entity';
 
 @Injectable()
 export class ChatService {
@@ -20,6 +21,8 @@ export class ChatService {
         private readonly channelRepository: Repository<ChannelEntity>,
         @InjectRepository(MessageEntity)
         private readonly messgaeRepository: Repository<MessageEntity>,
+        @InjectRepository(MutedListEntity)
+        private readonly mutedListRepository: Repository<MutedListEntity>,
         private readonly authService: AuthService,
         private readonly userService: UserService
     ) { }
@@ -204,13 +207,23 @@ export class ChatService {
         await this.channelRepository.save(channel);
     }
 
-    public async muteMemer(member: UserEntity, data: BanUserDto)
+    public async muteMemer(member: UserEntity, data: MuteMemberDto)
     {
-        // const {channel, user} = await this.getChannel_Kick_Ban_Mute(member, data);
+        const {channel, user} = await this.getChannel_Kick_Ban_Mute(member, data);
 
+        const mutedList = await this.isMuted(channel, user, new Date(data.expireDate), true)
+        if (mutedList)
+            throw new HttpException("Member already muted", HttpStatus.BAD_REQUEST);
+        const newMustedList = new MutedList();
+
+        newMustedList.expireDate = data.expireDate;
+        newMustedList.mutedUser = user;
+        newMustedList.channel = channel;
+
+        await this.mutedListRepository.save(newMustedList);
     }
 
-    private async getChannel_Kick_Ban_Mute(member: UserEntity, data: BanUserDto)
+    private async getChannel_Kick_Ban_Mute(member: UserEntity, data: BanUserDto | MuteMemberDto)
     {
         const user = await this.userService.getById(data.userId);
         const channel = await this.channelRepository
@@ -240,7 +253,9 @@ export class ChatService {
                                     {relations:['members']});
         if (!channel || !isMember(channel.members, member))
             throw new HttpException("channel not found or user is not member", HttpStatus.NOT_FOUND);
-
+        const mutedList = await this.isMuted(channel, member,new Date(),false);
+        if (mutedList)
+            throw new HttpException(`member is Muted until [${mutedList.expireDate}]`, HttpStatus.BAD_REQUEST);
        const message = this.messgaeRepository.create({msg: data.msg, owner: member, channel: channel});
        await this.messgaeRepository.save(message);
     }
@@ -330,6 +345,20 @@ export class ChatService {
             channelId: channel.id 
         })
 
+    }
+
+    private async isMuted(channel:ChannelEntity,user: UserEntity,
+                          expireDate: Date, flag: boolean)
+    {
+        const currentDate = new Date();
+
+        if (flag && currentDate > expireDate)
+            throw new HttpException("wtf given date is in the past", HttpStatus.BAD_REQUEST);
+        return  await this.mutedListRepository
+                                     .findOne(
+                                         {
+                                             where: { mutedUser: user, channel: channel, expireDate: MoreThan(currentDate)}
+                                         })
     }
 
 }

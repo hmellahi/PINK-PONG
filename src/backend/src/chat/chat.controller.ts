@@ -2,7 +2,7 @@ import { Body, Controller, Delete, Get, HttpCode, Post, Put, Req, UseGuards } fr
 import { JwtAuthGuard } from "src/authentication/Guards/jwtAccess.guard";
 import { RequestWithUser } from "src/authentication/Interfaces/requestWithUser.interface";
 import { ChatService } from "./chat.service";
-import { AddAdminDto, AddMemberDto, BanUserDto, CreateChannelDto, JoinChannelDto, LeaveChannelDto, UpdateChannelPassword, } from "./dtos/channel.dto";
+import { AddAdminDto, AddMemberDto, BanUserDto, CreateChannelDto, JoinChannelDto, LeaveChannelDto, MuteMemberDto, UpdateChannelPassword, } from "./dtos/channel.dto";
 import { DmMessageDto, GetDmMessagesDto, GetMessagesDto, MessageDto } from "./dtos/message.dto";
 
 @UseGuards(JwtAuthGuard)
@@ -111,6 +111,12 @@ export class ChatController {
         await this.chatService.ban_Kick_Member(user,data);
     }
 
+    @Post("muteUser")
+    @HttpCode(200)
+    async muteUser(@Req() request: RequestWithUser, @Body() data: MuteMemberDto)
+    {
+        await this.chatService.muteMemer(request.user,data);
+    }
     @Post("kickUser")
     @HttpCode(200)
     async kickUser(@Req() request: RequestWithUser, @Body() data: BanUserDto)

@@ -1,4 +1,4 @@
-import { IsBoolean, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsBoolean, IsDate, IsDateString, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 import UserEntity from 'src/user/entities/user.entity';
 
 export class CreateChannelDto {
@@ -80,6 +80,19 @@ export class BanUserDto {
   @IsBoolean()
   isPermanant: Boolean;
 
-  time?: string;
+}
 
+
+export class MuteMemberDto {
+  @IsNotEmpty()
+  @IsNumber()
+  channelId: number;
+
+  @IsNotEmpty()
+  @IsNumber()
+  userId: number;
+
+  @IsNotEmpty()
+  @IsDateString()
+  expireDate: Date;
 }
