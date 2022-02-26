@@ -35,14 +35,24 @@
               <Button
                 v-if="!isMyProfile && !user.isFriend"
                 :onClick="sendFriendReq"
-                ><i class="fas fa-check"></i> Add Friend</Button
+                ><i class="fas fa-check"></i> Friend Me</Button
               >
+              <!-- <Button
+                v-if="!isMyProfile && user.isFriend"
+                :onClick="sendUnFriend"
+                ><i class="fas fa-check"></i> Unfriend
+              </Button> -->
               <Button v-if="!isMyProfile" :onClick="inviteToPlay"
-                ><i class="fa fa-table-tennis"></i> InviteToPlay</Button
+                ><i class="fa fa-table-tennis"></i> Play with Me</Button
               >
-              <Button v-if="!isMyProfile" :onClick="blockUser"
-                ><i class="fa fa-ban"></i> Block Him</Button
-              >
+              <Button v-if="!isMyProfile && !isBlocked" :onClick="blockUser"
+                ><i class="fa fa-ban"></i> Block Me
+              </Button>
+              <Button
+                v-if="!isMyProfile"
+                :link="`/chat/directMessage/${user.login}`"
+                ><i class="fa fa-message"></i> Dm Me
+              </Button>
             </div>
             <p v-if="message" class="success_msg">{{ message }}</p>
             <div class="user-stats user_stat_left">
@@ -127,6 +137,7 @@ export default class Profile extends Vue {
   isMyProfile: boolean = false;
   invited_count: Number = 0;
   achievmentsList: any = [];
+  isBlocked: boolean = false;
   // async created() {
   // alert("hey");
 
@@ -227,7 +238,7 @@ export default class Profile extends Vue {
         duration: 2000,
         ignoreDuplicates: true,
         type: "success",
-        title: "Now He is your Friend, Enjoy with him",
+        title: "You send a request friend to this user",
       });
     } catch (e: any) {
       this.$notify({
@@ -238,7 +249,27 @@ export default class Profile extends Vue {
       });
     }
   }
-
+  // async sendUnFriend() {
+  //   try {
+  //     console.log(this.user.id);
+  //     let data = await this.$http.post("friendship/removeFriendship", {
+  //       friendshipId: this.user.id,
+  //     });
+  //     this.$notify({
+  //       duration: 2000,
+  //       ignoreDuplicates: true,
+  //       type: "success",
+  //       title: "You remove this friend from your list",
+  //     });
+  //   } catch (e: any) {
+  //     this.$notify({
+  //       duration: 2000,
+  //       ignoreDuplicates: true,
+  //       type: "danger",
+  //       title: e.response.data.message,
+  //     });
+  //   }
+  // }
   inviteToPlay() {
     if (this.invited_count == 1)
       this.$notify({
@@ -269,6 +300,7 @@ export default class Profile extends Vue {
       let data = await this.$http.post("users/blockUser", {
         userId: this.user.id,
       });
+      this.isBlocked = true;
     } catch (e) {
       console.log(e);
     }
@@ -279,6 +311,7 @@ export default class Profile extends Vue {
       title: "You blocked this user, you can't see their message any more",
     });
   }
+
   async created() {
     // console.log("im logged again in created");
     // alert("hello")
