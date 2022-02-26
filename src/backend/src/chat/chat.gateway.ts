@@ -26,7 +26,7 @@ export class ChatGateway {
   constructor(
     private authService: AuthService,
     private chatService: ChatService,
-    private userService: UserService
+    private userService: UserService,
   ) {}
 
   async handleConnection(client: any | Socket) {
@@ -64,7 +64,6 @@ export class ChatGateway {
       let messages = await this.chatService.getAllMessages(client.user, data);
       // join user to room
       client.join(data.channelId.toString());
-      console.log(messages)
       return { err: false, msg: messages };
     } catch (e) {
       return { err: true, msg: e.message };
@@ -78,9 +77,24 @@ export class ChatGateway {
     try {
       // save on database
       await this.chatService.createMessage(client.user, data);
+
+      let sockets = await this.server.fetchSockets();
+
+      let exceptList = [];
+
+      // get list of users blocking me
+      let blockingList = await this.getBlockingList(sockets, client);
+      exceptList = exceptList.concat(blockingList);
+
+      // uncomment this if you want to stop both users from seing eachothers msgs
+      /* get list of users i am blocking */
+      // let blockedList = await this.getBlockedList(client.user, sockets);
+      // exceptList = exceptList.concat(blockedList);
+
+      console.log('final list:   ' + exceptList.length);
+
       // send message to specific room
-      // check if the user is blocked before sending
-      client.to(data.channelId.toString()).emit('message', {
+      client.to(data.channelId.toString()).except(exceptList).emit('message', {
         err: false,
         msg: data.msg,
         owner: client.user,
@@ -89,6 +103,41 @@ export class ChatGateway {
     } catch (e) {
       return { err: true, msg: e.message };
     }
+  }
+
+  async getBlockedList(user: any, sockets: any) {
+    let blockedList = [];
+    let users = [];
+    let tmp = await this.userService.getBlockedList(user);
+    for (let i = 0; i < tmp.length; i++) {
+      users.push(tmp[i].user.id);
+    }
+
+    for (let j = 0; j < users.length; j++) {
+      for (let i = 0; i < sockets.length; i++) {
+        if (sockets[i].user.id == users[j]) {
+          blockedList.push(sockets[i].id);
+          break;
+        }
+      }
+    }
+    return blockedList;
+  }
+
+  async getBlockingList(sockets: any, client: Socket | any) {
+    let blockingList = [];
+
+    for (let i = 0; i < sockets.length; i++) {
+      // check if any server socket is blocking me
+      let isBlocked = await this.userService.isBlockedUser(
+        sockets[i].user,
+        client.user,
+      );
+      if (isBlocked) {
+        blockingList.push(sockets[i].id);
+      }
+    }
+    return blockingList;
   }
 
   @SubscribeMessage('addAdmin')
@@ -113,11 +162,10 @@ export class ChatGateway {
 
   @SubscribeMessage('banUser')
   async banUser(client: Socket | any, data: BanUserDto) {
-
-    const action: string = (data.isPermanant) ? "banned": "kicked";
+    const action: string = data.isPermanant ? 'banned' : 'kicked';
     if (!client.user) return { err: true, msg: 'socket not found!' };
     try {
-      await this.chatService.ban_Kick_Member(client.user, data)
+      await this.chatService.ban_Kick_Member(client.user, data);
       client.to(data.channelId.toString()).emit('banUser', {
         err: false,
         msg: {
@@ -128,7 +176,7 @@ export class ChatGateway {
         },
       });
 
-      // if (data.isPermanant) 
+      // no done yet
       client.leave(data.channelId.toString());
 
       return { err: false, msg: `user has been ${action}!` };
