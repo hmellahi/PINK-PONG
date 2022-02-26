@@ -79,7 +79,4 @@ export class BanUserDto {
   @IsNotEmpty()
   @IsBoolean()
   isPermanant: Boolean;
-
-  time?: string;
-
 }

@@ -11,7 +11,12 @@ import { UserService } from 'src/user/user.service';
 import { MessageInstance } from 'twilio/lib/rest/api/v2010/account/message';
 import { ChatService } from './chat.service';
 import { AddAdminDto, BanUserDto } from './dtos/channel.dto';
-import { GetMessagesDto, MessageDto } from './dtos/message.dto';
+import {
+  DmMessageDto,
+  GetDmMessagesDto,
+  GetMessagesDto,
+  MessageDto,
+} from './dtos/message.dto';
 
 @WebSocketGateway({
   namespace: 'chat',
@@ -175,11 +180,42 @@ export class ChatGateway {
           isPermanant: data.isPermanant,
         },
       });
-
-      // no done yet
       client.leave(data.channelId.toString());
-
       return { err: false, msg: `user has been ${action}!` };
+    } catch (e) {
+      return { err: true, msg: e.message };
+    }
+  }
+
+  @SubscribeMessage('getDmsMessages')
+  async getDmsMessages(client: Socket | any, data: GetDmMessagesDto) {
+    if (!client.user) return { err: true, msg: 'socket not found!' };
+    try {
+      let msgs = await this.chatService.getDmsMessages(client.user, data);
+      return { err: false, msg: msgs };
+    } catch (e) {
+      return { err: true, msg: e.message };
+    }
+  }
+
+  @SubscribeMessage('messageDm')
+  async messageDmBroadcast(client: Socket | any, data: DmMessageDto) {
+    if (!client.user) return { err: true, msg: 'socket not found!' };
+    try {
+      await this.chatService.createDmMessage(client.user, data);
+
+      let sockets: any = await this.server.fetchSockets();
+
+      for (let i = 0; i < sockets.length; i++) {
+        if (sockets[i].user.id == data.userId) {
+          client.to(sockets[i].id).emit('messageDm', {
+            err: false,
+            msg: data.msg,
+            owner: client.user,
+          });
+          break;
+        }
+      }
     } catch (e) {
       return { err: true, msg: e.message };
     }
