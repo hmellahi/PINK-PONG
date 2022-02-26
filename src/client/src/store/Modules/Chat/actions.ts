@@ -156,7 +156,6 @@ const actions = {
   async fetchMessages({ state, commit }: ActionContext<any, any>, data: any) {
     try {
       commit("CLEAR_ALL_MEASSAGES");
-      // listenToChannelEvents(commit, state.ChatSocket);
       state.chatSocket.emit("allMessages", data, ({ err, msg }: any) => {
         if (err) {
           router.push({ path: "/chat" });
@@ -187,7 +186,7 @@ const actions = {
           Vue.notify({
             duration: 3000,
             type: "danger",
-            title: err,
+            title: msg,
           });
           return;
         }
@@ -274,19 +273,13 @@ const actions = {
     }
   },
 
-  // async muteFromChannel({ commit, state }: ActionContext<any, any>, data: any) {
-  //   try {
-  //     state.chatSocket.emit("banUser", data, ({ err, msg }: any) => {
-  //       Vue.notify({
-  //         duration: 1000,
-  //         type: err ? "danger" : "success",
-  //         title: msg,
-  //       });
-  //     });
-  //   } catch (error) {
-  //     throw error;
-  //   }
-  // },
+  async muteFromChannel({ commit, state }: ActionContext<any, any>, data: any) {
+    try {
+      await api.post("chat/muteUser", data);
+    } catch (error) {
+      throw error;
+    }
+  },
   async banFromChannel({ commit, state }: ActionContext<any, any>, data: any) {
     try {
       state.chatSocket.emit("banUser", data, ({ err, msg }: any) => {

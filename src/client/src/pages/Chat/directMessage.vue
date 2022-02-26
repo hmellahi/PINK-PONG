@@ -41,7 +41,7 @@ import InputField from "@/common/components/UI/InputField.vue";
 import { Message } from "@/types/Channel";
 import MessageBox from "./Message.vue";
 
-@Component({
+@Component<channelRoom>({
   components: { Button, InputField, MessageBox },
   props: {},
   async beforeRouteLeave(to, from, next) {
@@ -57,10 +57,10 @@ export default class channelRoom extends Vue {
 
   async mounted() {
     await this.$store.dispatch("Chat/connectToChatSocket", this.$cookies);
-    // setTimeout(() => {
-    this.fetchMessages();
-    this.isLoading = false;
-    // }, 0);
+    setTimeout(() => {
+      this.fetchMessages();
+      this.isLoading = false;
+    }, 800);
   }
 
   get messages() {
