@@ -200,6 +200,8 @@ export class ChatGateway {
 
   @SubscribeMessage('messageDm')
   async messageDmBroadcast(client: Socket | any, data: DmMessageDto) {
+    console.log({ data });
+
     if (!client.user) return { err: true, msg: 'socket not found!' };
     try {
       await this.chatService.createDmMessage(client.user, data);
