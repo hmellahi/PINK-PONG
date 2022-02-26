@@ -42,6 +42,8 @@ const mutations = {
   ADD_MSG(state: any, msg: Message) {
     // let newMessagesList = state.get_channel_msgs(state, channelId).push(msg);
     // state.allMessages.set(channelId, newMessagesList);
+    console.log({ msg });
+    console.log(state.allMessages);
     state.allMessages.push(msg);
   },
   REMOVE_CHANNEL(state: any, channelId: any) {

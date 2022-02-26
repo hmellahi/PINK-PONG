@@ -14,7 +14,7 @@
         </div>
         <div class="col-md-9">
           <div class="Channel_content">
-            <div class="conv-name">{{ getFriend(conversation).name }}</div>
+            <div class="conv-name">{{ getFriend(conversation).login }}</div>
             <!-- <span class="conv-msg"> {{ short(conversation.last_msg) }}</span> -->
           </div>
         </div>
@@ -42,18 +42,17 @@ import { Channel } from "../../types/Channel";
   },
 })
 export default class DMS extends Vue {
-  dms: Channel[] = [];
-  mounted() {
+  dms: any[] = [];
+  async mounted() {
     try {
-      let data: any = this.$http.get("chat/getAllDms");
+      let data: any = await this.$http.get("chat/getAllDms");
       this.dms = data.data;
+      console.log(data.data);
       // this.dms = [...this.dms, ...data.data];
     } catch (e) {}
   }
   getFriend(dm: any) {
-    return dm.members[0].id == this.currentUser.id
-      ? dm.members[0]
-      : dm.members[1];
+    return dm.user;
   }
   get currentUser() {
     return this.$store.getters["User/getCurrentUser"];

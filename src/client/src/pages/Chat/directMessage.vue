@@ -44,19 +44,32 @@ import MessageBox from "./Message.vue";
 @Component({
   components: { Button, InputField, MessageBox },
   props: {},
+  async beforeRouteLeave(to, from, next) {
+    // await this.leaveRoomSocket();
+    // alert(this.$store.state.Chat.chatSocket.liste)
+    this.$store.state.Chat.chatSocket.removeListener("messageDm");
+    next();
+  },
 })
 export default class channelRoom extends Vue {
   msg = "";
-  messages: Message[] = [];
   isLoading = true;
 
   async mounted() {
     await this.$store.dispatch("Chat/connectToChatSocket", this.$cookies);
-    setTimeout(() => {
-      this.fetchMessages();
-      this.isLoading = false;
-    }, 700);
+    // setTimeout(() => {
+    this.fetchMessages();
+    this.isLoading = false;
+    // }, 0);
   }
+
+  get messages() {
+    return this.$store.getters["Chat/getDMmsgs"](
+      this.$route.params.id,
+      this.currentUser.id
+    );
+  }
+
   resetTooltips() {
     for (var i = 0; i < this.messages.length; i++)
       this.messages[i].showTooltip = false;
@@ -64,7 +77,7 @@ export default class channelRoom extends Vue {
 
   async fetchMessages() {
     try {
-      await this.$store.dispatch("Chat/fetchMessages", {
+      await this.$store.dispatch("Chat/fetchDMS", {
         userId: Number(this.$route.params.id),
       });
     } catch (e) {
@@ -81,6 +94,7 @@ export default class channelRoom extends Vue {
       await this.$store.dispatch("Chat/sendMessage", {
         userId: Number(this.$route.params.id),
         msg: this.msg,
+        isDM: true,
       });
       this.msg = "";
     } catch (e) {
@@ -90,6 +104,9 @@ export default class channelRoom extends Vue {
         title: e, // TODO CHANGE ERROR
       });
     }
+  }
+  get currentUser() {
+    return this.$store.getters["User/getCurrentUser"];
   }
   goBackward() {
     this.$router.go(-1);

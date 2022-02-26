@@ -50,7 +50,7 @@
               </Button>
               <Button
                 v-if="!isMyProfile"
-                :link="`/chat/directMessage/${user.login}`"
+                :link="`/chat/dms/${user.id}`"
                 ><i class="fa fa-message"></i> Dm Me
               </Button>
             </div>

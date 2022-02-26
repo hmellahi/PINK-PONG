@@ -28,6 +28,21 @@ const listenToChannelEvents = (commit: any, connection: Socket) => {
   });
 };
 
+const listenToDMEvents = (commit: any, connection: Socket) => {
+  connection.on("messageDm", async ({ msg, owner, channelId }: any) => {
+    console.log("recieved a msg", { msg, owner });
+    //let currentUser = await store.getters["User/getCurrentUser"];
+
+    commit("ADD_MSG", {
+      msg,
+      showTooltip: false,
+      owner,
+      create_date: new Date(),
+      channelId: -1,
+    });
+  });
+};
+
 const actions = {
   async connectToChatSocket(context: ActionContext<any, any>, cookies: any) {
     const { commit, state } = context;
@@ -50,13 +65,24 @@ const actions = {
       },
     });
     commit("SET_CHATSOCKET", connection);
-    listenToChannelEvents(commit, connection);
   },
 
   async listenToChatEvents(
     { commit, state }: ActionContext<any, any>,
     { channelId }: any
   ) {
+    state.chatSocket.on("message", async ({ msg, owner, channelId }: any) => {
+      console.log("recieved a msg", { channelId, msg, owner });
+      let currentUser = await store.getters["User/getCurrentUser"];
+
+      commit("ADD_MSG", {
+        msg,
+        showTooltip: false,
+        owner,
+        create_date: new Date(),
+        channelId,
+      });
+    });
     state.chatSocket.on("addAdmin", async ({ err, msg }: any) => {
       let currentUser = await store.getters["User/getCurrentUser"];
       if (currentUser.id != msg.userId || msg.channelId != channelId) return;
@@ -65,7 +91,7 @@ const actions = {
     state.chatSocket.on("banUser", async ({ err, msg }: any) => {
       let currentUser = await store.getters["User/getCurrentUser"];
       if (currentUser.id != msg.userId || msg.channelId != channelId) return;
-      // if (msg.isPermanant) 
+      // if (msg.isPermanant)
       router.push({ path: "/chat" });
       Vue.notify({
         duration: 1000,
@@ -130,6 +156,7 @@ const actions = {
   async fetchMessages({ state, commit }: ActionContext<any, any>, data: any) {
     try {
       commit("CLEAR_ALL_MEASSAGES");
+      // listenToChannelEvents(commit, state.ChatSocket);
       state.chatSocket.emit("allMessages", data, ({ err, msg }: any) => {
         if (err) {
           router.push({ path: "/chat" });
@@ -143,6 +170,29 @@ const actions = {
         // console.log({ allMessages : msg });
         commit("ADD_MESSAGES", msg.messages);
         commit("SET_ROLE", msg.role);
+      });
+      // });
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  async fetchDMS({ state, commit }: ActionContext<any, any>, data: any) {
+    try {
+      commit("CLEAR_ALL_MEASSAGES");
+      listenToDMEvents(commit, state.chatSocket);
+      state.chatSocket.emit("getDmsMessages", data, ({ err, msg }: any) => {
+        if (err) {
+          // router.push({ path: "/chat" });
+          Vue.notify({
+            duration: 3000,
+            type: "danger",
+            title: err,
+          });
+          return;
+        }
+        console.log({ msg });
+        commit("ADD_MESSAGES", msg.messages);
       });
       // });
     } catch (error) {
@@ -168,19 +218,23 @@ const actions = {
 
   async sendMessage(
     { commit, state, rootState }: ActionContext<any, any>,
-    { msg, channelId, userId }: any
+    { msg, channelId, userId, isDM }: any
   ) {
     let currentUser = await store.getters["User/getCurrentUser"];
+    console.log({ currentUser });
     commit("ADD_MSG", {
       msg,
       showTooltip: false,
       owner: currentUser,
       create_date: moment(),
-      channelId,
+      channelId: channelId ? channelId : -1,
     });
+
+    let eventName = isDM ? "messageDm" : "message";
+    console.log(state.allMessages);
     state.chatSocket.emit(
-      "message",
-      { msg, channelId,userId},
+      eventName,
+      { msg, channelId, userId },
       ({ err, msg }: any) => {
         if (err) {
           throw err;
