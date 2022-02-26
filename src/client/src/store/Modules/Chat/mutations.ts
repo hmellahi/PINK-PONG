@@ -73,7 +73,10 @@ const mutations = {
   },
   SET_IS_ADMIN(state: any, newVal: boolean) {
     state.isAdmin = newVal;
-  }
+  },
+  SET_ROLE(state: any, newVal: boolean) {
+    state.role = newVal;
+  },
 };
 
 export default mutations;

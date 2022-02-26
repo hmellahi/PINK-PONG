@@ -79,7 +79,8 @@ export default class App extends Vue {
   updateIsLoginPage() {
     /******  Check if the route one of this path if yes then lets update the bool val ********/
     let paths = ["/login", "/verification_code", "/auth/callback"];
-    this.isLoginPage = paths.includes(this.$route.path);
+    this.isLoginPage =
+      paths.includes(this.$route.path) || this.$route.name === "not found";
   }
   AcceptRequest(data: any) {
     let { senderSocketId, senderId } = data;

@@ -24,6 +24,10 @@ export default class Channel
     @JoinTable()
     admins: User[];
 
+    @ManyToMany(()=> User, {onDelete:"CASCADE"})
+    @JoinTable()
+    bandedUsers: User[];
+
     @ManyToOne(()=> User, user => user.owendChannels, {onDelete: "SET NULL"})
     owner: User;
 

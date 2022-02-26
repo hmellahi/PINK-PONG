@@ -10,6 +10,7 @@ const state = () => ({
   dms: [],
   allMessages: [],
   isAdmin: false,
+  role:"member"
 });
 
 // getters

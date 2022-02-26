@@ -74,13 +74,13 @@ const actions = {
     let blockedUsersBackup = [...state.blockedUsers];
     let friendsBackup = [...state.friends];
     commit("REMOVE_FROM", ["blockedUsers", userToUnblock]);
-    commit("ADD_TO_ENTITY", ["friends", userToUnblock]);
+    // commit("ADD_TO_ENTITY", ["friends", userToUnblock]);
     try {
       const data = await api.post("users/unblockUser", {
         blockId: userToUnblock.id,
       });
     } catch (e) {
-      commit("SET_ENTITY", ["friends", friendsBackup]);
+      // commit("SET_ENTITY", ["friends", friendsBackup]);
       commit("SET_ENTITY", ["blockedUsers", blockedUsersBackup]);
     }
   },

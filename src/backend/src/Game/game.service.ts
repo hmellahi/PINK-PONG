@@ -18,11 +18,10 @@ export class GameService {
   public async createGame(data: any) {
     var game: CreateGameDto = data;
 
-    // check for flag
     game.first_user = await this.userService.getById(data.user1Id);
     game.second_user = await this.userService.getById(data.user2Id);
 
-    if (game.first_user_score > game.second_user_score)
+    if (data.flag == 2 || game.first_user_score > game.second_user_score)
     {
         await this.userService.increaseWins(game.first_user);
         await this.userService.increatLosses(game.second_user);

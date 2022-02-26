@@ -104,7 +104,12 @@ export default class listChannels extends Vue {
       //   path: "/chat/channel/" + this.currentChannel.id,
       // });
     } catch (errors) {
-      this.errors = errors.response.data.message;
+      // this.errors = errors.response.data.message;
+      this.$notify({
+        duration: 1000,
+        type: "danger",
+        title:  errors.response.data.message  ,
+      });
       return;
     }
   }
