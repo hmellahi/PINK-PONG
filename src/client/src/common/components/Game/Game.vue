@@ -25,6 +25,8 @@ import P5, {
 import Paddle from "@/common/Game/Objects/Paddle";
 import Score from "@/common/Game/Objects/Score";
 
+let MAX_WIDTH = 600;
+let MAX_HEIGHT = 400;
 const MAX_SCORE = 5;
 const COUNTDOWN = 3;
 let RAD = 80;
@@ -57,6 +59,7 @@ export default class Game extends Vue {
   sounds: Array<any> = [];
   ball: Ball;
   isGameOver: boolean = false;
+  isResize: boolean = false;
   xPaddle = GameConstants.paddle.x;
   yPaddle = GameConstants.paddle.y;
   sketch: P5Sketch = null;
@@ -113,6 +116,15 @@ export default class Game extends Vue {
     var game: any = this.$refs.game;
 
     if (game) {
+      if (game.offsetWidth < MAX_WIDTH || game.offsetHeight < MAX_HEIGHT){
+        this.isResize = true;
+        console.log("below size",game.offsetWidth, game.offsetHeight);
+        // alert("Please augment window size to play");
+      }
+      else{
+        this.isResize = false;
+        console.log("above size",game.offsetWidth, game.offsetHeight);
+      }
       GameConstants.canvas.width = game.offsetWidth;
       GameConstants.canvas.height = game.offsetHeight;
       // console.log(game.offsetWidth, game.offsetHeight);
@@ -173,6 +185,15 @@ export default class Game extends Vue {
     var rx = GameConstants.canvas.width / 10;
     var ry = GameConstants.canvas.height / 10;
     if (game) {
+      if (game.offsetWidth < MAX_WIDTH || game.offsetHeight < MAX_HEIGHT){
+        this.isResize = true;
+        console.log("below size",game.offsetWidth, game.offsetHeight);
+        // alert("Please augment window size to play");
+      }
+      else{
+        this.isResize = false;
+        console.log("above size",game.offsetWidth, game.offsetHeight);
+      }
       GameConstants.canvas.width = game.offsetWidth;
       GameConstants.canvas.height = game.offsetHeight;
     }
@@ -213,17 +234,6 @@ export default class Game extends Vue {
       "assets/sounds/TunePocket-Ping-Pong-Ball-Bouce-Hit-Preview.mp3";
     var sound8 =
       "assets/sounds/alex-productions-epic-cinematic-gaming-cyberpunk-reset.mp3";
-
-    this.Clairo = await new Audio(sound8);
-    this.wallHitSound = await new Audio(sound);
-    this.scoreSound = await new Audio(sound2);
-    this.marioCoin = await new Audio(sound3);
-    this.ballBounce = await new Audio(sound5);
-    this.ballHit = await new Audio(sound7);
-
-    // this.Clairo.play();
-    // this.Clairo = new Audio("sounds/Clairo - Sofia-L9l8zCOwEII.mp3");
-    // this.marioCoin.play();
     this.listenToGameEvents();
     //  if(typeof(Worker) !== "undefined") {
     if (localStorage[this.currentUser.id + "#settings#0"]) {
@@ -234,9 +244,25 @@ export default class Game extends Vue {
       this.isSoundOn =
         localStorage[this.currentUser.id + "#settings#1"] === "true";
     }
+    try {
+    this.Clairo = await new Audio(sound8);
+    } catch (error) {
+      this.isMusicOn = false;
+    }
+    try {
+    this.wallHitSound = await new Audio(sound);
+    this.scoreSound = await new Audio(sound2);
+    this.marioCoin = await new Audio(sound3);
+    this.ballBounce = await new Audio(sound5);
+    this.ballHit = await new Audio(sound7);
+    } catch (error) {
+      this.isSoundOn = false;
+    }
     console.log({ isSoundOn: this.isSoundOn, isMusicOn: this.isMusicOn });
     // here do ur shit...
-    if (this.isMusicOn) this.Clairo.play();
+    if (this.isMusicOn){
+      this.playMusic(this.Clairo);
+    }
   }
   async fetchUser(id: Number) {
     try {
@@ -356,6 +382,7 @@ export default class Game extends Vue {
         this.gameData.isPlayer1) ||
       (this.scores[1].value < this.scores[0].value && !this.gameData.isPlayer1)
     )
+    //ff is disconnet
       this.playerLost(this.sketch, "you Have Won");
     else {
       this.playerLost(this.sketch, "you Have lost");
@@ -403,6 +430,20 @@ export default class Game extends Vue {
     sketch.noStroke();
     sketch.rect(0, 0, GameConstants.canvas.width, GameConstants.canvas.height);
   }
+
+    showResize(sketch: P5Sketch) {
+    this.drawOerlay(sketch);
+    //  sketch.background(220); 
+    //this.background.draw(sketch);
+    sketch.textSize(GameConstants.canvas.width / 18);
+    sketch.textAlign(sketch.CENTER);
+    sketch.fill(255, 255, 255);
+    sketch.text(
+      "Augment window size to resume controlle",
+      GameConstants.canvas.width / 2,
+      GameConstants.canvas.height / 2
+    );
+  }
   showGameOver(sketch: P5Sketch) {
     this.drawOerlay(sketch);
     sketch.textSize(GameConstants.canvas.width / 8);
@@ -413,7 +454,6 @@ export default class Game extends Vue {
       GameConstants.canvas.width / 2,
       GameConstants.canvas.height / 2
     );
-    // this.$router.push('/')
   }
   playerLost(sketch: P5Sketch, won: string) {
     sketch.textSize(GameConstants.canvas.width / 12);
@@ -466,6 +506,8 @@ export default class Game extends Vue {
   draw(sketch: P5Sketch) {
     if (this.isGameOver) return;
 
+
+
     // this.sendNewBallPostion();
     if (this.map != 3) {
       sketch.background(this.backColor);
@@ -477,10 +519,13 @@ export default class Game extends Vue {
     this.net.draw(sketch);
 
     this.background.draw(sketch);
+
     this.paddle.draw(sketch);
-    this.paddle.update();
+    if (!this.isResize)
+      this.paddle.update();
     this.paddle2.draw(sketch);
-    this.paddle2.update();
+    if (!this.isResize)
+      this.paddle2.update();
     if (
       this.scores[0].value >= MAX_SCORE ||
       this.scores[1].value >= MAX_SCORE
@@ -488,9 +533,10 @@ export default class Game extends Vue {
       this.isGameOver = true;
       this.scores.map((score) => score.draw(sketch));
       // this.showGameOver(sketch);
-      try {
-        this.Clairo.pause();
-      } catch (e) {}
+      // try {
+      //   this.Clairo.pause();
+      // } catch (e) {}
+      this.pauseMusic(this.Clairo);
       this.over(0);
       return;
     }
@@ -505,19 +551,20 @@ export default class Game extends Vue {
       // else this.sendNewPaddleVelocity(this.paddle2);
       // send
       if (this.isSoundOn) {
-        console.log("play sound");
+        // console.log("play sound");
         // this.wallHitSound.play();
         // this.marioCoin.play();
         // this.wallHitSound.play();
-        this.ballBounce.play();
+        // this.ballBounce.play();
         // this.ballHit.play();
+        this.playMusic(this.ballBounce);
       }
     }
     let ballHitsBorder = this.ball.checkBorders();
     if (ballHitsBorder) {
       if (this.isSoundOn) {
-        this.scoreSound.play();
-        console.log("play2 sound");
+        this.playMusic(this.scoreSound);
+        // this.scoreSound.play();
       }
       this.ball.reset();
       this.paddle.reset();
@@ -527,7 +574,8 @@ export default class Game extends Vue {
         this.scores[0].value >= MAX_SCORE ||
         this.scores[1].value >= MAX_SCORE
       ) {
-        this.Clairo.pause();
+        // this.Clairo.pause();
+        this.pauseMusic(this.Clairo);
         this.isGameOver = true;
         this.scores.map((score) => score.draw(sketch));
         // this.showGameOver(sketch);
@@ -547,6 +595,12 @@ export default class Game extends Vue {
     if (this.gameData.isPlayer1) this.sendNewPaddleVelocity(this.paddle);
     else this.sendNewPaddleVelocity(this.paddle2);
     this.sendNewBallPostion();
+    if (this.isResize)
+    {
+      //overlay
+      this.showResize(sketch);
+      // return;
+    }
   }
   keydown(e: any) {
     if (this.gameData.isSpectator) return;
@@ -610,10 +664,18 @@ export default class Game extends Vue {
 
   async playMusic(music: any) {
     try {
-      // await music.play();
-      // console.log("Playing...");
+      await music.play();
+      console.log("Playing...");
     } catch (err) {
-      // console.log("Failed to play..." + err);
+      console.log("Failed to play..." + err);
+    }
+  }
+  async pauseMusic(music: any) {
+    try {
+      await music.pause();
+      console.log("Playing...");
+    } catch (err) {
+      console.log("Failed to play..." + err);
     }
   }
 }

@@ -7,7 +7,7 @@ import Paddle from "@/common/Game/Objects/Paddle";
 function getRandomArbitrary(min: number, max: number) {
   return Math.random() * (max - min) + min;
 }
-
+let SPEED = 0.25;
 export default class {
   x: number;
   y: number;
@@ -42,9 +42,9 @@ export default class {
     this.radius = tempRadius;
     // this.velocityX = Math.floor(Math.random() * 10) + 1;;
     // this.velocityY = Math.floor(Math.random() * 10) + 1;;
-    this.velocityX = getRandomArbitrary(-1, 1);
-    this.velocityY = getRandomArbitrary(-1, 1);
-    this.initialSpeed = GameConstants.canvas.width / 60;
+    this.velocityX = getRandomArbitrary(0.5, 1);
+    this.velocityY = getRandomArbitrary(0.5, 1);
+    this.initialSpeed = GameConstants.canvas.width / 50;
     this.speed = this.initialSpeed;
     // this.speed = 1;
     this.color = tempColor;
@@ -109,8 +109,8 @@ export default class {
     // console.log(`ball VeloX ${this.velocityX} and VeloY ${this.velocityY}`);
 
     // console.log("I am hitted");
-    console.log(`player ${player.x}, ${player.y}`);
-    console.log(`bll ${this.x}, ${this.y}`);
+    // console.log(`player ${player.x}, ${player.y}`);
+    // console.log(`bll ${this.x}, ${this.y}`);
 
     let collidePoint = this.y - (player.y + player.height / 2);
     collidePoint = collidePoint / (player.height / 2);
@@ -133,7 +133,7 @@ export default class {
     // this.velocityY = this.speed * Math.sin(angle);
     this.velocityX = direction * Math.cos(angleRad);
     this.velocityY = Math.sin(angleRad);
-    this.speed += 1;
+    this.speed += SPEED;
     // increase speed
     // this.speed += 0.05; TODO CHange
     // console.log(`ball speed ${this.speed}`);
