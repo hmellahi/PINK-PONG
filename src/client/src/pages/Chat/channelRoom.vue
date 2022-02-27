@@ -1,5 +1,5 @@
 <template>
-  <Overlay class="text-left channel">
+  <div>
     <Button
       class="ml-0 mb-3 col-md-2"
       v-if="this.$route.path != '/profile/mine'"
@@ -12,54 +12,51 @@
       :link="'/chat/edit/' + $route.params.name"
       >Edit</Button
     >
-    <Button
-      class="mb-3 col-md-2 right-btn"
-      style="right: 19%"
-      :onClick="leaveRoom"
-      >Leave</Button
-    >
+    <Button class="mb-3 col-md-2 right-btn" :onClick="leaveRoom">Leave</Button>
     <Button class="mb-3 col-md-2" :onClick="InviteToPrivate">Invite</Button>
-    <Popup v-model="show_popup">
-      <h4>Invite your friend to this channel</h4>
-      <InputField
-        name="inviter"
-        placeholder="Enter The login"
-        type="text"
-        v-model="inviter"
-        class="text-left p-3 my-4"
-      ></InputField>
-      <Button :onClick="SendInvite" class="px-5">Invite</Button>
-    </Popup>
-    <div class="mb-2 room px-4">
-      <!-- <b-alert show variant="primary">Primary Alert</b-alert> -->
-      <div v-if="isLoading">loading</div>
-      <MessageBox
-        :isDM="false"
-        v-else
-        v-for="(message, i) in messages"
-        :message="message"
-        :myRole="myRole"
-        :class="'id-' + i"
-        :key="i"
-        :openHandler="resetTooltips"
-      />
-    </div>
-    <div class="row">
-      <div class="col-md-9">
+    <Overlay class="text-left channel">
+      <Popup v-model="show_popup">
+        <h4>Invite your friend to this channel</h4>
         <InputField
-          v-model="msg"
-          placeholder="type a message"
-          :handler="sendMessage"
-          style="font-size: 1.2rem"
+          name="inviter"
+          placeholder="Enter The login"
+          type="text"
+          v-model="inviter"
+          class="text-left p-3 my-4"
+        ></InputField>
+        <Button :onClick="SendInvite" class="px-5">Invite</Button>
+      </Popup>
+      <div class="mb-2 room px-4">
+        <!-- <b-alert show variant="primary">Primary Alert</b-alert> -->
+        <div v-if="isLoading">loading</div>
+        <MessageBox
+          :isDM="false"
+          v-else
+          v-for="(message, i) in messages"
+          :message="message"
+          :myRole="myRole"
+          :class="'id-' + i"
+          :key="i"
+          :openHandler="resetTooltips"
         />
-        <!-- <span class="error-ms" style="font-size: 1.3rem">errors</span> -->
       </div>
-      <div class="col-md-3">
-        <Button class="m-0 send-btn" :onClick="sendMessage">Send</Button>
+      <div class="row">
+        <div class="col-md-9">
+          <InputField
+            v-model="msg"
+            placeholder="type a message"
+            :handler="sendMessage"
+            style="font-size: 1.2rem"
+          />
+          <!-- <span class="error-ms" style="font-size: 1.3rem">errors</span> -->
+        </div>
+        <div class="col-md-3">
+          <Button class="m-0 send-btn" :onClick="sendMessage">Send</Button>
+        </div>
       </div>
-    </div>
-    <!-- </Overlay> -->
-  </Overlay>
+      <!-- </Overlay> -->
+    </Overlay>
+  </div>
 </template>
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
@@ -231,6 +228,7 @@ input:hover {
   //   // display: table-cell;
   position: relative;
   padding: 13px;
+  height: 25rem;
   //   // height: 0px !important;
 }
 
@@ -242,10 +240,10 @@ input:hover {
 .send-btn {
   width: 100%;
 }
-.right-btn {
-  position: absolute;
-  right: 1%;
-}
+// .right-btn {
+//   position: absolute;
+//   right: 1%;
+// }
 .popup {
   position: absolute !important;
 }
