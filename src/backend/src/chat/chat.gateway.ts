@@ -213,16 +213,20 @@ export class ChatGateway {
             client.user,
           );
           if (isBlocked) {
-            return { err: true, msg: "you're blocked!" };
+            return { err: true, msg: "You're blocked!" };
           }
+          break;
+        }
+      }
 
-          await this.chatService.createDmMessage(client.user, data);
+      await this.chatService.createDmMessage(client.user, data);
+      for (let i = 0; i < sockets.length; i++) {
+        if (sockets[i].user.id == data.userId) {
           client.to(sockets[i].id).emit('messageDm', {
             err: false,
             msg: data.msg,
             owner: client.user,
           });
-          break;
         }
       }
     } catch (e) {

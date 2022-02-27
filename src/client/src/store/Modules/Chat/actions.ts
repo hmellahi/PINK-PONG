@@ -207,7 +207,10 @@ const actions = {
     { msg, channelId, userId, isDM, errorCallback }: any
   ) {
     let currentUser = await store.getters["User/getCurrentUser"];
-    let msgsBackup = state.allMessages.slice();
+
+    let msgsBackup: any;
+    if (isDM) msgsBackup = state.dms.slice();
+    else msgsBackup = state.allMessages.slice();
     let mutationName = isDM ? "ADD_DMS" : "ADD_MSG";
     commit(mutationName, {
       msg,
@@ -218,6 +221,7 @@ const actions = {
     });
 
     let eventName = isDM ? "messageDm" : "message";
+    let mutation = isDM ? "SET_DMS" : "ADD_MESSAGES";
     state.chatSocket.emit(
       eventName,
       { msg, channelId, userId },
@@ -225,7 +229,7 @@ const actions = {
         if (err && errorCallback) {
           errorCallback(msg);
           console.log({ msgsBackup });
-          commit("ADD_MESSAGES", msgsBackup);
+          commit(mutation, msgsBackup);
         }
       }
     );
