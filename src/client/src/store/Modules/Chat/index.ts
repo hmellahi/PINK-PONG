@@ -19,9 +19,9 @@ const getters = {
     return state.allMessages.filter((msg: any) => msg.channelId == channelId);
   },
   getDMmsgs: (state: any) => (dmId: string, myId :string) => {
-    console.log({ ms: state.allMessages });
-    if (!state.allMessages.length) return [];
-    return state.allMessages.filter((msg: any) => msg.owner.id == dmId || msg.owner.id == myId);
+    console.log({ ms: state.dms });
+    if (!state.dms.length) return [];
+    return state.dms.filter((msg: any) => msg.owner.id == dmId || msg.owner.id == myId);
   },
 };
 

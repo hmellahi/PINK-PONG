@@ -98,6 +98,7 @@ export default class channelRoom extends Vue {
       });
       this.msg = "";
     } catch (e) {
+      console.log({ e });
       this.$notify({
         duration: 1000,
         type: "danger",

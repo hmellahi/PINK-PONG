@@ -124,16 +124,30 @@ export default class MessageBox extends Vue {
       isPermanant: false,
     });
   }
-  mute() {
+  async mute() {
     var minutesToAdd = this.muteDuration;
     var currentDate = new Date();
     var expireDate = new Date(currentDate.getTime() + minutesToAdd * 60000);
     console.log(expireDate);
-    this.$store.dispatch("Chat/muteFromChannel", {
-      userId: this.$props.message.owner.id,
-      channelId: this.$route.params.name,
-      expireDate,
-    });
+    try {
+      await this.$store.dispatch("Chat/muteFromChannel", {
+        userId: this.$props.message.owner.id,
+        channelId: Number(this.$route.params.name),
+        expireDate,
+      });
+      this.$notify({
+        duration: 1000,
+        type: "success",
+        title: "you have muted the user",
+      });
+    } catch (e) {
+      this.$notify({
+        duration: 1000,
+        type: "danger",
+        title: e.response.data.message,
+      });
+      console.log({ e });
+    }
   }
   mounted() {
     let newDate = moment(this.$props.message.create_date).format("mm:ss");
