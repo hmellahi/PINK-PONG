@@ -16,8 +16,6 @@ const { VUE_APP_API_URL: API_URL, VUE_APP_SERVER_URL: SERVER_URL } =
 const listenToChannelEvents = (commit: any, connection: Socket) => {
   connection.on("message", async ({ msg, owner, channelId }: any) => {
     console.log("recieved a msg", { channelId, msg, owner });
-    let currentUser = await store.getters["User/getCurrentUser"];
-
     commit("ADD_MSG", {
       msg,
       showTooltip: false,
