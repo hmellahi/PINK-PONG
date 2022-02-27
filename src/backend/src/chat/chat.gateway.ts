@@ -204,10 +204,22 @@ export class ChatGateway {
 
     if (!client.user) return { err: true, msg: 'socket not found!' };
     try {
-      await this.chatService.createDmMessage(client.user, data);
-
       let sockets: any = await this.server.fetchSockets();
 
+      for (let i = 0; i < sockets.length; i++) {
+        if (sockets[i].user.id == data.userId) {
+          let isBlocked = await this.userService.isBlockedUser(
+            sockets[i].user,
+            client.user,
+          );
+          if (isBlocked) {
+            return { err: true, msg: "You're blocked!" };
+          }
+          break;
+        }
+      }
+
+      await this.chatService.createDmMessage(client.user, data);
       for (let i = 0; i < sockets.length; i++) {
         if (sockets[i].user.id == data.userId) {
           client.to(sockets[i].id).emit('messageDm', {
@@ -215,7 +227,6 @@ export class ChatGateway {
             msg: data.msg,
             owner: client.user,
           });
-          break;
         }
       }
     } catch (e) {

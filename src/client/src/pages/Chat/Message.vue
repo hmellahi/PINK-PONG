@@ -59,7 +59,6 @@ import Checkbox from "@/common/components/UI/Checkbox.vue";
 import InputField from "@/common/components/UI/InputField.vue";
 import { Message } from "@/types/Channel";
 import Popup from "@/common/components/UI/Popup.vue";
-import moment from "moment";
 import { User } from "../../types/user";
 
 @Component({

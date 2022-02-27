@@ -84,14 +84,14 @@ export class ChatService {
         (await this.channelRepository
                             .find(
                                 {
-                                    where: {type: "public"},
+                                    where: [{type: "public"}, {type: "private"}],
                                     relations:["members"]}
                                 ))
                             .map(({members,password,...channel})=>
                             {
                                 if (isMember(members, user))
                                     channels.push({...channel, membersCount: members.length});
-                            }); // it's need to be filtered
+                            });
         return channels;
     }
 
@@ -208,18 +208,11 @@ export class ChatService {
         await this.channelRepository.save(channel);
     }
 
-    public async muteMemer(member: UserEntity, data: MuteMemberDto)
+    public async muteMember(member: UserEntity, data: MuteMemberDto)
     {
         const {channel, user} = await this.getChannel_Kick_Ban_Mute(member, data);
 
-        const mutedList = await this.isMuted(channel, user, new Date(data.expireDate), true)
-        if (mutedList) {
-          const timeLeft = moment(mutedList.expireDate).fromNow();
-          throw new HttpException(
-            `you are Muted, you will be able to send messages ${timeLeft}`,
-            HttpStatus.BAD_REQUEST,
-          );
-        }
+        await this.isMuted(channel, user, new Date(data.expireDate), true)
         const newMustedList = new MutedList();
 
         newMustedList.expireDate = data.expireDate;
@@ -259,9 +252,7 @@ export class ChatService {
                                     {relations:['members']});
         if (!channel || !isMember(channel.members, member))
             throw new HttpException("channel not found or user is not member", HttpStatus.NOT_FOUND);
-        const mutedList = await this.isMuted(channel, member,new Date(),false);
-        if (mutedList)
-            throw new HttpException(`member is Muted until [${mutedList.expireDate}]`, HttpStatus.BAD_REQUEST);
+        await this.isMuted(channel, member,new Date(),false);
        const message = this.messgaeRepository.create({msg: data.msg, owner: member, channel: channel});
        await this.messgaeRepository.save(message);
     }
@@ -344,6 +335,7 @@ export class ChatService {
                 isLocked: false,
                 name: "dms"
             });
+            //logic is fuck up here
             await this.addMember(member, {login:user.login, channelId:channel.id})
         }
         this.createMessage(member, {
@@ -360,11 +352,18 @@ export class ChatService {
 
         if (flag && currentDate > expireDate)
             throw new HttpException("wtf given date is in the past", HttpStatus.BAD_REQUEST);
-        return  await this.mutedListRepository
+        const mutedList = await this.mutedListRepository
                                      .findOne(
                                          {
                                              where: { mutedUser: user, channel: channel, expireDate: MoreThan(currentDate)}
                                          })
+        if (mutedList) {
+            const timeLeft = moment(mutedList.expireDate).fromNow();
+            throw new HttpException(
+                `you are Muted, you will be able to send messages ${timeLeft}`,
+                HttpStatus.BAD_REQUEST,
+            );
+        }
     }
 
 }
