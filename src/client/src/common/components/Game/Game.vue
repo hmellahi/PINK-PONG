@@ -52,7 +52,7 @@ export default class Game extends Vue {
   backColor: number = GameConstants.backColor;
   // xBall: number = Math.floor(Math.random() * 300) + GameConstants.ball.x;
   xBall: number = GameConstants.canvas.width / 2;
-  yBall: number = GameConstants.canvas.height / 2; //TODO add randomness
+  yBall: number = GameConstants.canvas.height / 2;
   radius: number = GameConstants.canvas.width / RAD;
   sounds: Array<any> = [];
   ball: Ball;
@@ -201,6 +201,7 @@ export default class Game extends Vue {
     window.addEventListener("keyup", this.keyup);
     window.addEventListener("resize", this.resize);
     this.init();
+    console.log({ paddle: this.paddle, paddle2: this.paddle2 });
     this.roomId = this.$route.query.id;
     var sound = "/assets/sounds/wallHitSound.wav";
     var sound2 = "/assets/sounds/scoreSound.wav";

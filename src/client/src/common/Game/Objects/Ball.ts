@@ -4,6 +4,10 @@ import {
 import { GameConstants } from "../constants";
 import Paddle from "@/common/Game/Objects/Paddle";
 
+function getRandomArbitrary(min: number, max: number) {
+  return Math.random() * (max - min) + min;
+}
+
 export default class {
   x: number;
   y: number;
@@ -28,14 +32,19 @@ export default class {
     this.x = tempX;
     this.y = tempY;
     // this.y =  Math.floor(Math.random() * GameConstants.canvas.height - 200) + 200;
-    // this.y = Math.floor(Math.random() * ((GameConstants.canvas.height / 10)*8 - (GameConstants.canvas.height / 10)*2 + (GameConstants.canvas.height / 10)*2));
+    // this.y = Math.floor(
+    //   Math.random() *
+    //     ((GameConstants.canvas.height / 10) * 8 -
+    //       (GameConstants.canvas.height / 10) * 2 +
+    //       (GameConstants.canvas.height / 10) * 2)
+    // );
     //USE this code above for randomnes
     this.radius = tempRadius;
     // this.velocityX = Math.floor(Math.random() * 10) + 1;;
     // this.velocityY = Math.floor(Math.random() * 10) + 1;;
-    this.velocityX = 1;
-    this.velocityY = 1;
-    this.initialSpeed = GameConstants.canvas.width / 100;
+    this.velocityX = getRandomArbitrary(-1, 1);
+    this.velocityY = getRandomArbitrary(-1, 1);
+    this.initialSpeed = GameConstants.canvas.width / 60;
     this.speed = this.initialSpeed;
     // this.speed = 1;
     this.color = tempColor;
@@ -124,7 +133,7 @@ export default class {
     // this.velocityY = this.speed * Math.sin(angle);
     this.velocityX = direction * Math.cos(angleRad);
     this.velocityY = Math.sin(angleRad);
-    this.speed += 1
+    this.speed += 1;
     // increase speed
     // this.speed += 0.05; TODO CHange
     // console.log(`ball speed ${this.speed}`);
@@ -141,8 +150,8 @@ export default class {
     this.y = canvas.height / 2; // TODO
     this.x = canvas.width / 2;
     this.speed = this.initialSpeed;
-    this.velocityX = 1;
-    this.velocityY = 1; 
+    this.velocityX = getRandomArbitrary(-1, 1);
+    this.velocityY = getRandomArbitrary(-1, 1);
   }
 
   checkBorders(): number {
@@ -153,19 +162,3 @@ export default class {
     return 0;
   }
 }
-// load sounds
-// => musics
-
-// keyreleased => stop
-// scoring functions
-// check if someone scored
-// => increase player score
-// if score reaches max
-// => stop the game
-// => reset
-
-// types of tests:
-// Unit Testing
-// Component Testing
-// End-To-End (E2E) Testing
-//

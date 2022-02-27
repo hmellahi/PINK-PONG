@@ -132,11 +132,11 @@ export default class channelRoom extends Vue {
       this.$store.dispatch("Chat/fetchMessages", {
         channelId: Number(this.currentChannelId),
       });
-      // this.$store.dispatch("Chat/listenToChatEvents", {
-      //   channelId: Number(this.currentChannelId),
-      // });
+      this.$store.dispatch("Chat/listenToChatEvents", {
+        channelId: Number(this.currentChannelId),
+      });
       this.isLoading = false;
-    }, 700);
+    }, 400);
   }
   resetTooltips() {
     for (var i = 0; i < this.messages.length; i++)
@@ -151,20 +151,13 @@ export default class channelRoom extends Vue {
       errorCallback: this.errorCallback,
     });
     this.msg = "";
-    // } catch (e) {
-    // this.$notify({
-    //   duration: 1000,
-    //   type: "danger",
-    //   title: e, // TODO CHANGE ERROR
-    // });
-    // }
   }
   errorCallback(err: any) {
     console.log({ err });
     this.$notify({
       duration: 2000,
       type: "danger",
-      title: err, // TODO CHANGE ERROR
+      title: err,
     });
   }
   leaveRoomSocket() {
@@ -195,13 +188,22 @@ export default class channelRoom extends Vue {
   get currentUser() {
     return this.$store.getters["User/getCurrentUser"];
   }
-  SendInvite() {
+  async SendInvite() {
     // console.log(this.$props.message.user_id);
-    this.$store.dispatch("Chat/addMember", {
-      channelId: Number(this.$route.params.name),
-      login: this.inviter,
-    });
-    this.show_popup = false;
+    try {
+      await this.$store.dispatch("Chat/addMember", {
+        channelId: Number(this.$route.params.name),
+        login: this.inviter,
+      });
+      this.show_popup = false;
+      this.inviter = "";
+    } catch (e) {
+      this.$notify({
+        duration: 2000,
+        type: "danger",
+        title: e.response.data.message,
+      });
+    }
   }
   unmount() {}
 }
