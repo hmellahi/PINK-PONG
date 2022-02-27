@@ -21,6 +21,7 @@ import Button from "@/common/components/UI/Button.vue";
     },
   },
 })
+
 export default class Auth extends Vue {
   mounted() {}
 }

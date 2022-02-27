@@ -41,7 +41,8 @@
       </div>
     </Popup>
     <div class="msg position-relative">
-      <span class="date">[{{ message.create_date }}]</span>
+      <!-- <span class="date">[{{ message.create_date }}]</span> -->
+      <img :src="message.owner.avatar_url" />
       <span v-if="true">
         <img src="/assets/svg/medal.svg" v-if="message.isAdmin" alt="" />
       </span>
@@ -184,10 +185,9 @@ export default class MessageBox extends Vue {
     cursor: pointer;
   }
   img {
-    // font-size: 1rem;
-    width: 1.3rem;
-    // position:absolute;
-    // top:20%
+    width: 2.6rem;
+    border-radius: 50%;
+    padding: 5px 5px;
   }
   #tooltip {
     background: #b183cd;
