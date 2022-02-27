@@ -132,9 +132,9 @@ export default class channelRoom extends Vue {
       this.$store.dispatch("Chat/fetchMessages", {
         channelId: Number(this.currentChannelId),
       });
-      // this.$store.dispatch("Chat/listenToChatEvents", {
-      //   channelId: Number(this.currentChannelId),
-      // });
+      this.$store.dispatch("Chat/listenToChatEvents", {
+        channelId: Number(this.currentChannelId),
+      });
       this.isLoading = false;
     }, 700);
   }
