@@ -83,14 +83,14 @@ export class ChatService {
         (await this.channelRepository
                             .find(
                                 {
-                                    where: {type: "public"},
+                                    where: [{type: "public"}, {type: "private"}],
                                     relations:["members"]}
                                 ))
                             .map(({members,password,...channel})=>
                             {
                                 if (isMember(members, user))
                                     channels.push({...channel, membersCount: members.length});
-                            }); // it's need to be filtered
+                            });
         return channels;
     }
 
