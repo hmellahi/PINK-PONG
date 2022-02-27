@@ -47,7 +47,7 @@ import MessageBox from "./Message.vue";
   async beforeRouteLeave(to, from, next) {
     // await this.leaveRoomSocket();
     // alert(this.$store.state.Chat.chatSocket.liste)
-    this.$store.state.Chat.chatSocket.removeListener("messageDm");
+    // this.$store.state.Chat.chatSocket.removeListener("messageDm");
     next();
   },
 })

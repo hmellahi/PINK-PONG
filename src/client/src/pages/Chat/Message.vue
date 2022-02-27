@@ -2,7 +2,7 @@
   <div>
     <Popup v-model="show_popup">
       <div v-if="!isDM">
-        <div v-if="isAdmin && message.owner.role == 'member'" class="mb-2">
+        <div v-if="isAdmin" class="mb-2">
           <span
             ><input
               class="checkbox_admin"
