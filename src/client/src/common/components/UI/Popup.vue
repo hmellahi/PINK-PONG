@@ -42,7 +42,7 @@ export default class Popup extends Vue {
   position: absolute;
   top: 0;
   left: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgb(16 22 54 / 70%);
   z-index: 9999;
   overflow: hidden;
 }
@@ -59,5 +59,8 @@ export default class Popup extends Vue {
   top: -10%;
   right: -3rem;
   background: transparent !important;
+}
+.btn-friends {
+  margin: 0.3rem 0.5rem;
 }
 </style>

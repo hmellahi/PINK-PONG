@@ -16,13 +16,11 @@
       </div>
       <div class="btn-messages">
         <div>
-          <Button class="m-0" :link="'/profile/' + message.owner.login"
-            >Profile</Button
-          >
+          <Button :link="'/profile/' + message.owner.login">Profile</Button>
         </div>
         <div v-if="!isDM">
-          <Button class="m-0" :onClick="kick" v-if="isAdmin">Kick</Button>
-          <Button class="m-0" :onClick="ban" v-if="isAdmin">Ban</Button>
+          <Button :onClick="kick" v-if="isAdmin">Kick</Button>
+          <Button :onClick="ban" v-if="isAdmin">Ban</Button>
           <div class="mute-message" v-if="isAdmin">
             <select
               v-model="muteDuration"
@@ -35,7 +33,7 @@
               <option value="480">8 hr</option>
               <option value="1440">24 hr</option>
             </select>
-            <Button class="m-0" :onClick="mute">Mute</Button>
+            <Button :onClick="mute">Mute</Button>
           </div>
         </div>
       </div>

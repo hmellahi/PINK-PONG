@@ -35,7 +35,7 @@
               <Button
                 v-if="!isMyProfile && !user.isFriend"
                 :onClick="sendFriendReq"
-                ><i class="fas fa-check"></i> Friend Me</Button
+                ><i class="fas fa-check"></i> Add Friend </Button
               >
               <!-- <Button
                 v-if="!isMyProfile && user.isFriend"
@@ -43,15 +43,15 @@
                 ><i class="fas fa-check"></i> Unfriend
               </Button> -->
               <Button v-if="!isMyProfile" :onClick="inviteToPlay"
-                ><i class="fa fa-table-tennis"></i> Play with Me</Button
+                ><i class="fa fa-table-tennis"></i> InviteToPlay</Button
               >
               <Button v-if="!isMyProfile && !isBlocked" :onClick="blockUser"
-                ><i class="fa fa-ban"></i> Block Me
+                ><i class="fa fa-ban"></i> Block
               </Button>
               <Button
                 v-if="!isMyProfile"
                 :link="`/chat/dms/${user.id}`"
-                ><i class="fa fa-message"></i> Dm Me
+                ><i class="fa fa-message"></i> Dm 
               </Button>
             </div>
             <p v-if="message" class="success_msg">{{ message }}</p>
