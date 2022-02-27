@@ -135,9 +135,9 @@ export default class channelRoom extends Vue {
       this.$store.dispatch("Chat/fetchMessages", {
         channelId: Number(this.currentChannelId),
       });
-      this.$store.dispatch("Chat/listenToChatEvents", {
-        channelId: Number(this.currentChannelId),
-      });
+      // this.$store.dispatch("Chat/listenToChatEvents", {
+      //   channelId: Number(this.currentChannelId),
+      // });
       this.isLoading = false;
     }, 700);
   }
@@ -147,19 +147,28 @@ export default class channelRoom extends Vue {
   }
   async sendMessage() {
     if (this.msg.trim().length <= 0) return;
-    try {
-      await this.$store.dispatch("Chat/sendMessage", {
-        channelId: Number(this.$route.params.name),
-        msg: this.msg,
-      });
-      this.msg = "";
-    } catch (e) {
-      this.$notify({
-        duration: 1000,
-        type: "danger",
-        title: e, // TODO CHANGE ERROR
-      });
-    }
+    // try {
+    await this.$store.dispatch("Chat/sendMessage", {
+      channelId: Number(this.$route.params.name),
+      msg: this.msg,
+      errorCallback: this.errorCallback,
+    });
+    this.msg = "";
+    // } catch (e) {
+    // this.$notify({
+    //   duration: 1000,
+    //   type: "danger",
+    //   title: e, // TODO CHANGE ERROR
+    // });
+    // }
+  }
+  errorCallback(err: any) {
+    console.log({ err });
+    this.$notify({
+      duration: 2000,
+      type: "danger",
+      title: err, // TODO CHANGE ERROR
+    });
   }
   leaveRoomSocket() {
     // this.$store.dispatch("Chat/leaveChannelSocket", {
