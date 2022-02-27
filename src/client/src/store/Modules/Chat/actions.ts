@@ -16,14 +16,27 @@ const { VUE_APP_API_URL: API_URL, VUE_APP_SERVER_URL: SERVER_URL } =
 const listenToChannelEvents = (commit: any, connection: Socket) => {
   connection.on("message", async ({ msg, owner, channelId }: any) => {
     console.log("recieved a msg", { channelId, msg, owner });
-    let currentUser = await store.getters["User/getCurrentUser"];
-
     commit("ADD_MSG", {
       msg,
       showTooltip: false,
       owner,
       create_date: new Date(),
       channelId,
+    });
+  });
+};
+
+const listenToDMEvents = (commit: any, connection: Socket) => {
+  connection.on("messageDm", async ({ msg, owner, channelId }: any) => {
+    console.log("recieved a msg", { msg, owner });
+    //let currentUser = await store.getters["User/getCurrentUser"];
+
+    commit("ADD_DMS", {
+      msg,
+      showTooltip: false,
+      owner,
+      create_date: new Date(),
+      channelId: -1,
     });
   });
 };
@@ -51,6 +64,7 @@ const actions = {
     });
     commit("SET_CHATSOCKET", connection);
     listenToChannelEvents(commit, connection);
+    listenToDMEvents(commit, connection);
   },
 
   async listenToChatEvents(
@@ -65,7 +79,7 @@ const actions = {
     state.chatSocket.on("banUser", async ({ err, msg }: any) => {
       let currentUser = await store.getters["User/getCurrentUser"];
       if (currentUser.id != msg.userId || msg.channelId != channelId) return;
-      // if (msg.isPermanant) 
+      // if (msg.isPermanant)
       router.push({ path: "/chat" });
       Vue.notify({
         duration: 1000,
@@ -81,7 +95,7 @@ const actions = {
     state.chatRoom.emit("leaveChannel", data);
   },
   async listenToChannelEvents({ commit, state }: ActionContext<any, any>) {
-    listenToChannelEvents(commit, state.chatSocket);
+    // listenToChannelEvents(commit, state.chatSocket);
   },
 
   async fetchChannels({ commit }: ActionContext<any, any>) {
@@ -150,6 +164,28 @@ const actions = {
     }
   },
 
+  async fetchDMS({ state, commit }: ActionContext<any, any>, data: any) {
+    try {
+      commit("CLEAR_ALL_MEASSAGES");
+      state.chatSocket.emit("getDmsMessages", data, ({ err, msg }: any) => {
+        if (err) {
+          // router.push({ path: "/chat" });
+          Vue.notify({
+            duration: 3000,
+            type: "danger",
+            title: msg,
+          });
+          return;
+        }
+        console.log({ msg });
+        if (msg.messages) commit("SET_DMS", msg.messages);
+      });
+      // });
+    } catch (error) {
+      throw error;
+    }
+  },
+
   async fetchMyChannels({ commit }: ActionContext<any, any>) {
     try {
       let data = await api.get("chat/myChannels");
@@ -168,22 +204,32 @@ const actions = {
 
   async sendMessage(
     { commit, state, rootState }: ActionContext<any, any>,
-    { msg, channelId, userId }: any
+    { msg, channelId, userId, isDM, errorCallback }: any
   ) {
     let currentUser = await store.getters["User/getCurrentUser"];
-    commit("ADD_MSG", {
+
+    let msgsBackup: any;
+    if (isDM) msgsBackup = state.dms.slice();
+    else msgsBackup = state.allMessages.slice();
+    let mutationName = isDM ? "ADD_DMS" : "ADD_MSG";
+    commit(mutationName, {
       msg,
       showTooltip: false,
       owner: currentUser,
       create_date: moment(),
-      channelId,
+      channelId: channelId ? channelId : -1,
     });
+
+    let eventName = isDM ? "messageDm" : "message";
+    let mutation = isDM ? "SET_DMS" : "ADD_MESSAGES";
     state.chatSocket.emit(
-      "message",
-      { msg, channelId,userId},
+      eventName,
+      { msg, channelId, userId },
       ({ err, msg }: any) => {
-        if (err) {
-          throw err;
+        if (err && errorCallback) {
+          errorCallback(msg);
+          console.log({ msgsBackup });
+          commit(mutation, msgsBackup);
         }
       }
     );
@@ -206,7 +252,7 @@ const actions = {
       // let resp = await api.post("/chat/addAdmin", data);
       // console.log({ data }, { resp });
       state.chatSocket.emit("addAdmin", data, ({ err, msg }: any) => {
-        if (err) throw err;
+        if (err) throw msg;
         Vue.notify({
           duration: 3000,
           type: err ? "danger" : "success",
@@ -220,19 +266,13 @@ const actions = {
     }
   },
 
-  // async muteFromChannel({ commit, state }: ActionContext<any, any>, data: any) {
-  //   try {
-  //     state.chatSocket.emit("banUser", data, ({ err, msg }: any) => {
-  //       Vue.notify({
-  //         duration: 1000,
-  //         type: err ? "danger" : "success",
-  //         title: msg,
-  //       });
-  //     });
-  //   } catch (error) {
-  //     throw error;
-  //   }
-  // },
+  async muteFromChannel({ commit, state }: ActionContext<any, any>, data: any) {
+    try {
+      await api.post("chat/muteUser", data);
+    } catch (error) {
+      throw error;
+    }
+  },
   async banFromChannel({ commit, state }: ActionContext<any, any>, data: any) {
     try {
       state.chatSocket.emit("banUser", data, ({ err, msg }: any) => {

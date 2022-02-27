@@ -2,7 +2,7 @@
   <div>
     <Popup v-model="show_popup">
       <div v-if="!isDM">
-        <div v-if="isAdmin && message.owner.role == 'member'" class="mb-2">
+        <div v-if="isAdmin" class="mb-2">
           <span
             ><input
               class="checkbox_admin"
@@ -16,13 +16,11 @@
       </div>
       <div class="btn-messages">
         <div>
-          <Button class="m-0" :link="'/profile/' + message.owner.login"
-            >Profile</Button
-          >
+          <Button :link="'/profile/' + message.owner.login">Profile</Button>
         </div>
         <div v-if="!isDM">
-          <Button class="m-0" :onClick="kick" v-if="isAdmin">Kick</Button>
-          <Button class="m-0" :onClick="ban" v-if="isAdmin">Ban</Button>
+          <Button :onClick="kick" v-if="isAdmin">Kick</Button>
+          <Button :onClick="ban" v-if="isAdmin">Ban</Button>
           <div class="mute-message" v-if="isAdmin">
             <select
               v-model="muteDuration"
@@ -35,13 +33,14 @@
               <option value="480">8 hr</option>
               <option value="1440">24 hr</option>
             </select>
-            <Button class="m-0" :onClick="mute">Mute</Button>
+            <Button :onClick="mute">Mute</Button>
           </div>
         </div>
       </div>
     </Popup>
     <div class="msg position-relative">
-      <span class="date">[{{ message.create_date }}]</span>
+      <!-- <span class="date">[{{ message.create_date }}]</span> -->
+      <img :src="message.owner.avatar_url" />
       <span v-if="true">
         <img src="/assets/svg/medal.svg" v-if="message.isAdmin" alt="" />
       </span>
@@ -60,7 +59,6 @@ import Checkbox from "@/common/components/UI/Checkbox.vue";
 import InputField from "@/common/components/UI/InputField.vue";
 import { Message } from "@/types/Channel";
 import Popup from "@/common/components/UI/Popup.vue";
-import moment from "moment";
 import { User } from "../../types/user";
 
 @Component({
@@ -124,17 +122,34 @@ export default class MessageBox extends Vue {
       isPermanant: false,
     });
   }
-  mute() {
-    this.$store.dispatch("Chat/banFromChannel", {
-      userId: this.$props.message.owner.id,
-      channelId: this.$route.params.name,
-      muteDuration: this.muteDuration,
-      isPermanant: false,
-    });
+  async mute() {
+    var minutesToAdd = this.muteDuration;
+    var currentDate = new Date();
+    var expireDate = new Date(currentDate.getTime() + minutesToAdd * 60000);
+    console.log(expireDate);
+    try {
+      await this.$store.dispatch("Chat/muteFromChannel", {
+        userId: this.$props.message.owner.id,
+        channelId: Number(this.$route.params.name),
+        expireDate,
+      });
+      this.$notify({
+        duration: 1000,
+        type: "success",
+        title: "you have muted the user",
+      });
+    } catch (e) {
+      this.$notify({
+        duration: 1000,
+        type: "danger",
+        title: e.response.data.message,
+      });
+      console.log({ e });
+    }
   }
   mounted() {
-    let newDate = moment(this.$props.message.create_date).format("mm:ss");
-    if (newDate != "Invalid date") this.$props.message.create_date = newDate;
+    // let newDate = moment(this.$props.message.create_date).format("mm:ss");
+    // if (newDate != "Invalid date") this.$props.message.create_date = newDate;
     // console.clear(); TODO UNCOMENT
   }
   showMsgTooltip() {
@@ -181,10 +196,9 @@ export default class MessageBox extends Vue {
     cursor: pointer;
   }
   img {
-    // font-size: 1rem;
-    width: 1.3rem;
-    // position:absolute;
-    // top:20%
+    width: 2.6rem;
+    border-radius: 50%;
+    padding: 5px 5px;
   }
   #tooltip {
     background: #b183cd;

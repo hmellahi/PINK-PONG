@@ -41,13 +41,18 @@ import InputField from "@/common/components/UI/InputField.vue";
 import { Message } from "@/types/Channel";
 import MessageBox from "./Message.vue";
 
-@Component({
+@Component<channelRoom>({
   components: { Button, InputField, MessageBox },
   props: {},
+  async beforeRouteLeave(to, from, next) {
+    // await this.leaveRoomSocket();
+    // alert(this.$store.state.Chat.chatSocket.liste)
+    // this.$store.state.Chat.chatSocket.removeListener("messageDm");
+    next();
+  },
 })
 export default class channelRoom extends Vue {
   msg = "";
-  messages: Message[] = [];
   isLoading = true;
 
   async mounted() {
@@ -57,6 +62,14 @@ export default class channelRoom extends Vue {
       this.isLoading = false;
     }, 700);
   }
+
+  get messages() {
+    return this.$store.getters["Chat/getDMmsgs"](
+      this.$route.params.id,
+      this.currentUser.id
+    );
+  }
+
   resetTooltips() {
     for (var i = 0; i < this.messages.length; i++)
       this.messages[i].showTooltip = false;
@@ -64,7 +77,7 @@ export default class channelRoom extends Vue {
 
   async fetchMessages() {
     try {
-      await this.$store.dispatch("Chat/fetchMessages", {
+      await this.$store.dispatch("Chat/fetchDMS", {
         userId: Number(this.$route.params.id),
       });
     } catch (e) {
@@ -77,19 +90,24 @@ export default class channelRoom extends Vue {
   }
   async sendMessage() {
     if (this.msg.trim().length <= 0) return;
-    try {
-      await this.$store.dispatch("Chat/sendMessage", {
-        userId: Number(this.$route.params.id),
-        msg: this.msg,
-      });
-      this.msg = "";
-    } catch (e) {
-      this.$notify({
-        duration: 1000,
-        type: "danger",
-        title: e, // TODO CHANGE ERROR
-      });
-    }
+    await this.$store.dispatch("Chat/sendMessage", {
+      userId: Number(this.$route.params.id),
+      msg: this.msg,
+      isDM: true,
+      errorCallback: this.errorCallback,
+    });
+    this.msg = "";
+  }
+  errorCallback(err: any) {
+    console.log({ err });
+    this.$notify({
+      duration: 2000,
+      type: "danger",
+      title: err,
+    });
+  }
+  get currentUser() {
+    return this.$store.getters["User/getCurrentUser"];
   }
   goBackward() {
     this.$router.go(-1);

@@ -76,7 +76,7 @@ export default class SideBar extends Vue {
     this.links = [
       { name: "Play", icon: "fa fa-table-tennis", path: "/" },
       { name: "Profile", icon: "fa fa-user", path: "/profile/mine" },
-      { name: "Friends", icon: "fa fa-user-friends", path: "/friends" },
+      { name: "Social", icon: "fa fa-user-friends", path: "/friends" },
       { name: "LeaderBoard", icon: "fa fa-trophy", path: "/leaderBoard" },
       { name: "Games", icon: "fa fa-trophy", path: "/games" },
       { name: "Chat", icon: "fa fa-comment", path: "/chat" },
