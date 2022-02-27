@@ -60,7 +60,7 @@ export default class channelRoom extends Vue {
     setTimeout(() => {
       this.fetchMessages();
       this.isLoading = false;
-    }, 800);
+    }, 700);
   }
 
   get messages() {
@@ -90,21 +90,21 @@ export default class channelRoom extends Vue {
   }
   async sendMessage() {
     if (this.msg.trim().length <= 0) return;
-    try {
-      await this.$store.dispatch("Chat/sendMessage", {
-        userId: Number(this.$route.params.id),
-        msg: this.msg,
-        isDM: true,
-      });
-      this.msg = "";
-    } catch (e) {
-      console.log({ e });
-      this.$notify({
-        duration: 1000,
-        type: "danger",
-        title: e, // TODO CHANGE ERROR
-      });
-    }
+    await this.$store.dispatch("Chat/sendMessage", {
+      userId: Number(this.$route.params.id),
+      msg: this.msg,
+      isDM: true,
+      errorCallback: this.errorCallback,
+    });
+    this.msg = "";
+  }
+  errorCallback(err: any) {
+    console.log({ err });
+    this.$notify({
+      duration: 2000,
+      type: "danger",
+      title: err,
+    });
   }
   get currentUser() {
     return this.$store.getters["User/getCurrentUser"];
