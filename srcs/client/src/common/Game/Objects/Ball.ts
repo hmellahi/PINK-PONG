@@ -4,16 +4,16 @@ import {
 import { GameConstants } from "../constants";
 import Paddle from "@/common/Game/Objects/Paddle";
 
-function getRandomArbitrary(min: number, max: number) {
-  var tmp = Math.random() * (max - min) + min;
-  if (Math.abs(tmp) < 0.5){
-    if (tmp < 0){
-      return tmp - 0.5;
-    }
-    else{
-      return tmp + 0.5;
-    }
-  }
+function getRandomArbitrary(min: number, max: number): any {
+  var tmp = Math.floor(Math.random() * (max - min) + min);
+  // if (Math.abs(tmp) == 0.5 | Math.abs(tmp) !=) {
+  //   if (tmp < 0) {
+  //     return tmp - 0.5;
+  //   } else {
+  //     return tmp + 0.5;
+  //   }
+  // }
+  if (tmp == 0) return getRandomArbitrary(min, max);
   return tmp;
 }
 let SPEED = 0.25;
@@ -153,14 +153,14 @@ export default class {
     let { canvas, borderWidth } = GameConstants;
     let { height: windowsHeight, width: windowsWidth } = canvas;
     // let {borderWidth} = GameConstants
-    // this.y = windowsHeight / 2; // TODO
     // // this.y =  Math.floor(Math.random() * (windowsHeight- borderWidth) + borderWidth);
     // this.x = windowsWidth / 2;
-    this.y = canvas.height / 2; // TODO
+    this.y = canvas.height / 2;
     this.x = canvas.width / 2;
     this.speed = this.initialSpeed;
-    this.velocityX = getRandomArbitrary(0.5, 1);
-    this.velocityY = getRandomArbitrary(0.5, 1);
+    this.velocityX = getRandomArbitrary(-1, 1);
+    this.velocityY = getRandomArbitrary(-1, 1);
+    console.log(this.velocityX, this.velocityY);
   }
 
   checkBorders(): number {

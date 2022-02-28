@@ -30,7 +30,7 @@
         Flex item with a lot of content
       </div>
       <div class="p-2 flex-fill bg-light m-1">Flex item</div>
-      <div class="p-2 flex-fill bg-light m-1">Flex item</div>
+      <div class="p-2 flex-fill b g-light m-1">Flex item</div>
     </div> -->
   </Overlay>
   <!-- <MatchHistory class="text-center pt-4" :matches="user.matches"></MatchHistory> -->

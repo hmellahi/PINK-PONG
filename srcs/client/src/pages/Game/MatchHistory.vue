@@ -4,8 +4,8 @@
     <div v-if="matches && matches.length">
       <div v-for="match in matches" class="leader_box match_box">
         <div class="left match_history">
-          <router-link to="/profile/mine">
-          <img :src="match.first_user.avatar_url" alt="" />
+          <router-link :to="`/profile/${match.first_user.login}`">
+            <img :src="match.first_user.avatar_url" alt="" />
           </router-link>
           <div class="match_content">
             <h4 :class="getResult(match)">{{ getResult(match) }}</h4>
@@ -13,9 +13,8 @@
               {{ match.first_user_score }} : {{ match.second_user_score }}
             </h3>
           </div>
-          <router-link :to="`/profile/${getOpLogin(match)}`">
-          
-          <img class="img_right" :src="match.second_user.avatar_url" alt="" >
+          <router-link :to="`/profile/${match.second_user.login}`">
+            <img class="img_right" :src="match.second_user.avatar_url" alt="" />
           </router-link>
         </div>
         <div class="match_right">
@@ -48,7 +47,7 @@ import moment from "moment";
 })
 export default class MatchHistory extends Vue {
   created() {
-    // console.log("matches", this.$props.matches);
+    window.scrollTo(0, 0);
   }
   get currentUser() {
     return this.$store.getters["User/getCurrentUser"];
@@ -61,18 +60,24 @@ export default class MatchHistory extends Vue {
     else if (map == 2) return "Speedy";
     else return "Classic";
   }
-  getOpLogin(match: any){
+  scrollToElement() {
+    window.scrollTo(0, 0);
+  }
+  getOpLogin(match: any) {
     // let isMe = match.first_user.id == this.currentUser.id ? 1 : 2;
-    if (match.first_user.id == this.$props.user.id){
+    if (match.first_user.id == this.$props.user.id) {
       return match.second_user.login;
-    }
-    else 
-      return match.first_user.login;
+    } else return match.first_user.login;
   }
   getResult(match: any) {
-    console.log("user id",match.first_user.login);
+    console.log("user id", match.first_user.login);
     let isMe = match.first_user.id == this.$props.user.id ? 1 : 2;
-    console.log(match.flag, this.$props.user.id, match.first_user.id, match.second_user.id);
+    console.log(
+      match.flag,
+      this.$props.user.id,
+      match.first_user.id,
+      match.second_user.id
+    );
     if ((isMe == 1 && match.flag == 2) || (isMe == 2 && match.flag == 1))
       return "Victory";
     else if (match.flag != 0) return "Defeat";
@@ -96,7 +101,6 @@ export default class MatchHistory extends Vue {
   }
 }
 .active {
-   background: transparent !important;
-  }
-  
+  background: transparent !important;
+}
 </style>

@@ -35,8 +35,8 @@
               <Button
                 v-if="!isMyProfile && !user.isFriend"
                 :onClick="sendFriendReq"
-                ><i class="fas fa-check"></i> Add Friend </Button
-              >
+                ><i class="fas fa-check"></i> Add Friend
+              </Button>
               <!-- <Button
                 v-if="!isMyProfile && user.isFriend"
                 :onClick="sendUnFriend"
@@ -48,10 +48,8 @@
               <Button v-if="!isMyProfile && !isBlocked" :onClick="blockUser"
                 ><i class="fa fa-ban"></i> Block
               </Button>
-              <Button
-                v-if="!isMyProfile"
-                :link="`/chat/dms/${user.id}`"
-                ><i class="fa fa-message"></i> Dm 
+              <Button v-if="!isMyProfile" :link="`/chat/dms/${user.id}`"
+                ><i class="fa fa-message"></i> Dm
               </Button>
             </div>
             <p v-if="message" class="success_msg">{{ message }}</p>
@@ -175,7 +173,15 @@ export default class Profile extends Vue {
   get achievments() {
     return this.$store.getters["User/getAchievments"];
   }
-
+  updated() {
+    // const lastMsgClassName = `id-${this.messages.length - 1}`;
+    const el = this.$el.getElementsByClassName(
+      "profile_header"
+    )[0] as HTMLElement;
+    console.log(el);
+    // Use el.scrollIntoView() to instantly scroll to the element
+    if (el) el.scrollIntoView({ behavior: "smooth" });
+  }
   fetchAchievments() {
     this.achievmentsList = [];
     this.achievments.map((achievment: any) => {
