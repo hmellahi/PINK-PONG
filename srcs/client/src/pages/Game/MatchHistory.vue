@@ -4,7 +4,7 @@
     <div v-if="matches && matches.length">
       <div v-for="match in matches" class="leader_box match_box">
         <div class="left match_history">
-          <router-link to="/profile/mine">
+          <router-link :to="`/profile/${match.second_user.login}`">
           <img :src="match.first_user.avatar_url" alt="" />
           </router-link>
           <div class="match_content">
@@ -13,7 +13,7 @@
               {{ match.first_user_score }} : {{ match.second_user_score }}
             </h3>
           </div>
-          <router-link :to="`/profile/${getOpLogin(match)}`">
+          <router-link :to="`/profile/${match.second_user.login}`">
           
           <img class="img_right" :src="match.second_user.avatar_url" alt="" >
           </router-link>
