@@ -115,7 +115,7 @@ export class ChatController {
     @HttpCode(200)
     async muteUser(@Req() request: RequestWithUser, @Body() data: MuteMemberDto)
     {
-        await this.chatService.muteMemer(request.user,data);
+        await this.chatService.muteMember(request.user,data);
     }
     @Post("kickUser")
     @HttpCode(200)
