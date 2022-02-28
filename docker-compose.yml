@@ -1,12 +1,10 @@
 version: "3.9"
 services:
-
   backend:
     build: ./src/backend/
     ports:
       - "3000:3000"
     volumes:
-      # - ./src/backend:/usr/src/app #docker-compose up --build --force-recreate
       - ./src/backend:/usr/app
       - /usr/app/node_modules
     depends_on:
@@ -20,16 +18,14 @@ services:
   dbservice:
     image: postgres
     restart: always
-    # ports: # shouldnt be exposed
-    #   - 5432:5432
     env_file:
-      - ./src/.env # where db secrets are stored
+      - ./src/.env
     networks:
       - db-network
     container_name: "dbservice"
-    # volumes:
-      # - pgdata:/var/lib/postgresql/data
-  
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
   client:
     volumes:
       - ./src/client:/usr/app
@@ -40,7 +36,7 @@ services:
       - "5000:8080"
     restart: always
     image: client
-    command: yarn serve
+    command: serve -l ./src/client/dist
 
 networks:
   db-network:

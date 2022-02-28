@@ -3,7 +3,10 @@
     <div v-if="friends && friends.length">
       <div class="friend_list" v-for="friend of friends">
         <!-- <Friend/> -->
-        <router-link class="friend-info link_profile" :to="`/profile/${friend.user.login}`" >
+        <router-link
+          class="friend-info link_profile"
+          :to="`/profile/${friend.user.login}`"
+        >
           <img :src="friend.user.avatar_url" />
           <!-- <img src="/assets/img/2.jpg" alt="" /> -->
           <div class="content">
@@ -66,7 +69,7 @@ export default class listFriends extends Vue {
     await this.fetchFriends();
   }
   sendMessage(friend: any) {
-    this.$router.push("/chat/channel/" + friend.id);
+    this.$router.push(`/chat/dms/${friend.user.id}`);
   }
   get friendsList(): any[] {
     return this.$store.state.Friends.friends;
@@ -86,9 +89,9 @@ export default class listFriends extends Vue {
     return statuss;
   }
 
-  async fetchFriends(){
+  async fetchFriends() {
     await this.$store.dispatch("Friends/fetchFriends");
-    this.friends = []
+    this.friends = [];
     const newData = this.friendsList.map(async (object: any) => {
       this.$store.state.User.gameSocket.emit(
         "getUserStatus",
@@ -111,7 +114,7 @@ export default class listFriends extends Vue {
     );
   }
   async mounted() {
-   await this.fetchFriends();
+    await this.fetchFriends();
   }
 }
 </script>
