@@ -57,8 +57,8 @@ export class  UserController
     {
         const {user} = request;
 
-        if (!login)
-            throw new HttpException("login not provided", HttpStatus.BAD_REQUEST);
+        if (!login || login.length > 10)
+            throw new HttpException("login not valide", HttpStatus.BAD_REQUEST);
         if (await this.userService.getByLogin(user,login))
             throw new HttpException("login already exist", HttpStatus.BAD_REQUEST);
 

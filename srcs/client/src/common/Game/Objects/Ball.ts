@@ -46,7 +46,7 @@ export default class {
     // this.velocityY = Math.floor(Math.random() * 10) + 1;;
     this.velocityX = getRandomArbitrary(-1, 1);
     this.velocityY = getRandomArbitrary(-1, 1);
-    this.initialSpeed = GameConstants.canvas.width / 70;
+    this.initialSpeed = GameConstants.canvas.width / 75   ;
     this.speed = this.initialSpeed;
     // this.speed = 1;
     this.color = tempColor;
