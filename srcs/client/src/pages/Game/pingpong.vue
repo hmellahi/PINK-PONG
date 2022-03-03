@@ -11,12 +11,12 @@ import Button from "@/common/components/UI/Button.vue";
   components: { Button, Game },
   watch: {
     $route(to, from) {
-      console.log("route switched");
+      //console.log("route switched");
       // this.leaveGame();
     },
   },
   beforeRouteLeave(to, from, next) {
-    console.log("beforeRouteLeave", to.path, from.path);
+   //("beforeRouteLeave", to.path, from.path);
     // await this.leaveGame();
     next();
   },
@@ -25,10 +25,10 @@ export default class Auth extends Vue {
   // socket:any = null
   created() {
     // console.log(this.$route.params)
-    console.log("The room id is: " + this.$route.query.id);
+    //console.log("The room id is: " + this.$route.query.id);
   }
   beforeUnmount() {
-    console.log("am leaving...");
+    //console.log("am leaving...");
   }
 }
 </script>

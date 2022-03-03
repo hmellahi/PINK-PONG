@@ -42,7 +42,7 @@ export class ChatGateway {
     }
 
     client.user = authentication;
-    console.log(`chat client connected: ${client.id}`);
+    // console.log(`chat client connected: ${client.id}`);
 
     // join client to all his rooms
     try {
@@ -57,7 +57,7 @@ export class ChatGateway {
   }
 
   handleDisconnect(client: any) {
-    console.log(`chat client disconnected: ${client.id}`);
+    //console.log(`chat client disconnected: ${client.id}`);
   }
 
   @SubscribeMessage('allMessages')
@@ -96,7 +96,7 @@ export class ChatGateway {
       // let blockedList = await this.getBlockedList(client.user, sockets);
       // exceptList = exceptList.concat(blockedList);
 
-      console.log('final list:   ' + exceptList.length);
+      //console.log('final list:   ' + exceptList.length);
 
       // send message to specific room
       client.to(data.channelId.toString()).except(exceptList).emit('message', {
@@ -200,7 +200,7 @@ export class ChatGateway {
 
   @SubscribeMessage('messageDm')
   async messageDmBroadcast(client: Socket | any, data: DmMessageDto) {
-    console.log({ data });
+    //console.log({ data });
 
     if (!client.user) return { err: true, msg: 'socket not found!' };
     try {

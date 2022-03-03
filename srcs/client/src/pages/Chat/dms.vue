@@ -71,7 +71,7 @@ export default class DMS extends Vue {
           });
         }
       );
-      console.log(this.dms);
+      //console.log(this.dms);
       // this.dms = [...this.dms, ...data.data];
     } catch (e) {}
   }

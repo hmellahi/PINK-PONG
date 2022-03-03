@@ -70,14 +70,14 @@ export default class MatchHistory extends Vue {
     } else return match.first_user.login;
   }
   getResult(match: any) {
-    console.log("user id", match.first_user.login);
+    //console.log("user id", match.first_user.login);
     let isMe = match.first_user.id == this.$props.user.id ? 1 : 2;
-    console.log(
-      match.flag,
-      this.$props.user.id,
-      match.first_user.id,
-      match.second_user.id
-    );
+    // console.log(
+    //   match.flag,
+    //   this.$props.user.id,
+    //   match.first_user.id,
+    //   match.second_user.id
+    // );
     if ((isMe == 1 && match.flag == 2) || (isMe == 2 && match.flag == 1))
       return "Victory";
     else if (match.flag != 0) return "Defeat";

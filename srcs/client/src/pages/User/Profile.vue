@@ -167,7 +167,7 @@ export default class Profile extends Vue {
       this.user.matches = data.data;
       // console.log(this.user.matches);
     } catch (e) {
-      console.log(e);
+      //console.log(e);
     }
   }
   get achievments() {
@@ -178,7 +178,7 @@ export default class Profile extends Vue {
     const el = this.$el.getElementsByClassName(
       "profile_header"
     )[0] as HTMLElement;
-    console.log(el);
+    //console.log(el);
     // Use el.scrollIntoView() to instantly scroll to the element
     if (el) el.scrollIntoView({ behavior: "smooth" });
   }
@@ -199,7 +199,7 @@ export default class Profile extends Vue {
       "getUserStatus",
       id,
       (status: string) => {
-        console.log(status);
+       // console.log(status);
         this.user.status = status;
         statuss = status;
         return status;
@@ -308,7 +308,7 @@ export default class Profile extends Vue {
       });
       this.isBlocked = true;
     } catch (e) {
-      console.log(e);
+      //console.log(e);
     }
     this.$notify({
       duration: 3000,

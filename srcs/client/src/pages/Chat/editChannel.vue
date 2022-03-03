@@ -51,7 +51,7 @@ import { isValidInput } from "@/common/helpers/Validations";
   components: { InputField, Button },
 })
 export default class editChannel extends Vue {
-  channel: Channel = { name: "WHOS 1v1", type: "", isLocked: false };
+  channel: Channel = { name: "", type: "", isLocked: false };
   newPassword = "";
   errors = "";
   mounted() {

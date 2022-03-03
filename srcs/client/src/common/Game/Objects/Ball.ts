@@ -5,16 +5,9 @@ import { GameConstants } from "../constants";
 import Paddle from "@/common/Game/Objects/Paddle";
 
 function getRandomArbitrary(min: number, max: number): any {
-  var tmp = Math.floor(Math.random() * (max - min) + min);
-  // if (Math.abs(tmp) == 0.5 | Math.abs(tmp) !=) {
-  //   if (tmp < 0) {
-  //     return tmp - 0.5;
-  //   } else {
-  //     return tmp + 0.5;
-  //   }
-  // }
-  if (tmp == 0) return getRandomArbitrary(min, max);
-  return tmp;
+  var rand_index = Math.floor(Math.random() * (max - min + 1) + min + 1);
+  let arr = [-1, 1];
+  return  arr[rand_index % 2];
 }
 let SPEED = 0.25;
 export default class {

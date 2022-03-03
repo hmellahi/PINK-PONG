@@ -62,7 +62,7 @@ const mutations = {
     }
   },
   ADD_DMS(state: any, msg: any) {
-    console.log({ dms: state.dms });
+   // console.log({ dms: state.dms });
     state.dms.push(msg);
   },
   ADD_MESSAGES(state: any, messages: Message[]) {

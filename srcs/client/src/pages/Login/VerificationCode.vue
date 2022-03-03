@@ -43,10 +43,10 @@ export default class VerificationCode extends Vue {
           code:this.verificationCode
         }
       })
-      console.log({data})
+     // console.log({data})
        this.$router.push({ path: "/" });
     }catch(e){
-      console.log({e})
+      //console.log({e})
       this.error = "verification code isnt valid"
       return;
     }

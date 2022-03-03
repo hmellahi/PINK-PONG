@@ -30,7 +30,7 @@ export default class Popup extends Vue {
   onClose() {
     this.$emit("input", !this.value);
     // this.visible = false;
-    console.log("show", this.show);
+    //console.log("show", this.show);
   }
 }
 </script>

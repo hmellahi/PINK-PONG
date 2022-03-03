@@ -67,14 +67,14 @@ export default class MatchHistory extends Vue {
   }
   async created() {
     this.socket.on("connect_failed", function (err: any) {
-      console.log("Connection Failed");
+     // console.log("Connection Failed");
     });
     this.socket.emit("getLiveGames", (data: any) => {
       const newData = data.map(async (object: any) => {
         const user1 = (await this.fetchUser(object.player1)) as any | undefined;
         const user2 = (await this.fetchUser(object.player2)) as any | undefined;
-        console.log({ game: object });
-        console.log({ user1 });
+       // console.log({ game: object });
+       // console.log({ user1 });
         this.matches.push({ ...object, user1: user1.data, user2: user2.data });
       });
     });

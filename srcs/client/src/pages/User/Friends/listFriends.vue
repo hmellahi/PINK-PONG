@@ -81,7 +81,7 @@ export default class listFriends extends Vue {
       "getUserStatus",
       id,
       (status: string) => {
-        console.log({ status });
+      //  console.log({ status });
         statuss = status;
         return status;
       }

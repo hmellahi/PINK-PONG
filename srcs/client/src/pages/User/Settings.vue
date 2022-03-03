@@ -257,7 +257,7 @@ export default class Settings extends Vue {
   }
 
   toggleA() {
-    console.log("toggleA");
+   // console.log("toggleA");
     let newValue = this.settings[0].isActive.toString();
     localStorage[this.user.id + "#settings#" + 0] = newValue;
     this.$notify({

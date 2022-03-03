@@ -123,7 +123,6 @@ export default class channelRoom extends Vue {
       this.goBackward();
     } catch (e) {
       console.log(e);
-      // TODO SHOW ALERT
     }
   }
   async mounted() {

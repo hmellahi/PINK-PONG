@@ -118,12 +118,12 @@ export default class Game extends Vue {
     if (game) {
       if (game.offsetWidth < MAX_WIDTH || game.offsetHeight < MAX_HEIGHT){
         this.isResize = true;
-        console.log("below size",game.offsetWidth, game.offsetHeight);
+        //console.log("below size",game.offsetWidth, game.offsetHeight);
         // alert("Please augment window size to play");
       }
       else{
         this.isResize = false;
-        console.log("above size",game.offsetWidth, game.offsetHeight);
+        //console.log("above size",game.offsetWidth, game.offsetHeight);
       }
       GameConstants.canvas.width = game.offsetWidth;
       GameConstants.canvas.height = game.offsetHeight;
@@ -131,13 +131,13 @@ export default class Game extends Vue {
       // GameConstants.canvas.width = 400;
       // GameConstants.canvas.height = 400;
     }
-    console.log(GameConstants.canvas.width, GameConstants.canvas.height);
+    //console.log(GameConstants.canvas.width, GameConstants.canvas.height);
     this.backColor = GameConstants.backColor;
     this.xBall = GameConstants.canvas.width / 2;
     this.yBall = GameConstants.canvas.height / 2;
     // this.radius = 10;
     this.sounds = [];
-    console.log({ rad: this.radius });
+    //console.log({ rad: this.radius });
     this.ball = new Ball(this.xBall, this.yBall, this.radius, 0);
     this.isGameOver = false;
     this.xPaddle = GameConstants.paddle.x;
@@ -187,12 +187,12 @@ export default class Game extends Vue {
     if (game) {
       if (game.offsetWidth < MAX_WIDTH || game.offsetHeight < MAX_HEIGHT){
         this.isResize = true;
-        console.log("below size",game.offsetWidth, game.offsetHeight);
+        //console.log("below size",game.offsetWidth, game.offsetHeight);
         // alert("Please augment window size to play");
       }
       else{
         this.isResize = false;
-        console.log("above size",game.offsetWidth, game.offsetHeight);
+        //console.log("above size",game.offsetWidth, game.offsetHeight);
       }
       GameConstants.canvas.width = game.offsetWidth;
       GameConstants.canvas.height = game.offsetHeight;
@@ -222,7 +222,7 @@ export default class Game extends Vue {
     window.addEventListener("keyup", this.keyup);
     window.addEventListener("resize", this.resize);
     this.init();
-    console.log({ paddle: this.paddle, paddle2: this.paddle2 });
+    //console.log({ paddle: this.paddle, paddle2: this.paddle2 });
     this.roomId = this.$route.query.id;
     var sound = "/assets/sounds/wallHitSound.wav";
     var sound2 = "/assets/sounds/scoreSound.wav";
@@ -258,7 +258,7 @@ export default class Game extends Vue {
     } catch (error) {
       this.isSoundOn = false;
     }
-    console.log({ isSoundOn: this.isSoundOn, isMusicOn: this.isMusicOn });
+    //console.log({ isSoundOn: this.isSoundOn, isMusicOn: this.isMusicOn });
     // here do ur shit...
     if (this.isMusicOn){
       this.playMusic(this.Clairo);
@@ -333,7 +333,7 @@ export default class Game extends Vue {
         this.player2 = player2.data;
         if (!this.gameData.isSpectator) {
           this.isLoading = false;
-          console.log({ gamdata: this.gameData });
+          //console.log({ gamdata: this.gameData });
           return;
         }
         // score
@@ -352,7 +352,7 @@ export default class Game extends Vue {
         this.paddle.velocity = paddles[0].velocity;
 
         this.isLoading = false;
-        console.log("aa", { msg });
+        //console.log("aa", { msg });
       }
     );
 
@@ -374,8 +374,8 @@ export default class Game extends Vue {
     this.showGameOver(this.sketch);
     // TODO show to the player the he won because the other player quits
     if (this.gameData.isSpectator) return;
-    console.log({ score1: this.scores[0].value });
-    console.log({ score2: this.scores[1].value });
+    //console.log({ score1: this.scores[0].value });
+    //console.log({ score2: this.scores[1].value });
     if (
       ff ||
       (this.scores[1].value > this.scores[0].value &&
@@ -403,7 +403,7 @@ export default class Game extends Vue {
     // }
     // this.init();
     // this.resizeObjects();
-    console.log({ rad: this.radius });
+    //console.log({ rad: this.radius });
 
     this.resizeObjectsOpt(); //optimzed version
 
@@ -580,7 +580,7 @@ export default class Game extends Vue {
         this.scores.map((score) => score.draw(sketch));
         // this.showGameOver(sketch);
         this.over(0);
-        console.log("GAME OVER", this.scores);
+        //console.log("GAME OVER", this.scores);
 
         return;
       }
@@ -665,17 +665,17 @@ export default class Game extends Vue {
   async playMusic(music: any) {
     try {
       await music.play();
-      console.log("Playing...");
+      //console.log("Playing...");
     } catch (err) {
-      console.log("Failed to play..." + err);
+      //console.log("Failed to play..." + err);
     }
   }
   async pauseMusic(music: any) {
     try {
       await music.pause();
-      console.log("Playing...");
+      //console.log("Playing...");
     } catch (err) {
-      console.log("Failed to play..." + err);
+     // console.log("Failed to play..." + err);
     }
   }
 }
