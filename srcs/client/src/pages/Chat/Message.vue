@@ -40,7 +40,7 @@
     </Popup>
     <div class="msg position-relative">
       <!-- <span class="date">[{{ message.create_date }}]</span> -->
-      <img :src="message.owner.avatar_url" />
+      <img :src="message.owner.image_url" />
       <span v-if="true">
         <img src="/assets/svg/medal.svg" v-if="message.isAdmin" alt="" />
       </span>

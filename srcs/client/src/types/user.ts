@@ -14,7 +14,7 @@ export interface UserState {
 export interface User {
   id?: number;
   login: string;
-  avatar_url: string;
+  image_url: string;
   status: string;
   matches: any[];
   wins: number;

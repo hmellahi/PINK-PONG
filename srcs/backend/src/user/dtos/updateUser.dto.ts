@@ -7,5 +7,5 @@ export class UpdateUserDto
     login?: string;
 
     // @IsNotEmpty()
-    avatar_url?: string;
+    image_url?: string;
 }

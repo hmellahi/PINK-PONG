@@ -14,6 +14,6 @@ export class CreateUserDto
     @IsEmail()
     email: string;
 
-    // @IsNotEmpty()
-    avatar_url?: string;
+    @IsNotEmpty()
+    image_url?: string;
 }

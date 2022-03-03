@@ -36,7 +36,7 @@
               <!-- <img src="/assets/img/2.jpg+" alt="" /> -->
               <!-- </div> -->
               <div class="right2 leader_board">
-                <img :src="user.avatar_url" alt="" />
+                <img :src="user.image_url" alt="" />
                 <h4>{{ user.login }}</h4>
               </div>
             </div>

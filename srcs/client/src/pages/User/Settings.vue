@@ -5,7 +5,7 @@
       <div class="mt-4 update_info">
         <div class="setting_user">
           <div class="avatar_setting">
-            <img :src="user.avatar_url" class="avatar_change" />
+            <img :src="user.image_url" class="avatar_change" />
             <input
               type="file"
               id="upload"

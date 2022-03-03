@@ -5,7 +5,7 @@
       <div v-for="match in matches" class="leader_box match_box">
         <div class="left match_history">
           <router-link :to="`/profile/${match.first_user.login}`">
-            <img :src="match.first_user.avatar_url" alt="" />
+            <img :src="match.first_user.image_url" alt="" />
           </router-link>
           <div class="match_content">
             <h4 :class="getResult(match)">{{ getResult(match) }}</h4>
@@ -14,7 +14,7 @@
             </h3>
           </div>
           <router-link :to="`/profile/${match.second_user.login}`">
-            <img class="img_right" :src="match.second_user.avatar_url" alt="" />
+            <img class="img_right" :src="match.second_user.image_url" alt="" />
           </router-link>
         </div>
         <div class="match_right">
