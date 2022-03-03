@@ -1,4 +1,4 @@
-version: "3.9"
+version: "3.3"
 services:
   backend:
     build: ./srcs/backend/
@@ -9,8 +9,8 @@ services:
       - /usr/src/app/node_modules
     depends_on:
       - "dbservice"
-    networks:
-      - db-network
+    # networks:
+      # - db-network
     restart: always
     container_name: "backend"
     image: backend
@@ -20,16 +20,18 @@ services:
     restart: always
     env_file:
       - ./srcs/.env
-    networks:
-      - db-network
+    ports:
+      - 5432:5432 # todo uncomment
+    # networks:
+      # - db-network
     container_name: "dbservice"
     volumes:
       - pgdata:/var/lib/postgresql/data
 
   client:
-    volumes:
-      - ./srcs/client:/usr/src/app
-      -  /usr/src/app/node_modules
+    # volumes:
+      # - ./srcs/client:/usr/src/app
+      # -  /usr/src/app/node_modules
     build: ./srcs/client/
     container_name: "client"
     ports:
