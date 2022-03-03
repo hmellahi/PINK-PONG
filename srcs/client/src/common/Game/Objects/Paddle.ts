@@ -29,7 +29,7 @@ export default class Ball {
     this.width = tempWidth;
     this.height = tempHeight;
     this.color = tempColor;
-    this.speed = GameConstants.canvas.height / 50;
+    this.speed = GameConstants.canvas.height / 40;
     this.velocity = 0;
   }
 
@@ -78,7 +78,7 @@ export default class Ball {
     // // this.y =  Math.floor(Math.random() * (windowsHeight- borderWidth) + borderWidth);
     // this.x = windowsWidth / 2;
     this.y = GameConstants.paddle.y;
-    this.speed = GameConstants.canvas.height / 50;
+    this.speed = GameConstants.canvas.height / 40;
     this.velocity = 0;
   }
   // handleKeyPressed(sketch: P5Sketch): Boolean {

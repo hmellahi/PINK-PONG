@@ -192,6 +192,7 @@ export default class Settings extends Vue {
         type: "success",
         title: "The 2Fa enabled successfuly",
       });
+      // this.$router.push({ path: "/login" });
     } catch (e) {
       this.$notify({
         duration: 2000,
@@ -257,7 +258,7 @@ export default class Settings extends Vue {
   }
 
   toggleA() {
-   // console.log("toggleA");
+    // console.log("toggleA");
     let newValue = this.settings[0].isActive.toString();
     localStorage[this.user.id + "#settings#" + 0] = newValue;
     this.$notify({

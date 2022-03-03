@@ -26,7 +26,7 @@ let ALREADY_IN_QUEUE = 'u cant join queue, because you are already in queue';
 @WebSocketGateway({
   namespace: 'game',
   cors: {
-    origin: `http://127.0.0.1:5000`,
+    origin: `http://10.11.2.6:5000`,
     credentials: true,
   },
 })
@@ -450,7 +450,7 @@ export class GameGateway {
       });
       console.log('stores game');
     } catch (e) {
-      console.log(e)
+      console.log(e);
     }
   }
 

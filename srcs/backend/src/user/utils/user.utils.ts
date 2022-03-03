@@ -29,7 +29,6 @@ export const filteredUser = (user: User) =>
 {
     user.email = undefined;
     user.currentRefreshToken = undefined;
-    user.two_factor_auth_enabled = undefined;
     user.two_factor_auth_code = undefined;
     user.password = undefined;
     user.create_date = undefined;

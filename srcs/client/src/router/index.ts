@@ -143,7 +143,14 @@ const routes: Array<RouteConfig> = [
       requiresAuth: false,
     },
   },
-  { path: "*", component: notFound, name: "not found" },
+  {
+    path: "*",
+    component: notFound,
+    name: "not found",
+    meta: {
+      requiresAuth: false,
+    },
+  },
 ];
 
 const router = new VueRouter({

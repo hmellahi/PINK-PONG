@@ -215,6 +215,7 @@ export default class Profile extends Vue {
     this.$router.go(-1);
   }
   async checkUser() {
+    this.isMyProfile = false;
     if (this.$route.path == "/profile/mine") {
       this.user = this.userCurrent;
       this.isMyProfile = true;

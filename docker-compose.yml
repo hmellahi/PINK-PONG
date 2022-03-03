@@ -4,13 +4,11 @@ services:
     build: ./srcs/backend/
     ports:
       - "3000:3000"
-    volumes:
-      - ./srcs/backend:/usr/src/app
-      - /usr/src/app/node_modules
+    # volumes:
+    #   - ./srcs/backend:/usr/src/app
+    #   - /usr/src/app/node_modules
     depends_on:
       - "dbservice"
-    # networks:
-      # - db-network
     restart: always
     container_name: "backend"
     image: backend
@@ -20,18 +18,14 @@ services:
     restart: always
     env_file:
       - ./srcs/.env
-    ports:
-      - 5432:5432 # todo uncomment
-    # networks:
-      # - db-network
     container_name: "dbservice"
     volumes:
       - pgdata:/var/lib/postgresql/data
 
   client:
     # volumes:
-      # - ./srcs/client:/usr/src/app
-      # -  /usr/src/app/node_modules
+    # - ./srcs/client:/usr/src/app
+    # -  /usr/src/app/node_modules
     build: ./srcs/client/
     container_name: "client"
     ports:
@@ -41,9 +35,6 @@ services:
       - "backend"
     image: client
     command: serve -l 5000 -s ./dist
-
-networks:
-  db-network:
 
 volumes:
   pgdata:

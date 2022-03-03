@@ -6,11 +6,11 @@
       <div class="code_verifation mt-4 px-0">
         <inputField
           type="text"
-          class=" mx-auto"
+          class="mx-auto"
           placeholder="verification code"
           v-model="verificationCode"
         />
-        {{error}}
+        {{ error }}
       </div>
       <Button class="mt-4 px-4" :onClick="handleSubmit"
         ><i class="fas fa-check"></i> Sign In</Button
@@ -25,32 +25,30 @@ import Button from "@/common/components/UI/Button.vue";
 
 @Component({
   components: { InputField, Button },
-
 })
 export default class VerificationCode extends Vue {
   verificationCode: string = "";
-  error=""
+  error = "";
 
   async handleSubmit() {
     if (!this.isValid(this.verificationCode))
-      this.error = "verification code isnt valid"
+      this.error = "verification code isnt valid";
     // console.log(this.verificationCode);
     try {
-       let data = await this.$http({
-        method: 'post',
-        url:'auth/2fa/login',
-        data:{
-          code:this.verificationCode
-        }
-      })
-     // console.log({data})
-       this.$router.push({ path: "/" });
-    }catch(e){
+      let data = await this.$http({
+        method: "post",
+        url: "auth/2fa/login",
+        data: {
+          code: this.verificationCode,
+        },
+      });
+      // console.log({data})
+      this.$router.push({ path: "/" });
+    } catch (e) {
       //console.log({e})
-      this.error = "verification code isnt valid"
+      this.error = "verification code isnt valid";
       return;
     }
-    this.$router.push({ path: "/" });
   }
 
   isValid(code: string): boolean {
