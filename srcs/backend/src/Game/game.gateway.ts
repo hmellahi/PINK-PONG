@@ -240,7 +240,7 @@ export class GameGateway {
     if (!this.pendingRequests[receiver]) this.pendingRequests[receiver] = [];
     this.pendingRequests[receiver].push(sender.id);
     if (this.getUserId(receiver) == -1) return;
-    console.log({ id: this.getUserId(receiver) });
+    // console.log({ id: this.getUserId(receiver) });
     sender.to('activeUsers').emit('inviteToPlay', {
       senderName,
       senderSocketId: sender.id,
@@ -255,9 +255,7 @@ export class GameGateway {
     @ConnectedSocket() receiver: Socket | any,
   ) {
     let { senderSocketId, senderId } = data;
-    console.log({ senderSocketId, senderId });
     if (!this.removePendingRequest(receiver.userId, senderSocketId)) {
-      console.log('wazbi');
       return { err: true, msg: 'the invitation is no longer available' };
     }
   }
@@ -265,7 +263,6 @@ export class GameGateway {
   removePendingRequest(recieverId: number, senderId: number) {
     if (!this.pendingRequests[recieverId]) return true;
     let oldSize = this.pendingRequests[recieverId].length;
-    console.log({ recieverId });
     this.pendingRequests[recieverId] = this.pendingRequests[recieverId].filter(
       (sender) => sender != senderId,
     );
@@ -437,13 +434,13 @@ export class GameGateway {
     // do nting
     this.setUserStatus(player.userId, 'Offline');
     delete this.users[player.userId];
-    console.log('client disconnected', player.userId);
+    //console.log('client disconnected', player.userId);
   }
 
-  saveGame(game: Game): void {
-    console.log({ game });
+  async saveGame(game: Game) {
+    //console.log({ game });
     try {
-      this.gameService.createGame({
+      await this.gameService.createGame({
         user1Id: game.player1,
         user2Id: game.player2,
         first_user_score: game.score2,
@@ -452,7 +449,9 @@ export class GameGateway {
         map: game.map,
       });
       console.log('stores game');
-    } catch (e) {}
+    } catch (e) {
+      console.log(e)
+    }
   }
 
   @SubscribeMessage('getUserStatus')
@@ -471,7 +470,7 @@ export class GameGateway {
       return;
     }
     client.userId = user.id;
-    console.log('client connected', client.userId);
+    //console.log('client connected', client.userId);
     client.join('activeUsers');
     this.users[user.id] = {
       status: 'Online',

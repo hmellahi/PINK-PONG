@@ -96,7 +96,7 @@ export default class MessageBox extends Vue {
     );
   }
   async addAdmin() {
-    console.log(this.$props.message.user_id);
+   // console.log(this.$props.message.user_id);
     try {
       await this.$store.dispatch("Chat/addAdmin", {
         userId: this.$props.message.owner.id,
@@ -126,7 +126,7 @@ export default class MessageBox extends Vue {
     var minutesToAdd = this.muteDuration;
     var currentDate = new Date();
     var expireDate = new Date(currentDate.getTime() + minutesToAdd * 60000);
-    console.log(expireDate);
+    //console.log(expireDate);
     try {
       await this.$store.dispatch("Chat/muteFromChannel", {
         userId: this.$props.message.owner.id,
@@ -144,13 +144,13 @@ export default class MessageBox extends Vue {
         type: "danger",
         title: e.response.data.message,
       });
-      console.log({ e });
+     // console.log({ e });
     }
   }
   mounted() {
     // let newDate = moment(this.$props.message.create_date).format("mm:ss");
     // if (newDate != "Invalid date") this.$props.message.create_date = newDate;
-    // console.clear(); TODO UNCOMENT
+    // console.clear(); UNCOMENT
   }
   showMsgTooltip() {
     if (this.currentUser.id == this.$props.message.owner.id) {

@@ -76,7 +76,7 @@ export default class App extends Vue {
     // await this.$store.dispatch("Chat/connectToChatSocket", this.$cookies);
   }
 
-  updateIsLoginPage() {
+  updateIsLoginPage() { 
     /******  Check if the route one of this path if yes then lets update the bool val ********/
     let paths = ["/login", "/verification_code", "/auth/callback"];
     this.isLoginPage =
@@ -84,7 +84,7 @@ export default class App extends Vue {
   }
   AcceptRequest(data: any) {
     let { senderSocketId, senderId } = data;
-    console.log({ senderSocketId, senderId });
+    //console.log({ senderSocketId, senderId });
     this.$store.dispatch("User/acceptInvitation", {
       senderSocketId,
       senderId,

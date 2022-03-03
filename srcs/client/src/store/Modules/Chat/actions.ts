@@ -15,7 +15,7 @@ const { VUE_APP_API_URL: API_URL, VUE_APP_SERVER_URL: SERVER_URL } =
 
 const listenToChannelEvents = (commit: any, connection: Socket) => {
   connection.on("message", async ({ msg, owner, channelId }: any) => {
-    console.log("recieved a msg", { channelId, msg, owner });
+   // console.log("recieved a msg", { channelId, msg, owner });
     commit("ADD_MSG", {
       msg,
       showTooltip: false,
@@ -28,7 +28,7 @@ const listenToChannelEvents = (commit: any, connection: Socket) => {
 
 const listenToDMEvents = (commit: any, connection: Socket) => {
   connection.on("messageDm", async ({ msg, owner, channelId }: any) => {
-    console.log("recieved a msg", { msg, owner });
+   // console.log("recieved a msg", { msg, owner });
     //let currentUser = await store.getters["User/getCurrentUser"];
 
     commit("ADD_DMS", {
@@ -101,7 +101,7 @@ const actions = {
   async fetchChannels({ commit }: ActionContext<any, any>) {
     try {
       let data = await api.get("chat/channels");
-      console.log({ a: data });
+      //console.log({ a: data });
       commit("CLEAR_PUBLIC_CHANNELS", "public");
       commit("ADD_CHANNELS", data.data);
     } catch (error) {}
@@ -113,7 +113,6 @@ const actions = {
       router.push({
         path: "/chat/channel/" + data.channelId,
       });
-      // commit("ADD_CHANNELS", data.data); TODO ADD TO MY CHANNELS LIST
     } catch (error) {
       throw error;
     }
@@ -122,9 +121,8 @@ const actions = {
   async leaveChannel({ commit }: ActionContext<any, any>, data: any) {
     try {
       let resp = await api.post("chat/leaveChannel", data);
-      // commit("ADD_CHANNELS", data.data); TODO REMOVE FROM MY CHANNELS LIST
       commit("REMOVE_CHANNEL", data.channelId);
-      console.log({ data }, { resp });
+      //console.log({ data }, { resp });
     } catch (error) {
       throw error;
     }
@@ -135,7 +133,7 @@ const actions = {
       let resp = await api.post("chat/addMember", data);
       // ex :{"login": "htagrour1","channelId": 5}
       // commit("ADD_CHANNELS", data.data);
-      console.log({ data }, { resp });
+     // console.log({ data }, { resp });
     } catch (error) {
       throw error;
     }
@@ -177,7 +175,7 @@ const actions = {
           });
           return;
         }
-        console.log({ msg });
+        //console.log({ msg });
         if (msg.messages) commit("SET_DMS", msg.messages);
       });
       // });
@@ -189,7 +187,7 @@ const actions = {
   async fetchMyChannels({ commit }: ActionContext<any, any>) {
     try {
       let data = await api.get("chat/myChannels");
-      console.log({ private: data });
+      //console.log({ private: data });
       commit("CLEAR_PUBLIC_CHANNELS", "private");
       data.data.map((channel: Channel) => {
         if (!channel) return;
@@ -228,7 +226,7 @@ const actions = {
       ({ err, msg }: any) => {
         if (err && errorCallback) {
           errorCallback(msg);
-          console.log({ msgsBackup });
+          //console.log({ msgsBackup });
           commit(mutation, msgsBackup);
         }
       }
@@ -237,9 +235,9 @@ const actions = {
 
   async createChannel({ commit }: ActionContext<UserState, any>, channel: any) {
     try {
-      console.log({ channel });
+     // console.log({ channel });
       let data = await api.post("chat/createChannel", channel);
-      console.log({ a: data });
+      //console.log({ a: data });
       if (channel.type == "public") commit("ADD_PUBLIC_CHANNEL", channel);
       commit("ADD_CHANNELS", [channel]);
     } catch (error) {
@@ -258,7 +256,7 @@ const actions = {
           type: err ? "danger" : "success",
           title: msg,
         });
-        console.log({ err, msg });
+       // console.log({ err, msg });
         data.callback();
       });
     } catch (error) {

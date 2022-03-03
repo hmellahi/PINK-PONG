@@ -14,7 +14,7 @@ const actions = {
     let friendsListBackup = [...state.friends];
     commit("REMOVE_FROM", ["friends", friend]);
     try {
-      console.log(friend.id);
+      //(friend.id);
       const data = await api.post("friendship/removeFriendship", {
         friendshipId: friend.id,
       });
@@ -49,7 +49,7 @@ const actions = {
     try {
       // let blockedUsers = [{ username: "john", lastSeen: "10m ago" }];
       const data = await api.get("users/blockedList");
-      console.log(data.data);
+     // console.log(data.data);
       commit("SET_ENTITY", ["blockedUsers", data.data]);
     } catch (e) {}
   },
@@ -63,11 +63,11 @@ const actions = {
       const data = await api.post("users/blockUser", {
         userId: userToBlock.user.id,
       });
-      console.log("from block user", data);
+     // console.log("from block user", data);
     } catch (e) {
       commit("SET_ENTITY", ["friends", friendsBackup]);
       commit("SET_ENTITY", ["blockedUsers", blockedUsersBackup]);
-      console.log(e);
+      //console.log(e);
     }
   },
   async unBlockUser({ state, commit }: any, userToUnblock: any) {
@@ -87,8 +87,8 @@ const actions = {
   async acceptRequest({ commit, state }: any, request: any) {
     let savedRequests = [...state.requests];
     let savedFriends = [...state.friends];
-    console.log(request);
-    console.log(savedFriends);
+   // console.log(request);
+   // console.log(savedFriends);
     let newFriend = {
       id: request.id,
       status: request.status,
@@ -101,7 +101,7 @@ const actions = {
       const requestData = await api.post("friendship/acceptFriendRequest", {
         friendshipRequestId: request.id,
       });
-      console.log(requestData);
+    //  console.log(requestData);
     } catch (e) {
       commit("SET_ENTITY", ["friends", savedFriends]);
       commit("SET_ENTITY", ["requests", savedRequests]);
@@ -146,7 +146,7 @@ export async function catchAction(store: any, action: string) {
   try {
     await store.dispatch(action);
   } catch (err) {
-    console.log(err);
+   // console.log(err);
   }
   // console.log({ store.state})
   store.commit("Friends/RESET_STATE", prevstate);

@@ -126,10 +126,8 @@ const actions = {
     cookies: any
   ) {
     const Authentication = cookies.get("Authentication");
-    if (state.gameSocket != null) {
-      // this.fetchMessages(context, state.chatSocket);
-      return;
-    } //TODO: check if socket is already connected and if so return ;)
+    if (state.gameSocket != null) return;
+
     let connection = io(`${SERVER_URL}/game`, {
       transportOptions: {
         polling: {

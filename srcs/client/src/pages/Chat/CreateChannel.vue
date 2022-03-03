@@ -72,7 +72,7 @@ export default class createChannel extends Vue {
     }
   }
   updateFormDate() {
-    console.log("sda");
+    //console.log("sda");
     // console.log(id, value);
     // this.$set(this.channel, id, value);
   }
