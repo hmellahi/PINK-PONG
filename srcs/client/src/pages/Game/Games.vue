@@ -5,12 +5,12 @@
       <div v-if="matches && matches.length">
         <div v-for="match in matches" class="leader_box match_box">
           <div class="left match_history">
-            <img :src="match.user1.avatar_url" alt="" />
+            <img :src="match.user1.image_url" alt="" />
             <div class="match_content">
               <!-- <h4 class="victory">VICTORY</h4> -->
               <h3>{{ match.score1 }} - {{ match.score2 }}</h3>
             </div>
-            <img class="img_right" :src="match.user2.avatar_url" alt="" />
+            <img class="img_right" :src="match.user2.image_url" alt="" />
           </div>
           <div class="match_right">
             <img :src="`/assets/img/map${match.map}.jpg`" alt="" />

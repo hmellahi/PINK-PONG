@@ -8,7 +8,7 @@
         >
           <div class="col-md-3 avatar-box">
             <img
-              :src="getFriend(conversation).avatar_url"
+              :src="getFriend(conversation).image_url"
               alt=""
               class="my-auto"
             />

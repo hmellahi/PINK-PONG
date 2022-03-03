@@ -37,9 +37,9 @@ export class  UserController
         const {user} = request;
         if (file)
         {
-            const avatar_url: string  = this.configService.get("BACKEND_URL") + `/public/users/${file.filename}`;
+            const image_url: string  = this.configService.get("BACKEND_URL") + `/public/users/${file.filename}`;
 
-            await this.userService.findByIdAndUpdate(user.id, {avatar_url})
+            await this.userService.findByIdAndUpdate(user.id, {image_url})
             const response = {
                 originalname: file.originalname,
                 filename: file.filename,

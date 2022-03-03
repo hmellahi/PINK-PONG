@@ -13,7 +13,7 @@
           <div class="user_avatar">
             <div>
               <div class="progress_user">
-                <div class="precent"><img :src="user.avatar_url" /></div>
+                <div class="precent"><img :src="user.image_url" /></div>
                 <div class="circle"></div>
                 <div class="range">
                   <input

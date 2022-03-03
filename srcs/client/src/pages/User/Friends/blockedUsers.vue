@@ -3,7 +3,7 @@
     <div v-if="blockedFriends && blockedFriends.length">
       <div class="friend_list" v-for="friend of blockedFriends">
         <router-link class="friend-info link_profile" :to="`/profile/${friend.user.login}`" >
-          <img :src="friend.user.avatar_url" alt="" />
+          <img :src="friend.user.image_url" alt="" />
           <div class="content">
             <h6>{{ friend.user.login }}</h6>
             <span> online</span>

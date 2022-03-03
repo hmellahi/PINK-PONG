@@ -14,7 +14,7 @@ const mutations = {
     state.user = Object.assign({ matches: [], status_user: "Online" }, user);
   },
   setAvatar(state: UserState, avatar: string) {
-    state.user.avatar_url = avatar;
+    state.user.image_url = avatar;
   },
 
   setEnableFactor(state: UserState, enable: boolean) {

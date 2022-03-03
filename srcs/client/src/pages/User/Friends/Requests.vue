@@ -3,7 +3,7 @@
     <div v-if="requests && requests.length">
       <div class="friend_list" v-for="request of requests">
         <router-link class="friend-info link_profile" :to="`/profile/${request.sender.login}`" >
-          <img :src="request.sender.avatar_url" alt="" />
+          <img :src="request.sender.image_url" alt="" />
           <div class="content">
             <h6>{{ request.sender.login }}</h6>
             <!-- <span>{{ request.sender.status }}</span> -->

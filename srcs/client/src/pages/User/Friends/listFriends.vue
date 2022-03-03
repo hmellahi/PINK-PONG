@@ -7,7 +7,7 @@
           class="friend-info link_profile"
           :to="`/profile/${friend.user.login}`"
         >
-          <img :src="friend.user.avatar_url" />
+          <img :src="friend.user.image_url" />
           <!-- <img src="/assets/img/2.jpg" alt="" /> -->
           <div class="content">
             <h6>{{ friend.user.login }}</h6>
