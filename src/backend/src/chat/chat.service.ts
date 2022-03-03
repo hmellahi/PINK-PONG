@@ -12,8 +12,8 @@ import MessageEntity from './entities/message.entity';
 import { filteredUser } from 'src/user/utils/user.utils';
 import { getRole, isAdmin, isBaned, isMember } from './utils/chat.utils';
 import MutedListEntity from './entities/mute.entity';
-  import * as moment from 'moment';
-  import MutedList from './entities/mute.entity';
+import * as moment from 'moment';
+import MutedList from './entities/mute.entity';
 
 @Injectable()
 export class ChatService {
