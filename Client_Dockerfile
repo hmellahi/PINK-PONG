@@ -2,10 +2,11 @@ FROM node:lts-alpine
 
 WORKDIR /usr/src/app
 
-COPY package.json .
+COPY  srcs/client/package.json .
+COPY  srcs/client/patches ./patches
 
 RUN yarn
-COPY . .
+COPY srcs/client .
 
 RUN yarn build
 RUN npm install -g serve

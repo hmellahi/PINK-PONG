@@ -106,7 +106,9 @@ export class AuthService
         .pipe(
             map((response: AxiosResponse<CreateUserDto>)=> response.data
         ),
-        catchError((e)=> {console.log("Intra Error");throw new UnauthorizedException;}));
+        catchError((e)=> {
+            //console.log("Intra Error");
+        throw new UnauthorizedException;}));
 
         const user: CreateUserDto = await lastValueFrom(observable);
         return user;

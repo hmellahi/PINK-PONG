@@ -26,7 +26,7 @@ let ALREADY_IN_QUEUE = 'u cant join queue, because you are already in queue';
 @WebSocketGateway({
   namespace: 'game',
   cors: {
-    origin: `http://127.0.0.1:5000`,
+    origin: `http://192.168.99.100:5000`,
     credentials: true,
   },
 })
@@ -425,7 +425,7 @@ export class GameGateway {
           ff = 1;
         } else if (currentPlayerRoom.player2 == player.userId) ff = 2;
         await this.server.to(currentPlayerRoom.roomId).emit('gameOver', ff);
-
+        currentPlayerRoom.ff = ff;
         this.saveGame(currentPlayerRoom);
         this.removeGame(currentPlayerRoom.roomId);
       }
@@ -448,9 +448,9 @@ export class GameGateway {
         flag: game.ff,
         map: game.map,
       });
-      console.log('stores game');
+     // console.log('stores game');
     } catch (e) {
-      console.log(e);
+      //console.log(e);
     }
   }
 

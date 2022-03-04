@@ -2,7 +2,7 @@
   <div>
     <Popup v-model="show_popup">
       <div v-if="!isDM">
-        <div v-if="isAdmin" class="mb-2">
+        <div v-if="canAssignAdmin" class="mb-2">
           <span
             ><input
               class="checkbox_admin"
@@ -93,6 +93,13 @@ export default class MessageBox extends Vue {
     return (
       (myRole == "owner" && messageOwnerRole != "owner") ||
       (myRole == "admin" && messageOwnerRole == "member")
+    );
+  }
+  get canAssignAdmin() {
+    let { myRole, message } = this.$props;
+    let messageOwnerRole = message.owner.role;
+    return (
+      myRole != "member" && messageOwnerRole == "member"
     );
   }
   async addAdmin() {

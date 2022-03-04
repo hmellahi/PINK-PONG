@@ -9,7 +9,9 @@ function getRandomArbitrary(min: number, max: number): any {
   let arr = [-1, 1];
   return  arr[rand_index % 2];
 }
-let SPEED = 0.25;
+let SPEED = 0.75;
+let FACSPEED = 90;
+
 export default class {
   x: number;
   y: number;
@@ -46,7 +48,7 @@ export default class {
     // this.velocityY = Math.floor(Math.random() * 10) + 1;;
     this.velocityX = getRandomArbitrary(-1, 1);
     this.velocityY = getRandomArbitrary(-1, 1);
-    this.initialSpeed = GameConstants.canvas.width / 75   ;
+    this.initialSpeed = GameConstants.canvas.width / FACSPEED   ;
     this.speed = this.initialSpeed;
     // this.speed = 1;
     this.color = tempColor;
@@ -153,7 +155,7 @@ export default class {
     this.speed = this.initialSpeed;
     this.velocityX = getRandomArbitrary(-1, 1);
     this.velocityY = getRandomArbitrary(-1, 1);
-    console.log(this.velocityX, this.velocityY);
+    //console.log(this.velocityX, this.velocityY);
   }
 
   checkBorders(): number {

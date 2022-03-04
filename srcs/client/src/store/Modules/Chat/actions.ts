@@ -236,11 +236,8 @@ const actions = {
 
   async createChannel({ commit }: ActionContext<UserState, any>, channel: any) {
     try {
-     // console.log({ channel });
       let data = await api.post("chat/createChannel", channel);
-      //console.log({ a: data });
-      if (channel.type == "public") commit("ADD_PUBLIC_CHANNEL", channel);
-      commit("ADD_CHANNELS", [channel]);
+      // commit("ADD_CHANNELS", [channel]);
     } catch (error) {
       throw error;
     }

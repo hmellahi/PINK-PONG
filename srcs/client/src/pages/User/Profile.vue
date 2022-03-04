@@ -28,7 +28,7 @@
               </div>
             </div>
             <p class="user_name">{{ user.login }}</p>
-            <div class="user_status" v-if="user.status">
+            <div class="user_status" v-if="user.status && !isMyProfile">
               <p class="user_status_text">{{ user.status }}</p>
             </div>
             <div class="user_buttons">
@@ -157,7 +157,7 @@ export default class Profile extends Vue {
   }
   async fetchMatches() {
     try {
-      console.log(this.user);
+      //console.log(this.user);
       let data = await this.$http({
         method: "post",
         url: "game/games",

@@ -117,13 +117,15 @@ export default class channelRoom extends Vue {
   }
   async leaveRoom() {
     try {
-      await this.$store.dispatch("Chat/leaveChannel", {
+      this.$store.dispatch("Chat/leaveChannel", {
         channelId: Number(this.currentChannelId),
       });
-      this.goBackward();
+      
     } catch (e) {
-      console.log(e);
+      //console.log(e);    
     }
+    console.clear();
+    this.goBackward();
   }
   async mounted() {
     await this.$store.dispatch("Chat/connectToChatSocket", this.$cookies);
@@ -152,7 +154,7 @@ export default class channelRoom extends Vue {
     this.msg = "";
   }
   errorCallback(err: any) {
-    console.log({ err });
+    //console.log({ err });
     this.$notify({
       duration: 2000,
       type: "danger",

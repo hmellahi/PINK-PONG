@@ -11,7 +11,7 @@ export const Logger = createDecorator((options: ComponentOptions<Vue>, key:strin
   // Wrap the method with the logging logic.
   options.methods[key] = function wrapperMethod(...args) {
     // Print a log.
-    console.log(`Invoked: ${key}(`, ...args, ')')
+  //  console.log(`Invoked: ${key}(`, ...args, ')')
     // Invoke the original method.
     originalMethod.apply(this, args)
   }

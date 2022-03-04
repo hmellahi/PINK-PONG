@@ -1,5 +1,5 @@
 var game = document.getElementById('game');
-console.log(game);
+//console.log(game);
 let canvas;
 
 
@@ -9,7 +9,7 @@ if (game){
 else{
 canvas = { width: 600, height: 400 };
 }
-let paddle = {    width: 10,height: 60}
+let paddle = {    width: 4,height: 60}
 let gridSize = 80;
 export const GameConstants = {
   // canvas: { width: 600, height: 400 },

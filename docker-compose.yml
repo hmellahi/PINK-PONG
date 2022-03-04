@@ -1,7 +1,9 @@
 version: "3.3"
 services:
   backend:
-    build: ./Backend_Dockerfile
+    build:
+      context: ./
+      dockerfile: Backend_Dockerfile
     ports:
       - "3000:3000"
     # volumes:
@@ -16,6 +18,8 @@ services:
   dbservice:
     image: postgres
     restart: always
+    # ports:
+    #   - "5432:5432"
     env_file:
       - ./srcs/.env
     container_name: "dbservice"
@@ -26,7 +30,9 @@ services:
     # volumes:
     # - ./srcs/client:/usr/src/app
     # -  /usr/src/app/node_modules
-    build: ./Client_Dockerfile
+    build:
+      context: ./
+      dockerfile: Client_Dockerfile
     container_name: "client"
     ports:
       - "5000:5000"

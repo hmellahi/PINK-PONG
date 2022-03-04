@@ -70,10 +70,10 @@ export default class App extends Vue {
     var files = e.target.files || e.dataTransfer.files;
     if (!files.length) return;
     this.avatar = files[0];
-    console.log(this.avatar);
+    //console.log(this.avatar);
   }
   handleSubmit(): void {
-    console.log(this.username);
+    //console.log(this.username);
     if (!isValidInput(this.username)) {
       this.errors = "username must be atleast 8 characters";
       return;

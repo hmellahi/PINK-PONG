@@ -34,7 +34,7 @@ let gameEvents = ["paddleMoves", "gameOver", "ballMoves", "incrementScore"];
 @Component<Game>({
   components: { P5 },
   async beforeRouteLeave(to, from, next) {
-    console.log("before leave");
+   // console.log("before leave");
     // if (to.name == "game") {
     //   this.isLoading = true;
     //   try {
@@ -50,7 +50,7 @@ let gameEvents = ["paddleMoves", "gameOver", "ballMoves", "incrementScore"];
     // }
     try {
       await this.leaveGame();
-      console.log({ name: to.name });
+      //console.log({ name: to.name });
       this.worker.terminate();
       gameEvents.map((event) => {
         this.socket.removeListener(event);
@@ -68,7 +68,7 @@ let gameEvents = ["paddleMoves", "gameOver", "ballMoves", "incrementScore"];
         this.socket.removeListener(event);
       });
       this.Clairo.pause();
-      console.log("Update hhhhd");
+      //console.log("Update hhhhd");
       this.updatedGame();
     },
   },
@@ -87,7 +87,7 @@ export default class Game extends Vue {
   radius: number = GameConstants.canvas.width / RAD;
   sounds: Array<any> = [];
   ball: Ball;
-  isGameOver: boolean = false;
+  isGameOver: boolean = false; 
   isResize: boolean = false;
   xPaddle = GameConstants.paddle.x;
   yPaddle = GameConstants.paddle.y;
@@ -247,7 +247,7 @@ export default class Game extends Vue {
     await this.updatedGame();
   }
   async updatedGame() {
-    console.log("Updated");
+   // console.log("Updated");
     window.addEventListener("keydown", this.keydown);
     window.addEventListener("keyup", this.keyup);
     window.addEventListener("resize", this.resize);
