@@ -18,8 +18,6 @@ services:
   dbservice:
     image: postgres
     restart: always
-    # ports:
-    #   - "5432:5432"
     env_file:
       - ./srcs/.env
     container_name: "dbservice"
