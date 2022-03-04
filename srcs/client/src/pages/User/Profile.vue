@@ -157,8 +157,9 @@ export default class Profile extends Vue {
   }
   async fetchMatches() {
     try {
+      console.log(this.user);
       let data = await this.$http({
-        method: "get",
+        method: "post",
         url: "game/games",
         data: {
           user: this.user,
@@ -199,7 +200,7 @@ export default class Profile extends Vue {
       "getUserStatus",
       id,
       (status: string) => {
-       // console.log(status);
+        // console.log(status);
         this.user.status = status;
         statuss = status;
         return status;

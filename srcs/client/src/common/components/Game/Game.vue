@@ -34,14 +34,43 @@ let gameEvents = ["paddleMoves", "gameOver", "ballMoves", "incrementScore"];
 @Component<Game>({
   components: { P5 },
   async beforeRouteLeave(to, from, next) {
+    console.log("before leave");
+    // if (to.name == "game") {
+    //   this.isLoading = true;
+    //   try {
+    //     await this.leaveGame();
+    //     gameEvents.map((event) => {
+    //       this.socket.removeListener(event);
+    //     });
+    //     this.Clairo.pause();
+    //     await this.updatedGame();
+    //   } catch (e) {}
+    //   console.log("to game");
+    //   return next();
+    // }
     try {
       await this.leaveGame();
+      console.log({ name: to.name });
+      this.worker.terminate();
       gameEvents.map((event) => {
         this.socket.removeListener(event);
       });
       this.Clairo.pause();
     } catch (e) {}
     next();
+  },
+  watch: {
+    $route(to, from) {
+      this.leaveGame();
+      this.worker.terminate();
+      this.isLoading = true;
+      gameEvents.map((event) => {
+        this.socket.removeListener(event);
+      });
+      this.Clairo.pause();
+      console.log("Update hhhhd");
+      this.updatedGame();
+    },
   },
 })
 export default class Game extends Vue {
@@ -116,12 +145,11 @@ export default class Game extends Vue {
     var game: any = this.$refs.game;
 
     if (game) {
-      if (game.offsetWidth < MAX_WIDTH || game.offsetHeight < MAX_HEIGHT){
+      if (game.offsetWidth < MAX_WIDTH || game.offsetHeight < MAX_HEIGHT) {
         this.isResize = true;
         //console.log("below size",game.offsetWidth, game.offsetHeight);
         // alert("Please augment window size to play");
-      }
-      else{
+      } else {
         this.isResize = false;
         //console.log("above size",game.offsetWidth, game.offsetHeight);
       }
@@ -185,12 +213,11 @@ export default class Game extends Vue {
     var rx = GameConstants.canvas.width / 10;
     var ry = GameConstants.canvas.height / 10;
     if (game) {
-      if (game.offsetWidth < MAX_WIDTH || game.offsetHeight < MAX_HEIGHT){
+      if (game.offsetWidth < MAX_WIDTH || game.offsetHeight < MAX_HEIGHT) {
         this.isResize = true;
         //console.log("below size",game.offsetWidth, game.offsetHeight);
         // alert("Please augment window size to play");
-      }
-      else{
+      } else {
         this.isResize = false;
         //console.log("above size",game.offsetWidth, game.offsetHeight);
       }
@@ -216,8 +243,11 @@ export default class Game extends Vue {
     this.score2.y = 30;
     this.scores = [this.score, this.score2];
   }
-
   async mounted() {
+    await this.updatedGame();
+  }
+  async updatedGame() {
+    console.log("Updated");
     window.addEventListener("keydown", this.keydown);
     window.addEventListener("keyup", this.keyup);
     window.addEventListener("resize", this.resize);
@@ -245,22 +275,22 @@ export default class Game extends Vue {
         localStorage[this.currentUser.id + "#settings#1"] === "true";
     }
     try {
-    this.Clairo = await new Audio(sound8);
+      this.Clairo = await new Audio(sound8);
     } catch (error) {
       this.isMusicOn = false;
     }
     try {
-    this.wallHitSound = await new Audio(sound);
-    this.scoreSound = await new Audio(sound2);
-    this.marioCoin = await new Audio(sound3);
-    this.ballBounce = await new Audio(sound5);
-    this.ballHit = await new Audio(sound7);
+      this.wallHitSound = await new Audio(sound);
+      this.scoreSound = await new Audio(sound2);
+      this.marioCoin = await new Audio(sound3);
+      this.ballBounce = await new Audio(sound5);
+      this.ballHit = await new Audio(sound7);
     } catch (error) {
       this.isSoundOn = false;
     }
     //console.log({ isSoundOn: this.isSoundOn, isMusicOn: this.isMusicOn });
     // here do ur shit...
-    if (this.isMusicOn){
+    if (this.isMusicOn) {
       this.playMusic(this.Clairo);
     }
   }
@@ -382,18 +412,18 @@ export default class Game extends Vue {
         this.gameData.isPlayer1) ||
       (this.scores[1].value < this.scores[0].value && !this.gameData.isPlayer1)
     )
-    //ff is disconnet
+      //ff is disconnet
       this.playerLost(this.sketch, "you Have Won");
     else {
       this.playerLost(this.sketch, "you Have lost");
     }
-    this.worker.terminate();
+    this.isGameOver = true;
+    // this.worker.terminate();
   }
   async leaveGame() {
     await this.socket.emit("leaveGame", {
       roomId: this.roomId,
     });
-    this.worker.terminate();
   }
 
   resize() {
@@ -431,9 +461,9 @@ export default class Game extends Vue {
     sketch.rect(0, 0, GameConstants.canvas.width, GameConstants.canvas.height);
   }
 
-    showResize(sketch: P5Sketch) {
+  showResize(sketch: P5Sketch) {
     this.drawOerlay(sketch);
-    //  sketch.background(220); 
+    //  sketch.background(220);
     //this.background.draw(sketch);
     sketch.textSize(GameConstants.canvas.width / 18);
     sketch.textAlign(sketch.CENTER);
@@ -500,13 +530,10 @@ export default class Game extends Vue {
     this.worker.onmessage = () => {
       this.draw(this.sketch);
     };
-    this.draw(this.sketch);
   }
 
   draw(sketch: P5Sketch) {
     if (this.isGameOver) return;
-
-
 
     // this.sendNewBallPostion();
     if (this.map != 3) {
@@ -521,11 +548,9 @@ export default class Game extends Vue {
     this.background.draw(sketch);
 
     this.paddle.draw(sketch);
-    if (!this.isResize)
-      this.paddle.update();
+    if (!this.isResize) this.paddle.update();
     this.paddle2.draw(sketch);
-    if (!this.isResize)
-      this.paddle2.update();
+    if (!this.isResize) this.paddle2.update();
     if (
       this.scores[0].value >= MAX_SCORE ||
       this.scores[1].value >= MAX_SCORE
@@ -595,8 +620,7 @@ export default class Game extends Vue {
     if (this.gameData.isPlayer1) this.sendNewPaddleVelocity(this.paddle);
     else this.sendNewPaddleVelocity(this.paddle2);
     this.sendNewBallPostion();
-    if (this.isResize)
-    {
+    if (this.isResize) {
       //overlay
       this.showResize(sketch);
       // return;
@@ -675,7 +699,7 @@ export default class Game extends Vue {
       await music.pause();
       //console.log("Playing...");
     } catch (err) {
-     // console.log("Failed to play..." + err);
+      // console.log("Failed to play..." + err);
     }
   }
 }

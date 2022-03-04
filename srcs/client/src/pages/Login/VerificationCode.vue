@@ -2,7 +2,7 @@
   <div class="text-center col-md-6 wrapper m-auto">
     <Overlay>
       <h2 class="mb-4">Verification Code</h2>
-      <h4>Please enter the verification code sent to Test@test.ma</h4>
+      <!-- <h4>Please enter the verification code sent to google </h4> -->
       <div class="code_verifation mt-4 px-0">
         <inputField
           type="text"

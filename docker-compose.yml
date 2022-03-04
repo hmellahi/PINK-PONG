@@ -1,7 +1,7 @@
 version: "3.3"
 services:
   backend:
-    build: ./srcs/backend/
+    build: ./Backend_Dockerfile
     ports:
       - "3000:3000"
     # volumes:
@@ -26,7 +26,7 @@ services:
     # volumes:
     # - ./srcs/client:/usr/src/app
     # -  /usr/src/app/node_modules
-    build: ./srcs/client/
+    build: ./Client_Dockerfile
     container_name: "client"
     ports:
       - "5000:5000"

@@ -109,7 +109,11 @@ const actions = {
             type: "danger",
             title: msg,
           });
-        } else router.push(`/game?id=${roomId}`);
+        }
+        // } else {
+        //   console.log({ roomId });
+        //   router.push(`/game?id=${roomId}`);
+        // }
       }
     );
   },

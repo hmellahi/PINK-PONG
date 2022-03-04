@@ -177,6 +177,7 @@ const actions = {
         }
         //console.log({ msg });
         if (msg.messages) commit("SET_DMS", msg.messages);
+        else commit("SET_DMS", []);
       });
       // });
     } catch (error) {
