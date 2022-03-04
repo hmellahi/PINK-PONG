@@ -118,7 +118,7 @@ const actions = {
     );
   },
 
-  declineGameInvite(
+  declineRequest(
     { commit, state }: ActionContext<UserState, any>,
     { senderSocketId, senderId }: any
   ) {
