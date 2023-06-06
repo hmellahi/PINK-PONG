@@ -33,8 +33,8 @@ export class AuthService
     {
         try
         {
-            // const randomNumber: number = Math.round(Math.random() * 10000);
-            // user.image_url = this.configService.get("AVATAR_API") + randomNumber + '.svg';
+            const randomNumber: number = Math.round(Math.random() * 10000);
+            user.image_url = this.configService.get("AVATAR_API") + randomNumber + '.svg';
             return await this.userService.createUser(user);
         }
         catch(error)

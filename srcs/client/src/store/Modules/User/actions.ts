@@ -54,20 +54,21 @@ const listenToNotifications = (gameSocket: Socket) => {
 
 const actions = {
   async login({ commit }: ActionContext<UserState, any>) {
-    window.location.href = `${API_URL}/auth/login`;
+    // window.location.href = `${API_URL}/auth/login`;
     // FOR TESTING ONLY UNCOMENT THIS
-    // let data: any;
-    // try {
-    //   data = await api.post("auth/testLogin", {
-    //     first_name: generateRandomString(),
-    //     last_name: generateRandomString(),
-    //     email: generateRandomString() + "@zin.com",
-    //     login: generateRandomString(),
-    //   });
-    // } catch (error) {}
-    // // store.commit("User/setUser", data.data);
+    let data: any;
+    try {
+      data = await api.post("auth/testLogin", {
+        first_name: generateRandomString(),
+        last_name: generateRandomString(),
+        email: generateRandomString() + "@zin.com",
+        login: generateRandomString(),
+        image_url:"https://unsplash.com/photos/WNoLnJo7tS8"
+      });
+    } catch (error) {}
+    store.commit("User/setUser", data.data);
 
-    // router.push("/");
+    router.push("/");
   },
   logout({ commit }: ActionContext<UserState, any>) {},
 

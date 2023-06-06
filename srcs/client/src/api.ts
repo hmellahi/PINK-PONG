@@ -1,7 +1,6 @@
 import axios from "axios";
 
-const { VUE_APP_API_URL: API_URL, VUE_APP_IP: IP } = process.env;
-
+const { VUE_APP_API_URL: API_URL, VUE_APP_SERVER_IP: IP } = process.env;
 
 export default axios.create({
   baseURL: API_URL,

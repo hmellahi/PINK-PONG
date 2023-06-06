@@ -1,12 +1,14 @@
-FROM node:lts-alpine
+FROM node:14.16.0-alpine
+
+
 
 WORKDIR /usr/src/app
 
 COPY srcs/backend/package.json .
 RUN npm install
-RUN npm i -g @nestjs/cli
+RUN npm i -g @nestjs/cli@8.2.6
 COPY srcs/backend .
 
 RUN npm run build
 CMD npm run start:prod
-#:${NODE_ENV} 
+#:${NODE_ENV}

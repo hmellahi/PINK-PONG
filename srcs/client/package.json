@@ -3,14 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "serve": "export NODE_OPTIONS=--openssl-legacy-provider && vue-cli-service serve",
+    "serve": "export NODE_OPTIONS=--openssl-legacy-provider && vue-cli-service serve --port 5000",
     "start": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "test:unit": "vue-cli-service test:unit",
     "postinstall": "patch-package"
   },
   "dependencies": {
-    "@soldeplata/popper-vue": "^1.0.4",
     "@types/node": "^16.11.11",
     "axios": "^0.24.0",
     "babel-plugin-transform-remove-console": "^6.9.4",

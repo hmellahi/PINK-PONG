@@ -31,7 +31,8 @@
     "@nestjs/platform-express": "^8.0.0",
     "@nestjs/platform-socket.io": "^8.2.6",
     "@nestjs/serve-static": "^2.2.2",
-    "@nestjs/typeorm": "^8.0.2",
+    "@nestjs/typeorm": "~8.0.2",
+    "typeorm": "^0.2.25",
     "@nestjs/websockets": "^8.2.6",
     "@types/bcrypt": "^5.0.0",
     "@types/cookie": "^0.4.1",
@@ -62,7 +63,6 @@
     "rxjs": "^7.2.0",
     "speakeasy": "^2.0.0",
     "twilio": "^3.73.1",
-    "typeorm": "^0.2.41",
     "uuid": "^8.3.2"
   },
   "devDependencies": {
@@ -87,7 +87,7 @@
     "ts-jest": "^27.0.3",
     "ts-loader": "^9.2.3",
     "tsconfig-paths": "^3.10.1",
-    "typescript": "^4.3.5"
+    "typescript": "~4.3.5"
   },
   "jest": {
     "moduleFileExtensions": [

@@ -194,6 +194,8 @@ export class AuthController {
   async testLogin(@Body() user: CreateUserDto, @Res() response: Response) {
     let existedUser = await this.userService.getByEmail(user.email);
 
+    // user.avatar_url = 'https://thispersondoesnotexist.com/';
+
     if (!existedUser) existedUser = await this.authService.register(user);
     const accessCookie = this.authService.getAccessJwtCookie(
       existedUser.id,
