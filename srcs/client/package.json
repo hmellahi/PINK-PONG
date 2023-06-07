@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "#serve": "export NODE_OPTIONS=--openssl-legacy-provider && vue-cli-service serve --port 5000",
-    "serve": "vue-cli-service serve --port 5000",
+    "serve": "export NODE_OPTIONS=--openssl-legacy-provider && vue-cli-service serve --port 5000",
+    "#serve": "vue-cli-service serve --port 5000",
     "start": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "test:unit": "vue-cli-service test:unit",
