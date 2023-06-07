@@ -5,6 +5,9 @@ WORKDIR /usr/src/app
 COPY  srcs/client/package.json .
 COPY  srcs/client/patches ./patches
 
+RUN apk add --update python make g++\
+   && rm -rf /var/cache/apk/*
+   
 RUN yarn
 COPY srcs/client .
 

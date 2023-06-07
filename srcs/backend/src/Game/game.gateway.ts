@@ -26,7 +26,7 @@ let ALREADY_IN_QUEUE = 'u cant join queue, because you are already in queue';
 @WebSocketGateway({
   namespace: 'game',
   cors: {
-    origin: `http://192.168.11.108:5000`,
+    origin: `http://172.16.84.159:5000`,
     credentials: true,
   },
 })
