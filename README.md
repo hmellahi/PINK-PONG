@@ -7,8 +7,8 @@
 I collaborated with my classmates to create an intuitive online ping pong game platform for our final school project. This platform features real-time chat capabilities and multiplayer gameplay, offering users the ability to challenge friends, join queues, and observe other players in action.
 
 <div align="center">
-  <img style="box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);" src="/blob/master/Feed.png?raw=true" alt="Matcha Project" width="80%">
-  <p><em>Screenshot of the Matcha Feed Page</em></p>
+  <img style="box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);" src="/assets/demo.gif" alt="Transandance Project" width="80%">
+  <p><em>Game Demo</em></p>
 </div>
 
 ## Technology Stack
@@ -42,7 +42,7 @@ This project employs a range of cutting-edge technologies:
 
 ## Installation
 
-To run the Matcha project locally, follow these steps:
+To run the Transandance project locally, follow these steps:
 
 1. Ensure Docker is installed on your system. Refer to the Docker documentation for installation instructions.
 2. Clone the project repository to your local machine.
@@ -98,4 +98,4 @@ Contributions and feedback are welcome! Feel free to create issues or pull reque
 
 ---
 
-_Disclaimer: Matcha is a project created for educational purposes and is not affiliated with Tinder or any dating platform._
+_Disclaimer: Transandance is a project created for educational purposes and is not affiliated with Tinder or any dating platform._
