@@ -18,12 +18,12 @@ services:
       dockerfile: Client_Dockerfile
     container_name: "client"
     ports:
-      - "5000:5000"
+      - "5678:5678"
     restart: always
     # depends_on:
     #   - "backend"
     image: client
-    command: serve -l 5000 -s ./dist
+    command: serve -l 5678 -s ./dist
 
   backend:
     build:

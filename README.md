@@ -6,10 +6,10 @@
 
 I collaborated with my classmates to create an intuitive online ping pong game platform for our final school project. This platform features real-time chat capabilities and multiplayer gameplay, offering users the ability to challenge friends, join queues, and observe other players in action.
 
-<!-- <div align="center">
-  <img style="box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);" src="https://github.com/hmellahi/Tinder-Clone/blob/master/Feed.png?raw=true" alt="Matcha Project" width="80%">
+<div align="center">
+  <img style="box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);" src="/blob/master/Feed.png?raw=true" alt="Matcha Project" width="80%">
   <p><em>Screenshot of the Matcha Feed Page</em></p>
-</div> -->
+</div>
 
 ## Technology Stack
 
@@ -48,8 +48,7 @@ To run the Matcha project locally, follow these steps:
 2. Clone the project repository to your local machine.
 3. Run `docker-compose up -d` command to start the application.
 
-
-Once the application is built and launched, access it by visiting [http://192.168.1.34:5678](http://192.168.1.34:8890) in your web browser. If you encounter any issues during installation, please let me know.
+Once the application is built and launched, access it by visiting [http://localhost:5678](http://localhost:8890) in your web browser. If you encounter any issues during installation, please let me know.
 
 ## Key Features
 
@@ -63,7 +62,6 @@ The primary purpose is to play Pong against other players:
 - The Game is Responsive
 
 This project aims to provide an engaging user experience, combining real-time gameplay, social interaction, and security measures.
-
 
 ### User Account
 

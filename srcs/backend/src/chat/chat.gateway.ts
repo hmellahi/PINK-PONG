@@ -21,7 +21,7 @@ import {
 @WebSocketGateway({
   namespace: 'chat',
   cors: {
-    origin: `http://172.16.84.159:5000`,
+    origin: `http://localhost:5678`,
     credentials: true,
   },
 })

@@ -8,7 +8,7 @@ COPY  srcs/client/patches ./patches
 RUN apk add --update python make g++\
    && rm -rf /var/cache/apk/*
    
-RUN yarn
+RUN yarn --ignore-engines
 COPY srcs/client .
 
 RUN yarn build
