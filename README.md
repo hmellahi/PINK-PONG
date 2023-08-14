@@ -40,6 +40,11 @@ This project employs a range of cutting-edge technologies:
   <span style="margin-left: 5px;"><strong>WebSockets:</strong> Real-time communication for online gameplay and chat.</span>
 </div>
 
+<div style="display: flex; align-items: center; margin-left: 10px; margin-right: 10px;">
+  <img src="https://raw.githubusercontent.com/danielcranney/readme-generator/main/public/icons/skills/typescript-colored.svg" width="18" height="18" alt="TypeScript" />
+  <span style="margin-left: 5px;"><strong>TypeScript:</strong> Superset of JavaScript with static typing for enhanced development.</span>
+</div>
+
 ## Installation
 
 To run the Transandance project locally, follow these steps:
@@ -91,11 +96,3 @@ To ensure security, the project addresses several concerns:
 - Protection against SQL injections is implemented.
 - Server-side validation for forms and user input is incorporated.
 - Sensitive information is stored locally in a `.env` file.
-
-## Contributing
-
-Contributions and feedback are welcome! Feel free to create issues or pull requests to improve this project.
-
----
-
-_Disclaimer: Transandance is a project created for educational purposes and is not affiliated with Tinder or any dating platform._
