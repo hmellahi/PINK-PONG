@@ -11,6 +11,9 @@ I collaborated with my classmates to create an intuitive online ping pong game p
   <p><em>Game Demo</em></p>
 </div>
 
+**Please Note:** The GIF demo above provides a visual overview of the Transandance project's gameplay and user interface. However, it's important to mention that any lag or performance issues visible in the GIF might not accurately represent the actual performance of the game.
+
+
 ## Technology Stack
 
 This project employs a range of cutting-edge technologies:
@@ -19,6 +22,7 @@ This project employs a range of cutting-edge technologies:
   <img src="https://raw.githubusercontent.com/danielcranney/readme-generator/main/public/icons/skills/vuejs-colored.svg" width="18" height="18" alt="Vue" />
   <span style="margin-left: 5px;"><strong>Vue 3:</strong> Frontend framework for building user interfaces.</span>
 </div>
+
 
 <div style="display: flex; align-items: center; margin-left: 10px; margin-right: 10px;">
   <img src="https://raw.githubusercontent.com/danielcranney/readme-generator/main/public/icons/skills/tailwindcss-colored.svg" width="18" height="18" alt="TailwindCSS" />
