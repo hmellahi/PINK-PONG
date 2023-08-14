@@ -48,7 +48,7 @@ To run the Matcha project locally, follow these steps:
 2. Clone the project repository to your local machine.
 3. Run `docker-compose up -d` command to start the application.
 
-Once the application is built and launched, access it by visiting [http://localhost:5678](http://localhost:8890) in your web browser. If you encounter any issues during installation, please let me know.
+Once the application is built and launched, access it by visiting [http://localhost:5678](http://localhost:5678) in your web browser. If you encounter any issues during installation, please let me know.
 
 ## Key Features
 
