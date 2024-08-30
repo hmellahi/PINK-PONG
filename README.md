@@ -1,4 +1,4 @@
-# Transandance Project
+# PINK PONG Project
 
 <!-- **Demo:** Explore the live demo of this project at [matcha.hmellahi.me](https://matcha.hmellahi.me) -->
 
@@ -7,11 +7,11 @@
 I collaborated with my classmates to create an intuitive online ping pong game platform for our final school project. This platform features real-time chat capabilities and multiplayer gameplay, offering users the ability to challenge friends, join queues, and observe other players in action.
 
 <div align="center">
-  <img style="box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);" src="/assets/demo.gif" alt="Transandance Project" width="80%">
+  <img style="box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);" src="/assets/demo.gif" alt="PINK PONG Project" width="80%">
   <p><em>Game Demo</em></p>
 </div>
 
-**Please Note:** The GIF demo above provides a visual overview of the Transandance project's gameplay and user interface. However, it's important to mention that any lag or performance issues visible in the GIF might not accurately represent the actual performance of the game.
+**Please Note:** The GIF demo above provides a visual overview of the PINK PONG project's gameplay and user interface. However, it's important to mention that any lag or performance issues visible in the GIF might not accurately represent the actual performance of the game.
 
 
 ## Technology Stack
@@ -51,7 +51,7 @@ This project employs a range of cutting-edge technologies:
 
 ## Installation
 
-To run the Transandance project locally, follow these steps:
+To run the PINK PONG project locally, follow these steps:
 
 1. Ensure Docker is installed on your system. Refer to the Docker documentation for installation instructions.
 2. Clone the project repository to your local machine.
